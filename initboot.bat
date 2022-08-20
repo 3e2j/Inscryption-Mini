@@ -1,2 +1,2 @@
 py -m pip install uni-curses
-pip install PyOpenAL
+py -m pip install PyOpenAL
