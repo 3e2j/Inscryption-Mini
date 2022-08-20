@@ -3,13 +3,14 @@ from pathlib import Path
 
 #print('-----')
 #print(Path(__file__).absolute().parent)
-
+ImportProcess = False
 working_directory = Path(__file__).absolute().parent
 print(working_directory)
-import subprocess
-from subprocess import Popen
-p = Popen(f"{working_directory}/initboot.bat", shell=True, stdout = subprocess.PIPE) # Auto-installs required dependancies
-stdout, stderr = p.communicate()
+if ImportProcess:
+  import subprocess
+  from subprocess import Popen
+  p = Popen(f"{working_directory}/initboot.bat", shell=True, stdout = subprocess.PIPE) # Auto-installs required dependancies
+  stdout, stderr = p.communicate()
 
 import unicurses
 HOME_DIR  = os.getenv('UserProfile') if unicurses.OPERATING_SYSTEM == 'Windows' else os.getenv('HOME')
