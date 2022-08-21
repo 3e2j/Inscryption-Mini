@@ -2,6 +2,7 @@ import threading
 from threading import Thread
 import unicurses
 from __main__ import Developer_Mode
+from time import sleep
 
 
 # Threaded function snippet
@@ -24,7 +25,6 @@ def threaded(fn):
         except:
             if Developer_Mode:
                 unicurses.mvaddstr(2, 0, f"Unsuccesful Threading Setup for {thread}")
-        return thread
 
     return wrapper
     # return threadedInner

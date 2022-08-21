@@ -6,8 +6,8 @@ SysOS = platform.system()
 from pathlib import Path
 
 
-ImportProcess = True
-BypassLinuxRestriction = True # Won't support sound (used for my own end for programming)
+ImportProcess = False
+Developer_Mode = True
 
 
 working_directory = Path(__file__).absolute().parent
@@ -20,19 +20,21 @@ if ImportProcess:
     stdout, stderr = p.communicate()
   else:
     print("Not supported on platforms other then Windows.")
-    if not BypassLinuxRestriction:
-      quit()
+    quit()
 
 print("Init boot complete")
 
-Developer_Mode = True
+import keyboard
+
+keyboard.press_and_release("f11")
+
+
 #import OLD.playarea.py #OLD FILE
 
-if not BypassLinuxRestriction:
-  import engine.soundEngine
+#import engine.soundEngine
 import engine.screenSetup
 
 if Developer_Mode == True:
   print("Reached End of main script")
-
+os._exit(1)
 #py C:\Users\flint\PycharmProjects\CardGame\

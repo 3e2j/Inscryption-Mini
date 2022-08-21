@@ -72,7 +72,7 @@ def deleteUnusedKeys(WaitIdOrKey):
     exec(f"global {WaitIdOrKey} \ndel {WaitIdOrKey}")
     unicurses.mvaddstr(4, 0, f"Removed global {WaitIdOrKey}")
 
-
+#don't thread this
 def waitUntil(WaitIdOrKey, isKeyboardInput, *arguments):
     wU = True
     if Developer_Mode:
@@ -80,15 +80,16 @@ def waitUntil(WaitIdOrKey, isKeyboardInput, *arguments):
     while wU == True:
         if isKeyboardInput is not False:  # No global decloration has to be declared for toggle
             try:
-                key = unicurses.getkey()
-                if key == isKeyboardInput:  # Enter
+                key = str(unicurses.getkey(),"utf-8") #Grab input and Decode bytes
+                if key == (isKeyboardInput or arguments):  # Enter
                     wU = False
                     if Developer_Mode:
                         unicurses.mvaddstr(3, 0, f"Completed Wait Key Loop for {WaitIdOrKey}    ")
                         exec(f"global {WaitIdOrKey} \n{WaitIdOrKey} = True")
                         deleteUnusedKeys(WaitIdOrKey)
                 else:
-                    unicurses.mvaddstr(11, 0, f"key ==== {key}                     ") # printing in bytes
+                    if Developer_Mode:
+                        unicurses.mvaddstr(11, 0, f"key ==== {key}                     ") # printing in bytes
             except:
                 pass  # Avoids "none" error
 
@@ -104,7 +105,6 @@ def waitUntil(WaitIdOrKey, isKeyboardInput, *arguments):
 
                 exec(
                     f"global {WaitIdOrKey} \ndel {WaitIdOrKey}")  # A sneaky bypass to delete WaitID without param/global errors
-
             sleep(0.25)  # waits 0.25s for preformance
             unicurses.refresh()
 
@@ -115,21 +115,28 @@ def startScreen():
     @threaded
     def dialouge(status):
         if status == "init":
-            centreFadeIn("Recommended to play in fullscreen for the best experience", -1, 0, 2)
+            centreFadeIn("The game should be fullscreen. If you wish to exit this anytime, press F11", -2, 0, 2)
         else:
-            centreFadeOut("Recommended to play in fullscreen for the best experience", -1, 0, 2)
+            centreFadeOut("The game should be fullscreen. If you wish to exit this anytime, press F11", -2, 0, 2)
 
     @threaded
     def dialouge2(status):
         if status == "init":
-            centreFadeIn("Press ENTER to confirm screen-size", 0, 0, 2)
-            dancingMan(1, 0, 0.5)
-            #exec("global DialougeSendIn \nDialougeSendIn = True")  # Quick line to push out a global value
+            centreFadeIn("(Note: This will break the game)", -1, 0, 2)
         else:
-            centreFadeOut("Press ENTER to confirm screen-size", 0, 0, 2)
+            centreFadeOut("(Note: This will break the game)", -1, 0, 2)
 
     @threaded
     def dialouge3(status):
+        if status == "init":
+            centreFadeIn("Press ENTER to continue", 0, 0, 2)
+            dancingMan(1, 0, 0.5)
+            #exec("global DialougeSendIn \nDialougeSendIn = True")  # Quick line to push out a global value
+        else:
+            centreFadeOut("Press ENTER to continue", 0, 0, 2)
+
+    @threaded
+    def dialouge4(status):
         if status == "init":
             centreFadeIn(" ┗(･o･ )┓ ", 1, 0, 2)
         else:
@@ -147,11 +154,13 @@ def startScreen():
     dialouge("init")
     dialouge2("init")
     dialouge3("init")
-    waitUntil("DialougeSendIn", "KEY_RIGHT")
+    dialouge4("init")
+    waitUntil("DialougeSendIn", "^J","z") #^J represents enter (for some reason)
     #waitUntil("DialougeSendIn", False)
     dialouge("out")
     dialouge2("out")
     dialouge3("out")  # Assumes last thread therefore will have wait toggle (note: changes for time periods given)
+    dialouge4("out")
     waitUntil("DialougeSendOut", False)
     # waitUntil("DialougeSendIn","\n")
 

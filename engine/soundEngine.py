@@ -18,7 +18,7 @@ from engine.threading import threaded
 
 
 # open our wave file
-soundfile = oalOpen(f'{working_directory}/sounds/mono/scale/scale_tick.wav')
+soundfile = oalOpen(f'{working_directory}/sounds/mono/scale/scale_tick.ogg')
 Source.set_gain(soundfile, 1)
 Source.set_position(soundfile, (-0.2, 0, 2))
 

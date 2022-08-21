@@ -11,23 +11,35 @@ red = None
 sh = None
 sw = None
 
+import unicurses
+''' 
+no, it's not a unicorn. But it is the terminal based framework that I'm runnning the program in.
+Originally was coded in Curses, but switched to UniCurses to support windows machines. 
+'''
+
 def ReimportCurses(ConfirmResolution):
-    import unicurses
-    ''' 
-    no, it's not a unicorn. But it is the terminal based framework that I'm runnning the program in.
-    Originally was coded in Curses, but switched to UniCurses to support windows machines. 
-    '''
     def main(s):
-        global StandardScreen  # Globalising Standard Screen to not require import to every file that wants screen updates
+        #global StandardScreen  # Globalising Standard Screen to not require import to every file that wants screen updates
         StandardScreen = unicurses.initscr()
 
-        #unicurses.nodelay()
+
+        #unicurses.resize_term(*unicurses.getmaxyx(StandardScreen))
+        #unicurses.wresize(StandardScreen,*unicurses.getmaxyx(StandardScreen))
+        #unicurses.clear()
+        #unicurses.refresh()
+
+        '''OLD resize code:
+         couldn't get screen-manipulation to work.
+         Had to settle for a simple F11 press by default.
+         '''
+
 
         unicurses.clear()  # Clear the whole Screen
         unicurses.timeout(250)  # Refresh rate
         unicurses.curs_set(0)
         unicurses.start_color()
         unicurses.use_default_colors()  # Makes the terminal the original color
+        unicurses.keypad(StandardScreen, True);
 
         global sh, sw
         sh, sw = unicurses.getmaxyx(StandardScreen)
@@ -75,13 +87,9 @@ def ReimportCurses(ConfirmResolution):
         @threaded
         def ThreadingChecker():
             from time import sleep
-            while True:
-                unicurses.mvaddstr(5, 0, f"Amount of threads: {threading.activeCount()}")
+            while not stopThreads:
+                unicurses.mvaddstr(5, 0, f"Number of running threads: {threading.activeCount()}")
                 sleep(2)
-
-        if Developer_Mode:
-            ThreadingChecker() # Thank god hyperthreading exists, still good to keep track though
-
 
         from game.dialouge.dialouge import startScreen, mainMenu
         if ConfirmResolution:
@@ -102,11 +110,13 @@ def reimportCursesModule(ConfirmResolution):
     ReimportCurses(ConfirmResolution)
 
 import time
+from time import localtime
 
 if Developer_Mode:
-    print(f"startScreen at {time.asctime(time.localtime())}")
+    print(f"startScreen at {time.asctime(localtime())}")
 reimportCursesModule(True)
-del sh, sw
+#from game.dialouge.dialouge import waitUntil
+#waitUntil("FinishedStartScreen", False)
 if Developer_Mode:
-    print(f"mainMenu at {time.asctime(time.localtime())}")
-#reimportCursesModule(False)  # Restarting the VM
+    print(f"mainMenu at {time.asctime(localtime())}")
+reimportCursesModule(True)  # Restarting the VM
