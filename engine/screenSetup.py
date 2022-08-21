@@ -20,7 +20,7 @@ no, it's not a unicorn. But it is the terminal based framework that I'm runnning
 Originally was coded in Curses, but switched to UniCurses to support windows machines. 
 '''
 
-def PrefixReimportCurses(ConfirmResolution):
+def CursesStartup(RunThroughFullGame):
     def main(s):
         #global StandardScreen  # Globalising Standard Screen to not require import to every file that wants screen updates
         StandardScreen = unicurses.initscr()
@@ -100,30 +100,22 @@ def PrefixReimportCurses(ConfirmResolution):
             return ThreadingChecker
 
         from game.dialouge.dialouge import startScreen, mainMenu
-        if ConfirmResolution:
+        if RunThroughFullGame:
             if Developer_Mode:
                 ThreadingChecker()
             startScreen()
         else:
-            print("RAN THROUGH MAIN MENU")
-            unicurses.mvaddstr(7, 0, f"Tried to call MainMenu {sh, sw}")
-            unicurses.refresh()
-            sleep(500)
-            #mainMenu() #This will go to the main menu but i'm skipping it to develop the game
+            print("Skipping to certain section")
+            #Add in whatever section here, IE: startScreen(), mainMenu(), etc...
         unicurses.endwin()
     print("RAN THROUGH SCRIPT")
     return main
 
 
-@PrefixReimportCurses
-def ReimportCurses(ConfirmResolution):
+@CursesStartup
+def StartCurses(RunThroughFullGame):
     pass
 
 if Developer_Mode:
-    print(f"startScreen at {time.asctime(localtime())}")
-ReimportCurses(True)
-
-# Restarting the VM
-if Developer_Mode:
-    print(f"mainMenu at {time.asctime(localtime())}")
-#reimportCursesModule(False)
+    print(f"Started Virtual Terminal at {time.asctime(localtime())}")
+StartCurses(True)
