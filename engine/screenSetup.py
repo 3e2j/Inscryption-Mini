@@ -17,19 +17,13 @@ from time import localtime, sleep
 import unicurses
 ''' 
 no, it's not a unicorn. But it is the terminal based framework that I'm runnning the program in.
-Originally was coded in Curses, but switched to UniCurses to support windows machines. 
+Originally was coded in Curses, but switched to UniCurses to support Windows machines. 
 '''
 
 def CursesStartup(RunThroughFullGame):
     def main(s):
-        #global StandardScreen  # Globalising Standard Screen to not require import to every file that wants screen updates
+
         StandardScreen = unicurses.initscr()
-
-
-        #unicurses.resize_term(*unicurses.getmaxyx(StandardScreen))
-        #unicurses.wresize(StandardScreen,*unicurses.getmaxyx(StandardScreen))
-        #unicurses.clear()
-        #unicurses.refresh()
 
         '''OLD resize code:
          couldn't get screen-manipulation to work.
@@ -39,15 +33,15 @@ def CursesStartup(RunThroughFullGame):
 
         unicurses.clear()  # Clear the whole Screen
         unicurses.timeout(250)  # Refresh rate
-        unicurses.curs_set(0)
-        unicurses.start_color()
+        unicurses.start_color() # init color
         unicurses.use_default_colors()  # Makes the terminal the original color
-        unicurses.keypad(StandardScreen, True);
+        unicurses.keypad(StandardScreen, True); #Makes arrow-keys work
+        unicurses.noecho() #removes any keyboard-inputs typing letters like a terminal
+        unicurses.curs_set(False) #removes the mouse
 
         global sh, sw
-        sh, sw = unicurses.getmaxyx(StandardScreen)
+        sh, sw = unicurses.getmaxyx(StandardScreen) #Screen height/width
 
-        # Color Init (not using background colors)
         # gray's from black to white
         unicurses.init_color(2,
                           0x1b * 1000 // 0xff,
@@ -79,7 +73,7 @@ def CursesStartup(RunThroughFullGame):
         red = unicurses.color_pair(6)
         magenta = unicurses.color_pair(7)
 
-        if Developer_Mode:
+        if Developer_Mode: #Dev subtitles
             unicurses.mvaddstr(0, 0, "Developer Stats", red)
             unicurses.mvaddstr(1, 0, "  Threading", magenta)
             unicurses.mvaddstr(6, 0, "Screen Height/Width", magenta)
@@ -89,7 +83,7 @@ def CursesStartup(RunThroughFullGame):
         from engine.threadingEngine import threaded
         from threading import activeCount
         @threaded
-        def ThreadingChecker():
+        def ThreadingChecker(): #Checks active amount of threads
             from time import sleep
             while True:
                 try:
@@ -99,16 +93,14 @@ def CursesStartup(RunThroughFullGame):
                 sleep(2)
             return ThreadingChecker
 
-        from game.dialouge.dialouge import startScreen, mainMenu
         if RunThroughFullGame:
             if Developer_Mode:
                 ThreadingChecker()
-            startScreen()
-        else:
+            import game.startScreen
+        else: #Dev skip
             print("Skipping to certain section")
             #Add in whatever section here, IE: startScreen(), mainMenu(), etc...
         unicurses.endwin()
-    print("RAN THROUGH SCRIPT")
     return main
 
 
@@ -117,5 +109,5 @@ def StartCurses(RunThroughFullGame):
     pass
 
 if Developer_Mode:
-    print(f"Started Virtual Terminal at {time.asctime(localtime())}")
+    print(f"Started Curses Terminal at {time.asctime(localtime())}")
 StartCurses(True)

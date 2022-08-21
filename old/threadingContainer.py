@@ -3,6 +3,13 @@ from time import sleep
 from engine.screenSetup import StandardScreen
 from __main__ import Developer_Mode
 
+
+'''
+This is a depreciated threading file that I couldn't get working.
+The new code is FAR simpler. But it's interesting to see where it developed from
+'''
+
+
 RunningThreads = {}
 
 

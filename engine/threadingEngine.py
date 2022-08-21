@@ -1,12 +1,17 @@
 import threading
 from threading import Thread
-import unicurses
-from __main__ import Developer_Mode
 from time import sleep
 
+from __main__ import Developer_Mode
+#if Developer_Mode:
+import unicurses
 
-# Threaded function snippet
-# def threaded(IsLooped):
+'''
+This threading engine was built up to run the code IN ITS ORIGINAL SCRIPT.
+It doesn't run the code in here. This is simply used as a threading
+relocater so the code doesn't have to be remade in every single script.
+'''
+
 def threaded(fn):
     def wrapper(*args, **kwargs):
         thread = Thread(target=fn, args=args, kwargs=kwargs)
@@ -17,14 +22,8 @@ def threaded(fn):
             thread.start()
             if Developer_Mode:
                 unicurses.mvaddstr(2, 0, f"Successful Threading Setup for {thread}")
-            # thread.join()
-            # StandardScreen.addstr(20, 0, f"Fully ran through thread")
-            # StandardScreen.refresh()
-            # time.sleep(50)
-            # thread.join() # For calling upon if a thread is completed, just use whatever def is after: refer to game.dialouge.dialouge.startScreen <Dialouge 2>
         except:
             if Developer_Mode:
                 unicurses.mvaddstr(2, 0, f"Unsuccesful Threading Setup for {thread}")
 
     return wrapper
-    # return threadedInner

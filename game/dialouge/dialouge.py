@@ -4,6 +4,12 @@ from engine.screenSetup import sh, sw  # pointer to _curses.window object heap
 from __main__ import Developer_Mode
 
 
+'''
+Below is all dialouge usable functions that can be called upon to simplify
+screen updates that are called constantly
+'''
+
+
 def screenClear():
     unicurses.clear()
 
@@ -60,36 +66,51 @@ def centreFadeOut(x, heightChange, widthChange, TotalTime):
     sleep(TotalTime / 4)
     unicurses.mvaddstr(sh // 2 + heightChange, sw // 2 - len(x) // 2 + widthChange, x, dark_gray)
 
-    '''Important to note that all sleep times need to be within the actual refresh rate, IE: a multiple of 0.25'''
-
 
 from engine.threadingEngine import threaded
 
+'''
+Below is code used as a waiting timer, this will allow any function to wait until a requirement is met.
+This could be simplified to a simple:
+
+while WaitIDOrKey not in waitUntilkiller
+
+But I needed this to be dynamic to listen for other inputs (IE: keypad inputs)
+'''
+
+waitUntilKiller = []
 
 @threaded
-def deleteUnusedKeys(WaitIdOrKey):
+def deleteResidueKeys(WaitIdOrKey):
     sleep(10)  # Give time for the functions to finish whatever they're doing
     try:
-        exec(f"global {WaitIdOrKey} \ndel {WaitIdOrKey}")
+        waitUntilKiller.remove(WaitIdOrKey)
     except:
         pass
-    unicurses.mvaddstr(4, 0, f"Removed global {WaitIdOrKey}")
+    unicurses.mvaddstr(4, 0, f"Removed {WaitIdOrKey} from waitUntilKiller")
 
-#don't thread this
+def sendWaitIdOrKey(WaitIdOrKey):
+    waitUntilKiller.append(WaitIdOrKey)
+
+def deleteKey(WaitIdOrKey):
+    waitUntilKiller.remove(WaitIdOrKey)
+
+
+#don't thread this, needs to wait like basic python, not be skipped through threading
 def waitUntil(WaitIdOrKey, isKeyboardInput, *arguments):
     wU = True
     if Developer_Mode:
         unicurses.mvaddstr(3, 0, f"Listening for {WaitIdOrKey}, Keyboard: '{isKeyboardInput}'    ")
     while wU == True:
-        if isKeyboardInput is not False:  # No global decloration has to be declared for toggle
+        if isKeyboardInput is not False:
             try:
                 key = str(unicurses.getkey(),"utf-8") #Grab input and Decode bytes
                 if key == isKeyboardInput or [item for item in arguments if item[0] == key]:  # Enter
                     wU = False
                     if Developer_Mode:
                         unicurses.mvaddstr(3, 0, f"Completed Wait Key Loop for {WaitIdOrKey}    ")
-                    exec(f"global {WaitIdOrKey} \n{WaitIdOrKey} = True")
-                    deleteUnusedKeys(WaitIdOrKey)
+                    waitUntilKiller.append(WaitIdOrKey)
+                    deleteResidueKeys(WaitIdOrKey)
                 else:
                     if Developer_Mode:
                         unicurses.mvaddstr(11, 0, f"key ==== {key}                     ") # printing in bytes
@@ -97,76 +118,19 @@ def waitUntil(WaitIdOrKey, isKeyboardInput, *arguments):
                 pass  # Avoids "none" error
 
         else:
-            if WaitIdOrKey in globals():  # Checks if waitID has been added to globals(trigger)
+            if WaitIdOrKey in waitUntilKiller:  # Checks if waitID has been added to waitUntilKiller
 
                 for x in arguments:  # Arguments
                     x
                 wU = False
+                waitUntilKiller.remove(WaitIdOrKey)  # Removes key
 
                 if Developer_Mode:
                     unicurses.mvaddstr(3, 0, f"Completed Wait Loop for {WaitIdOrKey}    ")
-
-                exec(
-                    f"global {WaitIdOrKey} \ndel {WaitIdOrKey}")  # A sneaky bypass to delete WaitID without param/global errors
             sleep(0.25)  # waits 0.25s for preformance
             unicurses.refresh()
 
-
-# Start Screen
-def startScreen():
-    # Two threads are required due to running simultaniously.
-    @threaded
-    def dialouge(status):
-        if status == "init":
-            centreFadeIn("The game should be fullscreen. If you wish to exit this anytime, press F11", -2, 0, 2)
-        else:
-            centreFadeOut("The game should be fullscreen. If you wish to exit this anytime, press F11", -2, 0, 2)
-
-    @threaded
-    def dialouge2(status):
-        if status == "init":
-            centreFadeIn("(Note: This will break the game)", -1, 0, 2)
-        else:
-            centreFadeOut("(Note: This will break the game)", -1, 0, 2)
-
-    @threaded
-    def dialouge3(status):
-        if status == "init":
-            centreFadeIn("Press ENTER to continue", 0, 0, 2)
-            dancingMan(1, 0, 0.5)
-        else:
-            centreFadeOut("Press ENTER to continue", 0, 0, 2)
-
-    @threaded
-    def dialouge4(status):
-        if status == "init":
-            centreFadeIn(" ┗(･o･ )┓ ", 1, 0, 2)
-        else:
-            centreFadeOut(" ┗(･o･ )┓ ", 1, 0, 2)
-            exec("global DialougeSendOut \nDialougeSendOut = True")  # Quick line to push out a global value
-
-    @threaded
-    def dancingMan(heightChange, widthChange, TotalTime):
-        while "DialougeSendIn" not in globals():
-            centreDialougeX(" ┏(・o･)┛", heightChange, widthChange)
-            sleep(TotalTime / 2)
-            centreDialougeX(" ┗(･o･ )┓ ", heightChange, widthChange)
-            sleep(TotalTime / 2)
-        exec(f"global DialougeSendIn \ndel DialougeSendIn")
-
-    dialouge("init")
-    dialouge2("init")
-    dialouge3("init")
-    dialouge4("init")
-    from engine.soundEngine import PlaySound,StopLoopingSound, GlobalCheckList
-    PlaySound("mono/scale/scale_tick", 0.5, (-0.1,0,0.5), False)
-    waitUntil("DialougeSendIn", "^J") #^J represents enter (for some reason)
-    dialouge("out")
-    dialouge2("out")
-    dialouge3("out")  # Assumes last thread therefore will have wait toggle (note: changes for time periods given)
-    dialouge4("out")
-    waitUntil("DialougeSendOut", False)
-
+#Main Menu Module
 def mainMenu():
     from time import sleep
     sleep(50)

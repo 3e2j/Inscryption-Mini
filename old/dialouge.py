@@ -18,7 +18,7 @@ def eyeSwitcher(eyeChoice):  # Random Eye Choice or will use given choice
 
 
 def boardPrinter(theBoard, x, eyeChoice):
-    os.system("clear")
+    os.system("cls")
     lineCount = 1
     for i in theBoard:  # Setting Up the basic board + Putting Player down
         if lineCount == 2:
@@ -32,7 +32,7 @@ def boardPrinter(theBoard, x, eyeChoice):
 
 
 def cardDisplay(dialouge):  # Basic Default Card Choice
-    os.system("clear")
+    os.system("cls")
     print("----------- -----------")
     for x in range(0, 2):
         print("|         | |         |")
@@ -72,7 +72,7 @@ def placementDialouge(board):  # Scripted Placing
 
 
 def tutorialCard():  # Tutorial
-    os.system("clear")
+    os.system("cls")
     switcher = {
         0: "Welcome to the Tutorial",
         1: "Begin with a basic card selection",
@@ -91,7 +91,7 @@ def tutorialCard():  # Tutorial
         print("----------- -----------")
         time.sleep(3)
         switchCounter += 1
-        os.system("clear")
+        os.system("cls")
 
 
 def endGameDialouge(x, firstGame):
@@ -123,7 +123,7 @@ def endGameDialouge(x, firstGame):
         switchCount = 10
         dialougeMax = 13
     while switchCount != dialougeMax:
-        os.system("clear")
+        os.system("cls")
         print("                   \033[0;31;49m꩜  ꩜\033[0;37;49m")
         print(f"                        {switcher.get(switchCount)}")
         switchCount += 1
@@ -132,15 +132,15 @@ def endGameDialouge(x, firstGame):
 
 def quitDialouge(x):
     if x == True:
-        os.system("clear")
+        os.system("cls")
         print("                              \033[0;31;49m꩜  ꩜\033[0;37;49m")
         print(f"                        Goodbye.")
         time.sleep(3)
-        os.system("clear")
+        os.system("cls")
         print("                              \033[0;31;49m-  -\033[0;37;49m")
         time.sleep(3)
-        os.system("clear")
+        os.system("cls")
     else:
-        os.system("clear")
+        os.system("cls")
         print("                              \033[0;31;49m꩜  ꩜\033[0;37;49m")
         print(f"                        I will require a valid answer")

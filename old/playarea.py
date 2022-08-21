@@ -1,7 +1,7 @@
 # Test Program for Card Game
 from old.dialouge import *
 
-tutorial = True
+tutorial = False #Change to true to see change in CardDraw
 EnticedToPlay = True
 characterX = 1
 characterY = 1
@@ -99,34 +99,33 @@ while EnticedToPlay == True:
             board[characterY][characterX] = characterPlacementPiece
             boardPrinter(board, "placed", False)
 
-            # toggle placement to Seize board updates
+            # toggle placement
             placement = False
+        #Dev code to end the game
+
 
     firstPlace = False
 
     placementDialouge(board)
     boardActual = board
 
-    ### To do: Add updated placement of his piece here
-
     gameEnd = True  # End the game
-
     if gameEnd == False:
         placement = True
         cardDraw(placement)
+    #moved this code up for purposes
+    endGameDialouge(win, firstGame)
 
-endGameDialouge(win, firstGame)
-
-firstGame = False
-continueToPlay = input("Y or N: ").upper()
-while continueToPlay not in "YN":  # Search for Valid.
-    quitDialouge(False)
+    firstGame = False
     continueToPlay = input("Y or N: ").upper()
-if continueToPlay == "N":  # Switch off Game
-    EnticedToPlay = False
-if continueToPlay == "Y":  # Restart
-    placement = True
-    gameEnd = False
+    while continueToPlay not in "YN":  # Search for Valid.
+        quitDialouge(False)
+        continueToPlay = input("Y or N: ").upper()
+    if continueToPlay == "N":  # Switch off Game
+        EnticedToPlay = False
+    if continueToPlay == "Y":  # Restart
+        placement = True
+        gameEnd = False
 
-quitDialouge(True)
-exit()
+    quitDialouge(True)
+    exit()
