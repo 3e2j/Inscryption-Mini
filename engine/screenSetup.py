@@ -84,6 +84,7 @@ def PrefixReimportCurses(ConfirmResolution):
             unicurses.mvaddstr(1, 0, "  Threading", magenta)
             unicurses.mvaddstr(6, 0, "Screen Height/Width", magenta)
             unicurses.mvaddstr(7, 0, f"{sh, sw}")
+            unicurses.mvaddstr(8, 0, "Sound", magenta)
 
         from engine.threadingEngine import threaded
         from threading import activeCount

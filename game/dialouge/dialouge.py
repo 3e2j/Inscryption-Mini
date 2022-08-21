@@ -158,13 +158,14 @@ def startScreen():
     dialouge2("init")
     dialouge3("init")
     dialouge4("init")
+    from engine.soundEngine import PlaySound,StopLoopingSound, GlobalCheckList
+    PlaySound("mono/scale/scale_tick", 0.5, (-0.1,0,0.5), False)
     waitUntil("DialougeSendIn", "^J") #^J represents enter (for some reason)
     dialouge("out")
     dialouge2("out")
     dialouge3("out")  # Assumes last thread therefore will have wait toggle (note: changes for time periods given)
     dialouge4("out")
     waitUntil("DialougeSendOut", False)
-
 
 def mainMenu():
     from time import sleep

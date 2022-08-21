@@ -16,19 +16,37 @@ Recommended just to use Audacity and multiple-export files after conversion
 
 from engine.threadingEngine import threaded
 
+GlobalCheckList = []
 
-# open our wave file
-soundfile = oalOpen(f'{working_directory}/sounds/mono/scale/scale_tick.ogg')
-Source.set_gain(soundfile, 1)
-Source.set_position(soundfile, (-0.2, 0, 2))
+@threaded
+def StopLoopingSound(LoopValue):
+	global GlobalCheckList
+	GlobalCheckList.append(LoopValue)
 
-# and start playback
-soundfile.play()
+@threaded
+def PlaySound(sound_path, volume, position, LoopValue):
+	from __main__ import Developer_Mode
+	if Developer_Mode:
+		import unicurses
+		unicurses.mvaddstr(9, 0, f'Last played: {sound_path}.ogg') # {working_directory}/sounds/
 
-# check if the file is still playing
-while soundfile.get_state() == AL_PLAYING:
-	# wait until the file is done playing
-	sleep(1) # lag reducer
+	soundfile = oalOpen(f'{working_directory}/sounds/{sound_path}.ogg')
+	Source.set_gain(soundfile, volume)
+	if position:
+		Source.set_position(soundfile, position)
+	soundfile.play()
 
-# release resources (don't forget this)
-oalQuit()
+	if LoopValue:
+		while LoopValue not in GlobalCheckList:
+
+				# check if the file is still playing
+			while soundfile.get_state() == AL_PLAYING and LoopValue not in GlobalCheckList:
+				# wait until the file is done playing
+				sleep(1) # lag reducer
+			# release resources
+			oalQuit()
+		GlobalCheckList.remove(LoopValue)
+	else:
+		while soundfile.get_state() == AL_PLAYING:
+			sleep(1)
+		oalQuit()
