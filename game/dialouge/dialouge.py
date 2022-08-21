@@ -84,7 +84,7 @@ def waitUntil(WaitIdOrKey, isKeyboardInput, *arguments):
         if isKeyboardInput is not False:  # No global decloration has to be declared for toggle
             try:
                 key = str(unicurses.getkey(),"utf-8") #Grab input and Decode bytes
-                if key == (isKeyboardInput or arguments):  # Enter
+                if key == isKeyboardInput or [item for item in arguments if item[0] == key]:  # Enter
                     wU = False
                     if Developer_Mode:
                         unicurses.mvaddstr(3, 0, f"Completed Wait Key Loop for {WaitIdOrKey}    ")

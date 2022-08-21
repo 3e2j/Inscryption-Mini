@@ -108,7 +108,7 @@ def PrefixReimportCurses(ConfirmResolution):
             unicurses.mvaddstr(7, 0, f"Tried to call MainMenu {sh, sw}")
             unicurses.refresh()
             sleep(500)
-            mainMenu()
+            #mainMenu() #This will go to the main menu but i'm skipping it to develop the game
         unicurses.endwin()
     print("RAN THROUGH SCRIPT")
     return main
