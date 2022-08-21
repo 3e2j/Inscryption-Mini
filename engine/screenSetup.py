@@ -11,13 +11,16 @@ red = None
 sh = None
 sw = None
 
+import time
+from time import localtime, sleep
+
 import unicurses
 ''' 
 no, it's not a unicorn. But it is the terminal based framework that I'm runnning the program in.
 Originally was coded in Curses, but switched to UniCurses to support windows machines. 
 '''
 
-def ReimportCurses(ConfirmResolution):
+def PrefixReimportCurses(ConfirmResolution):
     def main(s):
         #global StandardScreen  # Globalising Standard Screen to not require import to every file that wants screen updates
         StandardScreen = unicurses.initscr()
@@ -82,41 +85,44 @@ def ReimportCurses(ConfirmResolution):
             unicurses.mvaddstr(6, 0, "Screen Height/Width", magenta)
             unicurses.mvaddstr(7, 0, f"{sh, sw}")
 
-        import threading
-        from engine.threading import threaded
+        from engine.threadingEngine import threaded
+        from threading import activeCount
         @threaded
         def ThreadingChecker():
             from time import sleep
-            while not stopThreads:
-                unicurses.mvaddstr(5, 0, f"Number of running threads: {threading.activeCount()}")
+            while True:
+                try:
+                    unicurses.mvaddstr(5, 0, f"Number of running threads: {activeCount()}")
+                except:
+                    pass
                 sleep(2)
+            return ThreadingChecker
 
         from game.dialouge.dialouge import startScreen, mainMenu
         if ConfirmResolution:
+            if Developer_Mode:
+                ThreadingChecker()
             startScreen()
         else:
             print("RAN THROUGH MAIN MENU")
             unicurses.mvaddstr(7, 0, f"Tried to call MainMenu {sh, sw}")
             unicurses.refresh()
-            import time
-            time.sleep(500)
+            sleep(500)
             mainMenu()
         unicurses.endwin()
     print("RAN THROUGH SCRIPT")
     return main
 
-@ReimportCurses
-def reimportCursesModule(ConfirmResolution):
-    ReimportCurses(ConfirmResolution)
 
-import time
-from time import localtime
+@PrefixReimportCurses
+def ReimportCurses(ConfirmResolution):
+    pass
 
 if Developer_Mode:
     print(f"startScreen at {time.asctime(localtime())}")
-reimportCursesModule(True)
-#from game.dialouge.dialouge import waitUntil
-#waitUntil("FinishedStartScreen", False)
+ReimportCurses(True)
+
+# Restarting the VM
 if Developer_Mode:
     print(f"mainMenu at {time.asctime(localtime())}")
-reimportCursesModule(True)  # Restarting the VM
+#reimportCursesModule(False)

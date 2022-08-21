@@ -26,7 +26,7 @@ print("Init boot complete")
 
 import keyboard
 
-keyboard.press_and_release("f11")
+#keyboard.press_and_release("f11")
 
 
 #import OLD.playarea.py #OLD FILE

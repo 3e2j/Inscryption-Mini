@@ -63,13 +63,16 @@ def centreFadeOut(x, heightChange, widthChange, TotalTime):
     '''Important to note that all sleep times need to be within the actual refresh rate, IE: a multiple of 0.25'''
 
 
-from engine.threading import threaded
+from engine.threadingEngine import threaded
 
 
 @threaded
 def deleteUnusedKeys(WaitIdOrKey):
     sleep(10)  # Give time for the functions to finish whatever they're doing
-    exec(f"global {WaitIdOrKey} \ndel {WaitIdOrKey}")
+    try:
+        exec(f"global {WaitIdOrKey} \ndel {WaitIdOrKey}")
+    except:
+        pass
     unicurses.mvaddstr(4, 0, f"Removed global {WaitIdOrKey}")
 
 #don't thread this
@@ -85,8 +88,8 @@ def waitUntil(WaitIdOrKey, isKeyboardInput, *arguments):
                     wU = False
                     if Developer_Mode:
                         unicurses.mvaddstr(3, 0, f"Completed Wait Key Loop for {WaitIdOrKey}    ")
-                        exec(f"global {WaitIdOrKey} \n{WaitIdOrKey} = True")
-                        deleteUnusedKeys(WaitIdOrKey)
+                    exec(f"global {WaitIdOrKey} \n{WaitIdOrKey} = True")
+                    deleteUnusedKeys(WaitIdOrKey)
                 else:
                     if Developer_Mode:
                         unicurses.mvaddstr(11, 0, f"key ==== {key}                     ") # printing in bytes
@@ -131,7 +134,6 @@ def startScreen():
         if status == "init":
             centreFadeIn("Press ENTER to continue", 0, 0, 2)
             dancingMan(1, 0, 0.5)
-            #exec("global DialougeSendIn \nDialougeSendIn = True")  # Quick line to push out a global value
         else:
             centreFadeOut("Press ENTER to continue", 0, 0, 2)
 
@@ -150,19 +152,18 @@ def startScreen():
             sleep(TotalTime / 2)
             centreDialougeX(" ┗(･o･ )┓ ", heightChange, widthChange)
             sleep(TotalTime / 2)
+        exec(f"global DialougeSendIn \ndel DialougeSendIn")
 
     dialouge("init")
     dialouge2("init")
     dialouge3("init")
     dialouge4("init")
-    waitUntil("DialougeSendIn", "^J","z") #^J represents enter (for some reason)
-    #waitUntil("DialougeSendIn", False)
+    waitUntil("DialougeSendIn", "^J") #^J represents enter (for some reason)
     dialouge("out")
     dialouge2("out")
     dialouge3("out")  # Assumes last thread therefore will have wait toggle (note: changes for time periods given)
     dialouge4("out")
     waitUntil("DialougeSendOut", False)
-    # waitUntil("DialougeSendIn","\n")
 
 
 def mainMenu():
