@@ -6,21 +6,31 @@ SysOS = platform.system() #Grabs OS type
 from pathlib import Path
 
 
-ImportProcess = False #Determines if pre-setup is nessasary
 Developer_Mode = True #Dev stats
 
 
 working_directory = Path(__file__).absolute().parent #Grabs directory
 
-if ImportProcess:
+try:
+  f = open("save-file.txt", "x")
+  f.write("ImportProcess = Complete")
   import subprocess
   from subprocess import Popen
   if SysOS == 'Windows':
     p = Popen(f"{working_directory}/initboot.bat", shell=True, stdout = subprocess.PIPE) # Auto-installs required dependancies through initboot.bat
     stdout, stderr = p.communicate()
   else:
-    print("Not supported on platforms other then Windows.") #Could be replaced with a open file for initboot.sh, haven't worked out how to get all files installed yet.
+    pass
+  f.close
+
+except:
+  print("Import process has run before\nIf the game is not running, ignore this message.\nIf it's not running and you wish to retry imports, delete save-file.txt")
+  pass
+
+if not SysOS == 'Windows':
+    print("NOTICE: Not supported on platforms other then Windows.")
     quit()
+  
 
 if Developer_Mode:
   print("Init boot complete")
