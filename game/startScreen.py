@@ -7,16 +7,16 @@ from time import sleep
 @threaded
 def dialouge(status):
     if status == "init":
-        centreFadeIn("The game should be fullscreen. If you wish to exit this anytime, press F11", -2, 0, 2)
+        centreFadeIn("The game should be fullscreen. If you wish to exit this anytime, press F11 (Note: This will break the game)", -2, 0, 2)
     else:
-        centreFadeOut("The game should be fullscreen. If you wish to exit this anytime, press F11", -2, 0, 2)
+        centreFadeOut("The game should be fullscreen. If you wish to exit this anytime, press F11 (Note: This will break the game)", -2, 0, 2)
 
 @threaded
 def dialouge2(status):
     if status == "init":
-        centreFadeIn("(Note: This will break the game)", -1, 0, 2)
+        centreFadeIn("It's recommended that you change your default terminal font size to 18 or below.", -1, 0, 2)
     else:
-        centreFadeOut("(Note: This will break the game)", -1, 0, 2)
+        centreFadeOut("It's recommended that you change your default terminal font size to 18 or below.", -1, 0, 2)
 
 @threaded
 def dialouge3(status):

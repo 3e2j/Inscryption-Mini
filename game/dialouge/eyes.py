@@ -10,7 +10,7 @@ eyeDraw = [
 " ████            ████ ", #0
 "██  ██          ██  ██", #1
 " ████            ████ ", #2
-"                      ",
+"                            ", #3
 " █  █            █  █ ", #4
 "██████          ██████", #5
 
@@ -34,8 +34,8 @@ eyeDraw = [
 
 @threaded
 def StartEyes():
-    x = eyeDraw[0]
-    eyepos = -20
+    x = eyeDraw[3]
+    eyepos = -25
     while "Stop" not in eyesStatus:
         while "Open" in eyesStatus:
             refresh()

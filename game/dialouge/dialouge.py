@@ -130,12 +130,13 @@ def waitUntil(WaitIdOrKey, isKeyboardInput, *arguments):
                     unicurses.mvaddstr(3, 0, f"Completed Wait Loop for {WaitIdOrKey}    ")
             sleep(0.25)  # waits 0.25s for preformance
             unicurses.refresh()
-def waitTimerSecs(time):
+def waitTimerSecs(Seconds):
     if Developer_Mode:
-        unicurses.mvaddstr(15, 0, f"waiting for {time} seconds    ")
+        unicurses.mvaddstr(15, 0, f"waiting for {Seconds} seconds    ")
         unicurses.refresh()
-    while not time == 0:
+    while not Seconds == 0:
         for x in range(1, 4):
             sleep(0.25)
+            unicurses.mvaddstr(16, 0, f"waiting for {Seconds} seconds    ")
             unicurses.refresh()
-        time =-1
+        Seconds -= 1
