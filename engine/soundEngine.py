@@ -14,7 +14,7 @@ Recommended just to use Audacity and multiple-export files after conversion.
 
 OpenAL doesn't support mp3, originally used wav files but converted to ogg to compress files
 and bypass git-hub's upload limit per file (100MB)
-Due to ogg being 'partially' unsuppoted by OpenAL, it requires pyogg to be installed. (see initboot.bat)
+Due to ogg being 'partially' unsuppoted by OpenAL, it requires pyogg to be installed. (see __main__)
 '''
 
 
@@ -22,13 +22,15 @@ from engine.threadingEngine import threaded
 
 StopSoundList = [] #Threaded sounds store their values in this list when being stopped
 
-@threaded
+def KillAllSounds():
+	oalQuit()
+
 def StopLoopingSound(LoopValue): #Store value in StopSoundList
 	global StopSoundList
 	StopSoundList.append(LoopValue)
 
 @threaded
-def PlaySound(sound_path, volume, position, LoopValue=False):
+def PlaySound(sound_path, volume, position=(0,0,0), LoopValue=False, *args):
 	from __main__ import Developer_Mode
 	if Developer_Mode:
 		import unicurses
@@ -36,8 +38,7 @@ def PlaySound(sound_path, volume, position, LoopValue=False):
 
 	soundfile = oalOpen(f'{working_directory}/sounds/{sound_path}.ogg') #Path grab
 	Source.set_gain(soundfile, volume) #Volume
-	if position:
-		Source.set_position(soundfile, position) #3D audio, if pos is False, will play normal (0,0,0)
+	Source.set_position(soundfile, position) #3D audio, if pos is False, will play normal (0,0,0)
 
 	soundfile.play()
 
@@ -46,13 +47,14 @@ def PlaySound(sound_path, volume, position, LoopValue=False):
 			while soundfile.get_state() == AL_PLAYING and LoopValue not in StopSoundList: # check if the file is still playing
 				# wait until the file is done playing
 				sleep(1) # lag reducer
+			soundfile.play()
 			# release resources
-			oalQuit()
 		StopSoundList.remove(LoopValue) #
-	else: #Same as loop code but without StopLoopingSound check
+	else: #Same as loop code but without LoopSound check
 		while soundfile.get_state() == AL_PLAYING:
 			sleep(1)
-		oalQuit()
+	for x in args:
+		x
 
 	if Developer_Mode:
 		import unicurses

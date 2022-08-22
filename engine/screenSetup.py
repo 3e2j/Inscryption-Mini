@@ -32,7 +32,8 @@ def CursesStartup(RunThroughFullGame):
 
 
         unicurses.clear()  # Clear the whole Screen
-        unicurses.timeout(250)  # Refresh rate
+        #unicurses.timeout(100)  # Refresh rate
+        unicurses.nodelay(StandardScreen, True)
         unicurses.start_color() # init color
         unicurses.use_default_colors()  # Makes the terminal the original color
         unicurses.keypad(StandardScreen, True); #Makes arrow-keys work
@@ -55,6 +56,11 @@ def CursesStartup(RunThroughFullGame):
                           0x9d * 1000 // 0xff,
                           0x9d * 1000 // 0xff,
                           0x9d * 1000 // 0xff)
+        #Orange
+        unicurses.init_color(5,
+                          0xaa * 1000 // 0xff,
+                          0x5b * 1000 // 0xff,
+                          0x20 * 1000 // 0xff)
 
         unicurses.init_pair(1, unicurses.COLOR_BLACK, -1)
         unicurses.init_pair(2, 2, -1)
@@ -63,8 +69,9 @@ def CursesStartup(RunThroughFullGame):
         unicurses.init_pair(5, unicurses.COLOR_WHITE, -1)
         unicurses.init_pair(6, unicurses.COLOR_RED, -1)
         unicurses.init_pair(7, unicurses.COLOR_MAGENTA, -1)
+        unicurses.init_pair(8, 5, -1)
 
-        global black, dark_gray, gray, light_gray, white, red, magenta
+        global black, dark_gray, gray, light_gray, white, red, magenta, orange
         black = unicurses.color_pair(1)
         dark_gray = unicurses.color_pair(2)
         gray = unicurses.color_pair(3)
@@ -72,6 +79,7 @@ def CursesStartup(RunThroughFullGame):
         white = unicurses.color_pair(5)
         red = unicurses.color_pair(6)
         magenta = unicurses.color_pair(7)
+        orange = unicurses.color_pair(8)
 
         if Developer_Mode: #Dev subtitles
             unicurses.mvaddstr(0, 0, "Developer Stats", red)
@@ -99,15 +107,15 @@ def CursesStartup(RunThroughFullGame):
             import game.startScreen
         else: #Dev skip
             print("Skipping to certain section")
+            import game.cabin
             #Add in whatever section here, IE: startScreen(), mainMenu(), etc...
         unicurses.endwin()
     return main
 
-
-@CursesStartup
-def StartCurses(RunThroughFullGame):
+@CursesStartup(RunThroughFullGame=False)
+def StartCurses():
     pass
 
 if Developer_Mode:
     print(f"Started Curses Terminal at {time.asctime(localtime())}")
-StartCurses(True)
+StartCurses #RunThroughFullGame

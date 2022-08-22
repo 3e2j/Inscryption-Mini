@@ -111,6 +111,7 @@ def waitUntil(WaitIdOrKey, isKeyboardInput, *arguments):
                         unicurses.mvaddstr(3, 0, f"Completed Wait Key Loop for {WaitIdOrKey}    ")
                     waitUntilKiller.append(WaitIdOrKey)
                     deleteResidueKeys(WaitIdOrKey)
+                    unicurses.flushinp()
                 else:
                     if Developer_Mode:
                         unicurses.mvaddstr(11, 0, f"key ==== {key}                     ") # printing in bytes
@@ -120,8 +121,8 @@ def waitUntil(WaitIdOrKey, isKeyboardInput, *arguments):
         else:
             if WaitIdOrKey in waitUntilKiller:  # Checks if waitID has been added to waitUntilKiller
 
-                for x in arguments:  # Arguments
-                    x
+                # for x in arguments:  # Arguments
+                #     x
                 wU = False
                 waitUntilKiller.remove(WaitIdOrKey)  # Removes key
 
@@ -129,8 +130,12 @@ def waitUntil(WaitIdOrKey, isKeyboardInput, *arguments):
                     unicurses.mvaddstr(3, 0, f"Completed Wait Loop for {WaitIdOrKey}    ")
             sleep(0.25)  # waits 0.25s for preformance
             unicurses.refresh()
-
-#Main Menu Module
-def mainMenu():
-    from time import sleep
-    sleep(50)
+def waitTimerSecs(time):
+    if Developer_Mode:
+        unicurses.mvaddstr(15, 0, f"waiting for {time} seconds    ")
+        unicurses.refresh()
+    while not time == 0:
+        for x in range(1, 4):
+            sleep(0.25)
+            unicurses.refresh()
+        time =-1
