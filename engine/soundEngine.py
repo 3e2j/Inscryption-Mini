@@ -30,7 +30,7 @@ def StopLoopingSound(LoopValue): #Store value in StopSoundList
 	StopSoundList.append(LoopValue)
 
 @threaded
-def PlaySound(sound_path, volume, position=(0,0,0), LoopValue=False, *args):
+def PlaySound(sound_path, volume=1, position=(0,0,0), LoopValue=False, *args):
 	from __main__ import Developer_Mode
 	if Developer_Mode:
 		import unicurses

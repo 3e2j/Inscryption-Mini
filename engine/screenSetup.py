@@ -61,17 +61,23 @@ def CursesStartup(RunThroughFullGame):
                           0xaa * 1000 // 0xff,
                           0x5b * 1000 // 0xff,
                           0x20 * 1000 // 0xff)
+        #Brighter Orange
+        unicurses.init_color(6,
+                          0xad * 1000 // 0xff,
+                          0x53 * 1000 // 0xff,
+                          0x16 * 1000 // 0xff)
 
         unicurses.init_pair(1, unicurses.COLOR_BLACK, -1)
         unicurses.init_pair(2, 2, -1)
         unicurses.init_pair(3, 3, -1)
         unicurses.init_pair(4, 4, -1)
+        unicurses.init_pair(8, 5, -1)
+        unicurses.init_pair(9, 6, -1)
         unicurses.init_pair(5, unicurses.COLOR_WHITE, -1)
         unicurses.init_pair(6, unicurses.COLOR_RED, -1)
         unicurses.init_pair(7, unicurses.COLOR_MAGENTA, -1)
-        unicurses.init_pair(8, 5, -1)
 
-        global black, dark_gray, gray, light_gray, white, red, magenta, orange
+        global black, dark_gray, gray, light_gray, white, red, magenta, orange, brightorange
         black = unicurses.color_pair(1)
         dark_gray = unicurses.color_pair(2)
         gray = unicurses.color_pair(3)
@@ -80,13 +86,15 @@ def CursesStartup(RunThroughFullGame):
         red = unicurses.color_pair(6)
         magenta = unicurses.color_pair(7)
         orange = unicurses.color_pair(8)
+        brightorange = unicurses.color_pair(9)
 
         if Developer_Mode: #Dev subtitles
             unicurses.mvaddstr(0, 0, "Developer Stats", red)
             unicurses.mvaddstr(1, 0, "  Threading", magenta)
             unicurses.mvaddstr(6, 0, "Screen Height/Width", magenta)
-            unicurses.mvaddstr(7, 0, f"{sh, sw}")
+            unicurses.mvaddstr(7, 0, f"{sh, sw}", white)
             unicurses.mvaddstr(8, 0, "Sound", magenta)
+            unicurses.mvaddstr(11, 0, "Placeholder", magenta)
 
         from engine.threadingEngine import threaded
         from threading import activeCount
