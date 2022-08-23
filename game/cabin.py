@@ -58,7 +58,8 @@ def StartCabin():
     leshyTalk("You've won this match.")
     leshyTalk("They won't all be so easy.")
     leshyTalk("Lets begin.")
-
+    PlaySound("stereo/cabin/gametable_ambience", 1, (0,0,0), "GametableAmbience")
+    waitUntil("z",False)
 
 
 StartCabin()

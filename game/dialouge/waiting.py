@@ -43,10 +43,10 @@ def waitUntil(WaitIdOrKey, isKeyboardInput, *arguments, triangle=False):
                     if Developer_Mode:
                         unicurses.mvaddstr(3, 0, f"Completed Wait Key Loop for {WaitIdOrKey}    ")
                     waitUntilKiller.append(WaitIdOrKey)
-                    if not WaitIdOrKey == "leshyTalking":
-                        deleteResidueKeys(WaitIdOrKey)
-                    else:
+                    if WaitIdOrKey == "leshyTalking":
                         deleteKey("leshyTalking")
+                    else:
+                        deleteResidueKeys(WaitIdOrKey)
                     unicurses.flushinp()
                 else:
                     if triangle:

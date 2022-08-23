@@ -40,7 +40,7 @@ eyeDraw = [
 teethDraw = [
 "██                                     ██",
 "████                                 ████",
-" ███ █████ █████ ████ ████ ████ ████ ██  ",
+"  ██ █████ █████ ████ ████ ████ ████ ██  ",
 "   █ █████ █████ ████ ████ ████ ████ █   "
 ]
 
@@ -66,21 +66,20 @@ def StartEyes():
             mvaddstr(sh // 2 + eyepos+2, (sw // 2) - (len(NormalOffset) // 2), eyeDraw[2], white) # Bottom
             randomTime = randint(8,10)
             counter = 0
-            while "Open" in eyesStatus and not counter*4 == randomTime:
+            while "Open" in eyesStatus and not counter//4 >= randomTime:
                 napms(250)
                 counter += 1
             if "Open" in eyesStatus:
                 #blinking
                 mvaddstr(sh // 2 + eyepos, (sw // 2) - (len(ExtendedOffset) // 2), eyeDraw[3],white) #Top blank
-                napms(100) and refresh()
+                napms(40) and refresh()
                 mvaddstr(sh // 2 + eyepos+1, (sw // 2) - (len(ExtendedOffset) // 2), eyeDraw[3],white) # Mid blank
-                napms(100) and refresh()
+                napms(40) and refresh()
                 mvaddstr(sh // 2 + eyepos+2, (sw // 2) - (len(ExtendedOffset) // 2), eyeDraw[3], white) # Bottom blank
-                napms(120) and refresh()
+                napms(60) and refresh()
                 mvaddstr(sh // 2 + eyepos+2, (sw // 2) - (len(NormalOffset) // 2), eyeDraw[2], white)  # Bottom
-                napms(100) and refresh()
+                napms(40) and refresh()
                 mvaddstr(sh // 2 + eyepos+1, (sw // 2) - (len(NormalOffset) // 2), eyeDraw[1], white)  # Mid
-            y=0
         while "Opening" in eyesStatus:
             napms(2500) and refresh()
             mvaddstr(sh // 2 + eyepos+2, (sw // 2) - (len(NormalOffset) // 2), eyeDraw[4], white)  # Bottom
@@ -130,20 +129,16 @@ def StartEyes():
 def SetEyes(eyeMode):
     global eyesStatus
     eyesStatus.append(eyeMode) #Add new mode
-    if not eyesStatus[0] == eyeMode:
-        eyesStatus.pop(0) # remove old mode
+    try:
+        if eyesStatus[1]:
+            eyesStatus.pop(0) # remove old mode
+    except:
+        pass
 
 # Tone can be either -  calm, curious, or frustrated
 def leshyTalk(speech, tone="calm", skippable=False, volume=0.4, position=(0,0,0)):
     from engine.soundEngine import PlaySound
     from engine.screenSetup import StandardScreen
-    #Remove old line
-    y = 0
-    x = 0
-    unicurses.move(sh // 2 + eyepos -2, 0)
-    unicurses.clrtoeol()
-    unicurses.move(y,x)
-    unicurses.getyx(StandardScreen)
     #talk
     mvaddstr(sh // 2 + eyepos -2, sw // 2 - len(speech) // 2, speech.upper(), brightorange)
     SetEyes("Talking")
@@ -205,3 +200,13 @@ def leshyTalk(speech, tone="calm", skippable=False, volume=0.4, position=(0,0,0)
         #    endingEyesNonSkipKill = 0
         #    SetEyes("Open")
         #endingEyesNonSkip
+
+    #Remove old line + triangle
+    y = 0
+    x = 0
+    unicurses.move(sh // 2 + eyepos -2, 0) #Line
+    unicurses.clrtoeol()
+    unicurses.move(sh // 2 + eyepos -3, 0) #Triangle
+    unicurses.clrtoeol()
+    unicurses.move(y,x)
+    unicurses.getyx(StandardScreen)
