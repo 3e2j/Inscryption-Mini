@@ -15,15 +15,6 @@ relocater so the code doesn't have to be remade in every single script.
 def threaded(fn):
     def wrapper(*args, **kwargs):
         thread = Thread(target=fn, args=args, kwargs=kwargs)
-
         # Removed old loop code: better to control from inside the func itself instead of threading func
-
-        try:
-            thread.start()
-            if Developer_Mode:
-                unicurses.mvaddstr(2, 0, f"Successful Threading Setup for {thread}")
-        except:
-            if Developer_Mode:
-                unicurses.mvaddstr(2, 0, f"Unsuccesful Threading Setup for {thread}")
-
+        thread.start()
     return wrapper

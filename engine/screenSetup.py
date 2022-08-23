@@ -7,6 +7,8 @@ light_gray = None
 white = None
 magenta = None
 red = None
+orange = None
+brightorange = None
 
 sh = None
 sw = None
@@ -22,7 +24,7 @@ Originally was coded in Curses, but switched to UniCurses to support Windows mac
 
 def CursesStartup(RunThroughFullGame):
     def main(s):
-
+        global StandardScreen
         StandardScreen = unicurses.initscr()
 
         '''OLD resize code:
@@ -97,21 +99,29 @@ def CursesStartup(RunThroughFullGame):
             unicurses.mvaddstr(11, 0, "Placeholder", magenta)
 
         from engine.threadingEngine import threaded
+
+        @threaded
+        def RefreshTheScreenContantly():
+            while True:
+                unicurses.refresh()
+                sleep(0.02)
+
+        RefreshTheScreenContantly()
+
         from threading import activeCount
         @threaded
         def ThreadingChecker(): #Checks active amount of threads
             from time import sleep
             while True:
                 try:
-                    unicurses.mvaddstr(5, 0, f"Number of running threads: {activeCount()}")
+                    unicurses.mvaddstr(2, 0, f"Number of running threads: {activeCount()}       ")
                 except:
                     pass
                 sleep(2)
             return ThreadingChecker
-
+        if Developer_Mode:
+            ThreadingChecker()
         if RunThroughFullGame:
-            if Developer_Mode:
-                ThreadingChecker()
             import game.startScreen
         else: #Dev skip
             print("Skipping to certain section")

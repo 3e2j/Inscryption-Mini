@@ -7,6 +7,7 @@ from time import sleep
 from engine.threadingEngine import threaded
 from unicurses import  mvaddstr, refresh, napms
 from random import randint
+from game.dialouge.waiting import waitUntil, waitTimerSecs
 
 eyesStatus = [] #Open, Closed, Talking, Opening, Stop (kills eyes)
 
@@ -36,11 +37,27 @@ eyeDraw = [
 
 ]
 
+teethDraw = [
+"██                                     ██",
+"████                                 ████",
+" ███ █████ █████ ████ ████ ████ ████ ██  ",
+"   █ █████ █████ ████ ████ ████ ████ █   "
+]
+
+finLDraw = [
+
+]
+
+finRDraw = [
+
+]
+
+eyepos = -25
 @threaded
 def StartEyes():
     NormalOffset = eyeDraw[2]
+    TeethOffset = teethDraw[0]
     ExtendedOffset = eyeDraw[3]
-    eyepos = -25
     while "Stop" not in eyesStatus:
         while "Open" in eyesStatus:
             refresh()
@@ -74,7 +91,15 @@ def StartEyes():
             napms(2000) and refresh()
             mvaddstr(sh // 2 + eyepos+2, (sw // 2) - (len(NormalOffset) // 2), eyeDraw[2], white)  # Bottom
             mvaddstr(sh // 2 + eyepos+1, (sw // 2) - (len(NormalOffset) // 2), eyeDraw[1], white)  # Mid
-            napms(2000) and refresh()
+            napms(2400) and refresh()
+            mvaddstr(sh // 2 + eyepos + 6, (sw // 2) - (len(TeethOffset) // 2), teethDraw[3], white)
+            napms(170) and refresh()
+            mvaddstr(sh // 2 + eyepos + 5, (sw // 2) - (len(TeethOffset) // 2), teethDraw[2], white)
+            napms(170) and refresh()
+            mvaddstr(sh // 2 + eyepos + 4, (sw // 2) - (len(TeethOffset) // 2), teethDraw[1], white)
+            napms(170) and refresh()
+            mvaddstr(sh // 2 + eyepos + 3, (sw // 2) - (len(TeethOffset) // 2), teethDraw[0], white)
+            napms(170) and refresh()
             SetEyes("Open")
         while "Talking" in eyesStatus:
             mvaddstr(15, 0, f"Talking")
@@ -95,8 +120,11 @@ def StartEyes():
             mvaddstr(sh // 2 + eyepos, (sw // 2) - (len(NormalOffset) // 2), eyeDraw[17], orange)  # Top
             napms(220) and refresh()
 
+        unicurses.mvaddstr(17, 0, f"{eyesStatus}")
+        unicurses.refresh()
 
-            
+
+
     eyesStatus.remove("Stop")
 
 def SetEyes(eyeMode):
@@ -104,11 +132,22 @@ def SetEyes(eyeMode):
     eyesStatus.append(eyeMode) #Add new mode
     if not eyesStatus[0] == eyeMode:
         eyesStatus.pop(0) # remove old mode
+
 # Tone can be either -  calm, curious, or frustrated
-def leshyTalk(speech, tone="calm", volume=0.4, position=(0,0,0)):
+def leshyTalk(speech, tone="calm", skippable=False, volume=0.4, position=(0,0,0)):
     from engine.soundEngine import PlaySound
-    mvaddstr(sh // 2 -27, sw // 2 - len(speech) // 2, speech.upper(), brightorange)
+    from engine.screenSetup import StandardScreen
+    #Remove old line
+    y = 0
+    x = 0
+    unicurses.move(sh // 2 + eyepos -2, 0)
+    unicurses.clrtoeol()
+    unicurses.move(y,x)
+    unicurses.getyx(StandardScreen)
+    #talk
+    mvaddstr(sh // 2 + eyepos -2, sw // 2 - len(speech) // 2, speech.upper(), brightorange)
     SetEyes("Talking")
+    #voice
     if tone == "calm":
         calm = [
             "voice_calm#1",
@@ -152,3 +191,17 @@ def leshyTalk(speech, tone="calm", volume=0.4, position=(0,0,0)):
             "voice_frustrated#8"
         ]
         PlaySound(random.choice(frustrated), volume, position)
+
+    if not skippable:
+        waitUntil("leshyTalking","^J","z", triangle=True)
+        SetEyes("Open")
+    else:
+        pass
+        #@threaded
+        #def endingEyesNonSkip():
+        #    while endingEyesNonSkipKill == 0 or not count == 4:
+        #        waitTimerSecs(1)
+        #        count += 1
+        #    endingEyesNonSkipKill = 0
+        #    SetEyes("Open")
+        #endingEyesNonSkip

@@ -34,7 +34,7 @@ def PlaySound(sound_path, volume=1, position=(0,0,0), LoopValue=False, *args):
 	from __main__ import Developer_Mode
 	if Developer_Mode:
 		import unicurses
-		unicurses.mvaddstr(9, 0, f'Last played: {sound_path}.ogg') # {working_directory}/sounds/
+		unicurses.mvaddstr(9, 0, f'Last played: {sound_path}.ogg			') # {working_directory}/sounds/
 
 	soundfile = oalOpen(f'{working_directory}/sounds/{sound_path}.ogg') #Path grab
 	Source.set_gain(soundfile, volume) #Volume
@@ -58,4 +58,4 @@ def PlaySound(sound_path, volume=1, position=(0,0,0), LoopValue=False, *args):
 
 	if Developer_Mode:
 		import unicurses
-		unicurses.mvaddstr(10, 0, f'Sound Ended: {sound_path}.ogg') # {working_directory}/sounds/
+		unicurses.mvaddstr(10, 0, f'Sound Ended: {sound_path}.ogg			') # {working_directory}/sounds/
