@@ -3,14 +3,18 @@ from game.dialouge.waiting import waitTimerSecs
 from game.dialouge.leshy import *
 import unicurses
 
+from game.gameboard import startBoard
+
+
 # This is the main cabin that will be used for the remainer of rounds
 def StartCabin():
     PlaySound("stereo/cabin/cabin_ambience", 1, (0,0,0), "CabinAmbience")
     sleep(3)
-    PlaySound("stereo/misc/eyes_opening", 0.8)
-    SetEyes("Opening")
+    #PlaySound("stereo/misc/eyes_opening", 0.8)
+    #SetEyes("Opening")
     StartEyes()
-    waitTimerSecs(13)
+    #waitTimerSecs(13)
+    startBoard()
     leshyTalk("Another challenger... it has been ages.")
     leshyTalk("Perhaps you have forgotton how this game is played.")
     leshyTalk("Allow me to remind you.")
