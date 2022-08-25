@@ -1,7 +1,6 @@
 from engine.soundEngine import PlaySound,StopLoopingSound, StopSoundList
 from game.dialouge.waiting import waitTimerSecs
 from game.dialouge.leshy import *
-import unicurses
 
 from game.gameboard import PlaceCard, startBoard
 
@@ -10,18 +9,25 @@ from game.gameboard import PlaceCard, startBoard
 def StartCabin():
     PlaySound("stereo/cabin/cabin_ambience", 1, (0,0,0), "CabinAmbience")
     sleep(3)
-    #PlaySound("stereo/misc/eyes_opening", 0.8)
-    #SetEyes("Opening")
+    PlaySound("stereo/misc/eyes_opening", 0.8)
+    SetEyes("Opening")
     StartEyes()
-    #waitTimerSecs(13)
-    startBoard()
+    waitTimerSecs(13)
+    
     leshyTalk("Another challenger... it has been ages.")
-    PlaceCard(4,2,"lobster")
     leshyTalk("Perhaps you have forgotton how this game is played.")
     leshyTalk("Allow me to remind you.")
+
     #EngageBoard
+    startBoard()
+
+    waitTimerSecs(5)
+
     #give squirrel + a low level card
     leshyTalk("Play the squirrel card.")
+
+    PlaceCard(4,2,"lobster")
+
     leshyTalk("Now play your stoat.")
     leshyTalk("Stoats cost 1 blood. Sacrifices must be made.")
     leshyTalk("An honorable death. Play the stoat.")
