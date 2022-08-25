@@ -8,20 +8,20 @@ from game.gameboard import PlaceCard, startBoard
 # This is the main cabin that will be used for the remainer of rounds
 def StartCabin():
     PlaySound("stereo/cabin/cabin_ambience", 1, (0,0,0), "CabinAmbience")
-    sleep(3)
-    PlaySound("stereo/misc/eyes_opening", 0.8)
-    SetEyes("Opening")
+    #sleep(3)
+    #PlaySound("stereo/misc/eyes_opening", 0.8)
+    #SetEyes("Opening")
     StartEyes()
-    waitTimerSecs(13)
+    #waitTimerSecs(13)
     
-    leshyTalk("Another challenger... it has been ages.")
-    leshyTalk("Perhaps you have forgotton how this game is played.")
-    leshyTalk("Allow me to remind you.")
+    #leshyTalk("Another challenger... it has been ages.")
+    #leshyTalk("Perhaps you have forgotton how this game is played.")
+    #leshyTalk("Allow me to remind you.")
 
     #EngageBoard
     startBoard()
 
-    waitTimerSecs(5)
+    waitTimerSecs(1)
 
     #give squirrel + a low level card
     leshyTalk("Play the squirrel card.")
