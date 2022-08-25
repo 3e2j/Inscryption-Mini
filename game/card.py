@@ -13,7 +13,7 @@ blankCardSpace = [
     '└───────────────┘'#this is obviously used
 ]
 
-test = [
+lobster = [
     '┌───────────────┐',
     '│               │',
     '│   ███   ███   │',

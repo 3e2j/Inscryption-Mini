@@ -3,7 +3,8 @@ from engine.screenSetup import sh,sw
 from time import sleep
 
 
-from game.card import blankCardSpace, test
+from game.card import blankCardSpace, lobster
+
 from engine.soundEngine import PlaySound
 import random
 
@@ -29,18 +30,30 @@ def startBoard():
         cardHeight += 12
 
 
-# mvaddstr(sh // 2 + cardHeight, sw // 2 + cardCentering, test[0])
-# mvaddstr(sh // 2 + cardHeight + 1, sw // 2 + cardCentering, test[1])
-# mvaddstr(sh // 2 + cardHeight + 2, sw // 2 + cardCentering, test[2])
-# mvaddstr(sh // 2 + cardHeight + 3, sw // 2 + cardCentering, test[3])
-# mvaddstr(sh // 2 + cardHeight + 4, sw // 2 + cardCentering, test[4])
-# mvaddstr(sh // 2 + cardHeight + 5, sw // 2 + cardCentering, test[5])
-# mvaddstr(sh // 2 + cardHeight + 6, sw // 2 + cardCentering, test[6])
-# mvaddstr(sh // 2 + cardHeight + 7, sw // 2 + cardCentering, test[7])
-# mvaddstr(sh // 2 + cardHeight + 8, sw // 2 + cardCentering, test[8])
-# mvaddstr(sh // 2 + cardHeight + 9, sw // 2 + cardCentering, test[9])
-# mvaddstr(sh // 2 + cardHeight + 10, sw // 2 + cardCentering, test[10])
-# mvaddstr(sh // 2 + cardHeight + 11, sw // 2 + cardCentering, test[11])
+
+def PlaceCard(cardNum, row, CardType): #Assumes cardNum is 1-4
+    cardCentering = -38 + (20 * (cardNum-1)) #Centering; changes 1-4 to 0-3
+    soundPosition = -0.2
+    cardHeight = -15 + (12 * (row -1)) #Height; changes 1-3 to 0-2
+    type = {
+        "blankCardSpace" : blankCardSpace,
+        "lobster" : lobster
+    }
+    mvaddstr(sh // 2 + cardHeight, sw // 2 + cardCentering, type[CardType][0])
+    mvaddstr(sh // 2 + cardHeight + 1, sw // 2 + cardCentering, type[CardType][1])
+    mvaddstr(sh // 2 + cardHeight + 2, sw // 2 + cardCentering, type[CardType][2])
+    mvaddstr(sh // 2 + cardHeight + 3, sw // 2 + cardCentering, type[CardType][3])
+    mvaddstr(sh // 2 + cardHeight + 4, sw // 2 + cardCentering, type[CardType][4])
+    mvaddstr(sh // 2 + cardHeight + 5, sw // 2 + cardCentering, type[CardType][5])
+    mvaddstr(sh // 2 + cardHeight + 6, sw // 2 + cardCentering, type[CardType][6])
+    mvaddstr(sh // 2 + cardHeight + 7, sw // 2 + cardCentering, type[CardType][7])
+    mvaddstr(sh // 2 + cardHeight + 8, sw // 2 + cardCentering, type[CardType][8])
+    mvaddstr(sh // 2 + cardHeight + 9, sw // 2 + cardCentering, type[CardType][9])
+    mvaddstr(sh // 2 + cardHeight + 10, sw // 2 + cardCentering, type[CardType][10])
+    mvaddstr(sh // 2 + cardHeight + 11, sw // 2 + cardCentering, type[CardType][11])
+    CardPlaySound("normal",(soundPosition, 0, 1))
+
+
 
 
 def CardPlaySound(tone="normal", position=(0,0,0)):

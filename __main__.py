@@ -3,6 +3,7 @@ import sys
 
 
 Developer_Mode = True #Dev stats
+TurnOffSoundForLinux = True # Dev command (LINUX NOT SUPPORTED)
 
 
 import subprocess
@@ -33,8 +34,8 @@ from pynput.keyboard import Key, Controller
 
 keyboard = Controller()
 
-keyboard.press(Key.f11)
-keyboard.release(Key.f11)
+#keyboard.press(Key.f11)
+#keyboard.release(Key.f11)
 
 '''
 If you wish to see the original prototype of the game, enable this file.

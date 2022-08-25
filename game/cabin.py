@@ -3,7 +3,7 @@ from game.dialouge.waiting import waitTimerSecs
 from game.dialouge.leshy import *
 import unicurses
 
-from game.gameboard import startBoard
+from game.gameboard import PlaceCard, startBoard
 
 
 # This is the main cabin that will be used for the remainer of rounds
@@ -16,6 +16,7 @@ def StartCabin():
     #waitTimerSecs(13)
     startBoard()
     leshyTalk("Another challenger... it has been ages.")
+    PlaceCard(4,2,"lobster")
     leshyTalk("Perhaps you have forgotton how this game is played.")
     leshyTalk("Allow me to remind you.")
     #EngageBoard
