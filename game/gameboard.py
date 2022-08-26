@@ -1,5 +1,5 @@
 from unicurses import mvaddstr
-from engine.screenSetup import sh,sw,white,gray
+from engine.screenSetup import sh,sw,white,gray,brightorange
 from time import sleep
 
 
@@ -15,6 +15,7 @@ BoardID = [
     [0,0,0,0],
     [0,0,0,0]
 ] # 0 represents 'blank'
+deck = [] # Users current deck of cards
 
 def startBoard():
     cardCentringOriginal = -38
@@ -43,6 +44,7 @@ def startBoard():
         [0, 0, 0, 0]
     ]
     mvaddstr(22, 0, BoardID)
+    deck.append(["lobster",lobster[12],lobster[13]]) # type, attack, health
 
 type = {
         "blankCardSpace" : blankCardSpace,
@@ -84,8 +86,61 @@ def printSide(CardType, color):
     mvaddstr(sh // 2 - 12 + 28, sw // 2 + 64, f"{type[CardType][12]}†")
     mvaddstr(sh // 2 - 12 + 28, sw // 2 + 90, f"{type[CardType][13]}♥")
 
+def positionPlacement(CardType):
+    count = 0
+    while wU:
+        printSide(deck[count][0], white)
+        #add position markers with light ups
+        #add cangoleft/right
+        checkInput = True
+        while checkInput:
+            key = str(unicurses.getkey().lower(),"utf-8") #Grab input and Decode bytes
+            if key == "KEY_LEFT" or key == "a":
+                checkInput == False
+                count += 1
+                pass
+            if key == "KEY RIGHT" or key == "d":
+                checkInput == False
+                count += 1
+                pass
+            if key == "^J" or key == 'z':
+                checkInput = False
+                wU = False
+    PlaceCard(count+1, 3, CardType)
 
+import unicurses
 
+def SelectCardFromDeck():
+    wU = True
+    count = 0
+    while wU:
+        printSide(deck[count][0], white)
+        if deck[count-1]:
+            mvaddstr(sh // 2 + 2, sw // 2 + 55, "<", brightorange)
+        else:
+            mvaddstr(sh // 2 + 2, sw // 2 + 55, "<", gray)
+        if deck[count+1]:
+            mvaddstr(sh // 2 + 2, sw // 2 + 99, ">", brightorange)
+        else:
+            mvaddstr(sh // 2 + 2, sw // 2 + 99, ">", brightorange)
+        checkInput = True
+        while checkInput:
+            key = str(unicurses.getkey().lower(),"utf-8") #Grab input and Decode bytes
+            if key == "KEY_LEFT" or key == "a":
+                checkInput == False
+                count += 1
+                pass
+            if key == "KEY RIGHT" or key == "d":
+                checkInput == False
+                count += 1
+                pass
+            if key == "^J" or key == 'z':
+                checkInput = False
+                wU = False
+    #Insert place card pos check
+    printSide(deck[count][0], gray)
+    positionPlacement(deck[count][0])
+    pass
 
 def CardPlaySound(tone="normal", position=(0,0,0)):
     if tone == "normal":

@@ -2,7 +2,7 @@ from engine.soundEngine import PlaySound,StopLoopingSound, StopSoundList
 from game.dialouge.waiting import waitTimerSecs
 from game.dialouge.leshy import *
 
-from game.gameboard import PlaceCard, startBoard
+from game.gameboard import PlaceCard, SelectCardFromDeck, startBoard
 
 
 # This is the main cabin that will be used for the remainer of rounds
@@ -26,7 +26,8 @@ def StartCabin():
     #give squirrel + a low level card
     leshyTalk("Play the squirrel card.")
 
-    PlaceCard(4,2,"lobster")
+    SelectCardFromDeck()
+    #PlaceCard(4,2,"lobster")
 
     leshyTalk("Now play your stoat.")
     leshyTalk("Stoats cost 1 blood. Sacrifices must be made.")
