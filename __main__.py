@@ -3,8 +3,7 @@ import sys
 
 
 Developer_Mode = True #Dev stats
-TurnOffSoundForLinux = True # Dev command (LINUX NOT SUPPORTED)
-
+TurnOffSoundForLinux = False # Dev command (LINUX NOT SUPPORTED)
 
 import subprocess
 def install(package):

@@ -101,7 +101,6 @@ def StartEyes():
             napms(170) and refresh()
             SetEyes("Open")
         while "Talking" in eyesStatus:
-            mvaddstr(15, 0, f"Talking")
             mvaddstr(sh // 2 + eyepos+2, (sw // 2) - (len(NormalOffset) // 2), eyeDraw[6], orange)  # Bottom
             mvaddstr(sh // 2 + eyepos+1, (sw // 2) - (len(NormalOffset) // 2), eyeDraw[7], orange)  # Mid
             mvaddstr(sh // 2 + eyepos, (sw // 2) - (len(NormalOffset) // 2), eyeDraw[8], orange)  # Top
@@ -118,8 +117,6 @@ def StartEyes():
             mvaddstr(sh // 2 + eyepos+1, (sw // 2) - (len(NormalOffset) // 2), eyeDraw[16], orange)  # Mid
             mvaddstr(sh // 2 + eyepos, (sw // 2) - (len(NormalOffset) // 2), eyeDraw[17], orange)  # Top
             napms(220) and refresh()
-
-        unicurses.mvaddstr(17, 0, f"{eyesStatus}")
         unicurses.refresh()
 
 

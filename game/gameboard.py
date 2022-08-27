@@ -1,9 +1,10 @@
 from unicurses import mvaddstr
-from engine.screenSetup import sh,sw,white,gray,brightorange
+from engine.screenSetup import sh,sw,white,gray,brightorange, ResetKey
 from time import sleep
+from __main__ import Developer_Mode
 
 
-from game.card import blankCardSpace, lobster, biglobster
+from game.card import blankCardSpace, lobster, biglobster, lobster2, biglobster2
 
 from engine.soundEngine import PlaySound
 import random
@@ -43,13 +44,18 @@ def startBoard():
         [0, 0, 0, 0],
         [0, 0, 0, 0]
     ]
-    mvaddstr(22, 0, BoardID)
     deck.append(["lobster",lobster[12],lobster[13]]) # type, attack, health
+    deck.append(["lobster2", lobster2[12], lobster2[13]])  # type, attack, health
+    if Developer_Mode:
+        mvaddstr(22, 0, BoardID)
+        mvaddstr(23,0,deck)
 
 type = {
         "blankCardSpace" : blankCardSpace,
         "lobster" : lobster,
-        "biglobster" : biglobster
+        "biglobster" : biglobster,
+        "lobster2": lobster2,
+        "biglobster2": biglobster2
     }
 
 def PlaceCard(cardNum, row, CardType): #Assumes cardNum is 1-4
@@ -75,32 +81,30 @@ def PlaceCard(cardNum, row, CardType): #Assumes cardNum is 1-4
     global BoardID
     BoardID[row - 1][cardNum - 1] = [CardType,type[CardType][12],type[CardType][13]]
     mvaddstr(22,0,BoardID)
-    printSide(CardType, white)
+    printSideBig(CardType, white)
 
-def printSide(CardType, color):
+def printSideBig(CardType, color):
     count = 0
     portrait = f"big{CardType}"
     for x in range(0,31):
-        mvaddstr(sh // 2 -12 + count, sw // 2 + 58, type[portrait][count])
+        mvaddstr(sh // 2 -12 + count, sw // 2 + 58, type[portrait][count], color)
         count +=1
-    mvaddstr(sh // 2 - 12 + 28, sw // 2 + 64, f"{type[CardType][12]}†")
-    mvaddstr(sh // 2 - 12 + 28, sw // 2 + 90, f"{type[CardType][13]}♥")
-
-from engine.screenSetup import key
+    mvaddstr(sh // 2 - 12 + 28, sw // 2 + 64, f"{type[CardType][12]}†", color)
+    mvaddstr(sh // 2 - 12 + 28, sw // 2 + 90, f"{type[CardType][13]}♥", color)
 
 def positionPlacement(CardType):
-    count = 0
+    mvaddstr(23,0,"MAN")
+    wU = True
     while wU:
-        printSide(deck[count][0], white)
         #add position markers with light ups
         #add cangoleft/right
         checkInput = True
         while checkInput:
             if key == "KEY_LEFT" or key == "a":
                 checkInput == False
-                count += 1
+                count -= 1
                 pass
-            if key == "KEY RIGHT" or key == "d":
+            if key == "KEY_RIGHT" or key == "d":
                 checkInput == False
                 count += 1
                 pass
@@ -115,32 +119,41 @@ def SelectCardFromDeck():
     wU = True
     count = 0
     while wU:
-        printSide(deck[count][0], white)
-        try:
-            if deck[count-1]:
-                mvaddstr(sh // 2 + 2, sw // 2 + 55, "<", brightorange)
-        except:
+        ResetKey()
+        canGoLeft = False
+        canGoRight = False
+        printSideBig(deck[count][0], white)
+        if not count -1 == -1:
+            mvaddstr(sh // 2 + 2, sw // 2 + 55, "<", brightorange)
+            canGoLeft = True
+        else:
             mvaddstr(sh // 2 + 2, sw // 2 + 55, "<", gray)
         try:
             if deck[count+1]:
                 mvaddstr(sh // 2 + 2, sw // 2 + 99, ">", brightorange)
+                canGoRight = True
         except:
-            mvaddstr(sh // 2 + 2, sw // 2 + 99, ">", brightorange)
+            mvaddstr(sh // 2 + 2, sw // 2 + 99, ">", gray)
+
         checkInput = True
-        while checkInput:
-            if key == "KEY_LEFT" or key == "a":
-                checkInput == False
-                count += 1
-                pass
-            if key == "KEY RIGHT" or key == "d":
-                checkInput == False
-                count += 1
-                pass
+
+        while checkInput == True:
+            from engine.screenSetup import key
+            if canGoLeft:
+                if key == "KEY_LEFT" or key == "a":
+                    count -= 1
+                    checkInput = False
+            if canGoRight:
+                if key == "KEY_RIGHT" or key == "d":
+                    count += 1
+                    checkInput = False
             if key == "^J" or key == 'z':
                 checkInput = False
                 wU = False
+        mvaddstr(31,0,count)
     #Insert place card pos check
-    printSide(deck[count][0], gray)
+    mvaddstr(21,0,"CONTINUING")
+    printSideBig(deck[count][0], gray)
     positionPlacement(deck[count][0])
     pass
 

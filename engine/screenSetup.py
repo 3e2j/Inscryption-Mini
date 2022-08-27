@@ -115,12 +115,9 @@ def CursesStartup(RunThroughFullGame):
         def GetCurrentKeyPress():
             global key
             while True:
-                try:
-                    key = str(unicurses.getkey(), "utf-8")  # Grab input and Decode bytes
-                except:
-                    key = None
-                unicurses.mvaddstr(23, 0, key)
-                sleep(0.5)
+                key = str(unicurses.getkey(), "utf-8")  # Grab input and Decode bytes
+                #if Developer_Mode:
+                    #unicurses.mvaddstr(23, 0, f"{key}             ")
 
         GetCurrentKeyPress()
 
@@ -145,6 +142,10 @@ def CursesStartup(RunThroughFullGame):
             #Add in whatever section here, IE: startScreen(), mainMenu(), etc...
         unicurses.endwin()
     return main
+
+def ResetKey():
+    global key
+    key = None
 
 @CursesStartup(RunThroughFullGame=False)
 def StartCurses():

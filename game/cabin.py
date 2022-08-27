@@ -8,6 +8,7 @@ from game.gameboard import PlaceCard, SelectCardFromDeck, startBoard
 # This is the main cabin that will be used for the remainer of rounds
 def StartCabin():
     PlaySound("stereo/cabin/cabin_ambience", 1, (0,0,0), "CabinAmbience")
+    #PlaySound("stereo/cabin/gametable_ambience", 1, (0, 0, 0), "GametableAmbience")
     #sleep(3)
     #PlaySound("stereo/misc/eyes_opening", 0.8)
     #SetEyes("Opening")

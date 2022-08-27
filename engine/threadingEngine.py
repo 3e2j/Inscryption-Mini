@@ -1,10 +1,7 @@
 import threading
 from threading import Thread
-from time import sleep
 
 from __main__ import Developer_Mode
-#if Developer_Mode:
-import unicurses
 
 '''
 This threading engine was built up to run the code IN ITS ORIGINAL SCRIPT.
