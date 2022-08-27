@@ -92,32 +92,39 @@ def printSideBig(CardType, color):
     mvaddstr(sh // 2 - 12 + 28, sw // 2 + 64, f"{type[CardType][12]}†", color)
     mvaddstr(sh // 2 - 12 + 28, sw // 2 + 90, f"{type[CardType][13]}♥", color)
 
-def positionPlacement(CardType):
-    mvaddstr(23,0,"MAN")
+def positionPlacement(CardType, oldSelect=0):
+    placementCount = 0
     wU = True
     while wU:
+        ResetKey()
         #add position markers with light ups
         #add cangoleft/right
         checkInput = True
+        SelectCardReturn = False
         while checkInput:
+            from engine.screenSetup import key
             if key == "KEY_LEFT" or key == "a":
-                checkInput == False
-                count -= 1
-                pass
+                placementCount -= 1
+                checkInput = False
             if key == "KEY_RIGHT" or key == "d":
-                checkInput == False
-                count += 1
-                pass
+                placementCount += 1
+                checkInput = False
+            if key == "^[":
+                SelectCardReturn = True
+                checkInput = False
+                wU = False
             if key == "^J" or key == 'z':
                 checkInput = False
                 wU = False
-    PlaceCard(count+1, 3, CardType)
+    if SelectCardReturn:
+        SelectCardFromDeck(oldSelect)
+    else:
+        PlaceCard(placementCount+1, 3, CardType)
 
 import unicurses
 
-def SelectCardFromDeck():
+def SelectCardFromDeck(count=0):
     wU = True
-    count = 0
     while wU:
         ResetKey()
         canGoLeft = False
@@ -151,10 +158,8 @@ def SelectCardFromDeck():
                 checkInput = False
                 wU = False
         mvaddstr(31,0,count)
-    #Insert place card pos check
-    mvaddstr(21,0,"CONTINUING")
     printSideBig(deck[count][0], gray)
-    positionPlacement(deck[count][0])
+    positionPlacement(deck[count][0],count)
     pass
 
 def CardPlaySound(tone="normal", position=(0,0,0)):

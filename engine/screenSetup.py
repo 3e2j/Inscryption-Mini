@@ -97,7 +97,7 @@ def CursesStartup(RunThroughFullGame):
             unicurses.mvaddstr(6, 0, "Screen Height/Width", magenta)
             unicurses.mvaddstr(7, 0, f"{sh, sw}", white)
             unicurses.mvaddstr(8, 0, "Sound", magenta)
-            unicurses.mvaddstr(11, 0, "Placeholder", magenta)
+            unicurses.mvaddstr(11, 0, "Key-press", magenta)
 
         from engine.threadingEngine import threaded
 
@@ -117,7 +117,7 @@ def CursesStartup(RunThroughFullGame):
             while True:
                 key = str(unicurses.getkey(), "utf-8")  # Grab input and Decode bytes
                 #if Developer_Mode:
-                    #unicurses.mvaddstr(23, 0, f"{key}             ")
+                #    unicurses.mvaddstr(12, 0, f"{key}             ")
 
         GetCurrentKeyPress()
 
