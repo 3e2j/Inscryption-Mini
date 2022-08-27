@@ -8,6 +8,7 @@ from engine.threadingEngine import threaded
 from unicurses import  mvaddstr, refresh, napms
 from random import randint
 from game.dialouge.waiting import waitUntil, waitTimerSecs
+from game.dialouge.dialouge import clearLine
 
 eyesStatus = [] #Open, Closed, Talking, Opening, Stop (kills eyes)
 
@@ -71,11 +72,11 @@ def StartEyes():
                 counter += 1
             if "Open" in eyesStatus:
                 #blinking
-                mvaddstr(sh // 2 + eyepos, (sw // 2) - (len(ExtendedOffset) // 2), eyeDraw[3],white) #Top blank
+                clearLine(eyepos)
                 napms(40) and refresh()
-                mvaddstr(sh // 2 + eyepos+1, (sw // 2) - (len(ExtendedOffset) // 2), eyeDraw[3],white) # Mid blank
+                clearLine(eyepos+1)
                 napms(40) and refresh()
-                mvaddstr(sh // 2 + eyepos+2, (sw // 2) - (len(ExtendedOffset) // 2), eyeDraw[3], white) # Bottom blank
+                clearLine(eyepos+2)
                 napms(60) and refresh()
                 mvaddstr(sh // 2 + eyepos+2, (sw // 2) - (len(NormalOffset) // 2), eyeDraw[2], white)  # Bottom
                 napms(40) and refresh()

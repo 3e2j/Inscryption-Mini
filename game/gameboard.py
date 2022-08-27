@@ -1,5 +1,5 @@
 from unicurses import mvaddstr
-from engine.screenSetup import sh,sw,white,gray,brightorange, ResetKey
+from engine.screenSetup import sh,sw,white,gray,brightorange,red, ResetKey
 from time import sleep
 from __main__ import Developer_Mode
 
@@ -20,10 +20,10 @@ import random
 from array import *
 
 BoardID = [
-    [0,0,0,0],
-    [0,0,0,0],
-    [0,0,0,0]
-] # 0 represents 'blank'
+        ["blankCardSpace", "blankCardSpace", "blankCardSpace", "blankCardSpace"],#0
+        ["blankCardSpace", "blankCardSpace", "blankCardSpace", "blankCardSpace"],#1
+        ["blankCardSpace", "blankCardSpace", "blankCardSpace", "blankCardSpace"]#2
+    ]
 deck = [] # Users current deck of cards
 
 def startBoard():
@@ -34,13 +34,13 @@ def startBoard():
         cardCentering = cardCentringOriginal
         soundPosition = soundPositionOriginal
         for card in range(0,4):
-            mvaddstr(sh // 2 + cardHeight, sw // 2 + cardCentering, blankCardSpace[0])
+            mvaddstr(sh // 2 + cardHeight, sw // 2 + cardCentering, blankCardSpace[0], white)
             heightAddition = 1
             for line in range(0,10):
-                mvaddstr(sh // 2 + cardHeight + heightAddition, sw // 2 + cardCentering, blankCardSpace[1])
+                mvaddstr(sh // 2 + cardHeight + heightAddition, sw // 2 + cardCentering, blankCardSpace[1], white)
                 heightAddition += 1
             heightAddition = 0
-            mvaddstr(sh // 2 + cardHeight +11, sw // 2 + cardCentering, blankCardSpace[11])
+            mvaddstr(sh // 2 + cardHeight +11, sw // 2 + cardCentering, blankCardSpace[11], white)
             cardCentering += 20
             CardPlaySound("glow",(soundPosition, 0,1))
             soundPosition += 0.1
@@ -52,8 +52,8 @@ def startBoard():
         ["blankCardSpace", "blankCardSpace", "blankCardSpace", "blankCardSpace"],#1
         ["blankCardSpace", "blankCardSpace", "blankCardSpace", "blankCardSpace"]#2
     ]
-    deck.append(["squirrel",squirrel[12],squirrel[13], squirrel[14]]) # type, attack, health
-    deck.append(["lobster2",lobster2[12],lobster2[13], lobster2[14]]) # type, attack, health
+    deck.append(["squirrel",squirrel[12],squirrel[13], squirrel[14]]) # type, attack, health, blood #NOTE THIS IS THE ONLY TIME THAT THE DEFAULT NUMBERS ARE USED
+    deck.append(["lobster2",lobster2[12],lobster2[13], lobster2[14]]) # type, attack, health, blood
     if Developer_Mode:
         #mvaddstr(22, 0, BoardID)
         mvaddstr(23,0,deck)
@@ -101,7 +101,7 @@ def PlaceCardOrColorChange(cardNum, row, deckCardInfo, placement = True, color =
     if placement:
         CardPlaySound("normal",(soundPosition, 0, 1))
         global BoardID
-        BoardID[row][cardNum] = [CardType,reference[CardType][12],reference[CardType][13],reference[CardType][14]]
+        BoardID[row][cardNum] = [CardType,deckCardInfo[1],deckCardInfo[2],deckCardInfo[3]]
         #mvaddstr(22,0,BoardID)
 
 def printSideBig(deckCardInfo, color, blank=False):
@@ -129,8 +129,12 @@ def positionPlacement(oldSelect=0):
         ResetKey()
         posCenter = -30
         clearLine(21)
-        mvaddstr(33,0,BoardID[2][placementCount])
         PlaceCardOrColorChange(placementCount, 2, BoardID[2][placementCount], False, brightorange)
+        if deck[oldSelect][3] > 0:
+            mvaddstr(24,0,deck[oldSelect][3])
+            PlaceCardOrColorChange(placementCount, 2, BoardID[2][placementCount], False, red)
+        else:
+            PlaceCardOrColorChange(placementCount, 2, BoardID[2][placementCount], False, brightorange)
         mvaddstr(sh // 2 + 21 ,sw // 2 + posCenter + (20 * placementCount),"^", brightorange)
 
         def changeOldCardToWhite():
@@ -140,14 +144,16 @@ def positionPlacement(oldSelect=0):
         SelectCardReturn = False
         while checkInput:
             from engine.screenSetup import key
-            if key == "KEY_LEFT" or key == "a" and not placementCount - 1 == -1:
-                changeOldCardToWhite()
-                placementCount -= 1
-                checkInput = False
-            if key == "KEY_RIGHT" or key == "d" and not placementCount + 1 == 4:
-                changeOldCardToWhite()
-                placementCount += 1
-                checkInput = False
+            if not placementCount - 1 == -1:
+                if key == "KEY_LEFT" or key == "a":
+                    changeOldCardToWhite()
+                    placementCount -= 1
+                    checkInput = False
+            if not placementCount + 1 == 4:
+                if key == "KEY_RIGHT" or key == "d":
+                    changeOldCardToWhite()
+                    placementCount += 1
+                    checkInput = False
             if key == "^[" or key == "x" and not sacrificeMade:
                 changeOldCardToWhite()
                 SelectCardReturn = True
