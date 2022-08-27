@@ -137,6 +137,7 @@ def SetEyes(eyeMode):
 def leshyTalk(speech, tone="calm", skippable=False, volume=0.4, position=(0,0,0)):
     from engine.soundEngine import PlaySound
     from engine.screenSetup import StandardScreen
+    clearLine(-27)
     #talk
     mvaddstr(sh // 2 + eyepos -2, sw // 2 - len(speech) // 2, speech.upper(), brightorange)
     SetEyes("Talking")
@@ -200,5 +201,4 @@ def leshyTalk(speech, tone="calm", skippable=False, volume=0.4, position=(0,0,0)
         #endingEyesNonSkip
 
     #Remove old line
-    from game.dialouge.dialouge import clearLine
     clearLine(-27)

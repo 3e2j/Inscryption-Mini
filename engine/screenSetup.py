@@ -70,7 +70,7 @@ def CursesStartup(RunThroughFullGame):
                           0x53 * 1000 // 0xff,
                           0x16 * 1000 // 0xff)
         # White
-        unicurses.init_color(7,
+        unicurses.init_color(7, # for some reason default_colors sets the font to '7', which means I must make white ID 7.
                              0xff * 1000 // 0xff,
                              0xff * 1000 // 0xff,
                              0xff * 1000 // 0xff)

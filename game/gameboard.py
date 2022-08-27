@@ -99,7 +99,7 @@ def PlaceCardOrColorChange(cardNum, row, deckCardInfo, placement = True, color =
         mvaddstr(sh // 2 + cardHeight + 10, sw // 2 + cardCentering + 13, f"{deckCardInfo[2]}♥", color)  # Attack
         mvaddstr(sh // 2 + cardHeight + 10, sw // 2 + cardCentering + 9 - deckCardInfo[3], "δ" * deckCardInfo[3], color)  # Attack
     if placement:
-        CardPlaySound("normal",(soundPosition, 0, 1))
+        CardPlaySound("normal",(soundPosition+(0.1*cardNum), 0, 1))
         global BoardID
         BoardID[row][cardNum] = [CardType,deckCardInfo[1],deckCardInfo[2],deckCardInfo[3]]
         #mvaddstr(22,0,BoardID)
@@ -120,25 +120,29 @@ def printSideBig(deckCardInfo, color, blank=False):
         mvaddstr(sh // 2 - 12 + 28, sw // 2 + 90, f"{deckCardInfo[2]}♥", color)
         mvaddstr(sh // 2 + 15 + 28, sw // 2 + 90 - deckCardInfo[3], "δ" * deckCardInfo[3], color)
 
-def positionPlacement(oldSelect=0):
+def positionPlacement(oldSelect=0): # Position on one of the 4 avaliable places to put a card (Includes sacrifices)
     placementCount = 0
+    sacrificeRequired = False
     sacrificeMade = False
     wU = True
     from game.dialouge.dialouge import clearLine
+    sacrifices = []
+    placing = False
     while wU:
         ResetKey()
         posCenter = -30
         clearLine(21)
         PlaceCardOrColorChange(placementCount, 2, BoardID[2][placementCount], False, brightorange)
-        if deck[oldSelect][3] > 0:
-            mvaddstr(24,0,deck[oldSelect][3])
+        if deck[oldSelect][3] > 0: # Checks if a sacrifice is being made
+            sacrificeRequired = True
             PlaceCardOrColorChange(placementCount, 2, BoardID[2][placementCount], False, red)
-        else:
+        else: # No sacrifice could be made
             PlaceCardOrColorChange(placementCount, 2, BoardID[2][placementCount], False, brightorange)
+            placing = True
         mvaddstr(sh // 2 + 21 ,sw // 2 + posCenter + (20 * placementCount),"^", brightorange)
 
-        def changeOldCardToWhite():
-            PlaceCardOrColorChange(placementCount, 2, BoardID[2][placementCount], False, white)
+        def changeOldCardToWhite(placement=BoardID[2][placementCount]):
+            PlaceCardOrColorChange(placementCount, 2, placement, False, white)
 
         checkInput = True
         SelectCardReturn = False
@@ -146,12 +150,14 @@ def positionPlacement(oldSelect=0):
             from engine.screenSetup import key
             if not placementCount - 1 == -1:
                 if key == "KEY_LEFT" or key == "a":
-                    changeOldCardToWhite()
+                    if not placementCount in sacrifices:
+                        changeOldCardToWhite()
                     placementCount -= 1
                     checkInput = False
             if not placementCount + 1 == 4:
                 if key == "KEY_RIGHT" or key == "d":
-                    changeOldCardToWhite()
+                    if not placementCount in sacrifices:
+                        changeOldCardToWhite()
                     placementCount += 1
                     checkInput = False
             if key == "^[" or key == "x" and not sacrificeMade:
@@ -161,7 +167,20 @@ def positionPlacement(oldSelect=0):
                 wU = False
             if key == "^J" or key == 'z':
                 checkInput = False
-                wU = False
+                if placing: # Will not continue if sacrifice is not made
+                    wU = False
+                if sacrificeRequired and sacrificeMade == False and not BoardID[2][placementCount] == "blankCardSpace":
+                    sacrifices.append(placementCount) #appends position of sacrifice
+                    PlaySound("mono/card/sacrifice_mark",0.7,(-0.2+(0.1*placementCount),0,1))
+                    if len(sacrifices) == deck[oldSelect][3]:
+                        for position in sacrifices:
+                            BoardID[2][position] = "blankCardSpace"
+                            PlaySound("mono/card/sacrifice_default", 0.7, (-0.2 + (0.1 * position), 0, 1))
+                            changeOldCardToWhite(BoardID[2][position])
+                        sacrifices.clear()
+                        sacrificeMade = True
+                        sacrificeRequired = False
+                        placing = True
     if SelectCardReturn:
         clearLine(21)
         SelectCardFromDeck(oldSelect)
