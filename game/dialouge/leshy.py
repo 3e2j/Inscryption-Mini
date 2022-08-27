@@ -201,12 +201,8 @@ def leshyTalk(speech, tone="calm", skippable=False, volume=0.4, position=(0,0,0)
         #    SetEyes("Open")
         #endingEyesNonSkip
 
-    #Remove old line + triangle
+    #Remove old line
     y = 0
     x = 0
     unicurses.move(sh // 2 + eyepos -2, 0) #Line
     unicurses.clrtoeol()
-    unicurses.move(sh // 2 + eyepos -3, 0) #Triangle
-    unicurses.clrtoeol()
-    unicurses.move(y,x)
-    unicurses.getyx(StandardScreen)

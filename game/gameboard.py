@@ -86,6 +86,8 @@ def printSide(CardType, color):
     mvaddstr(sh // 2 - 12 + 28, sw // 2 + 64, f"{type[CardType][12]}†")
     mvaddstr(sh // 2 - 12 + 28, sw // 2 + 90, f"{type[CardType][13]}♥")
 
+from engine.screenSetup import key
+
 def positionPlacement(CardType):
     count = 0
     while wU:
@@ -94,7 +96,6 @@ def positionPlacement(CardType):
         #add cangoleft/right
         checkInput = True
         while checkInput:
-            key = str(unicurses.getkey().lower(),"utf-8") #Grab input and Decode bytes
             if key == "KEY_LEFT" or key == "a":
                 checkInput == False
                 count += 1
@@ -115,17 +116,18 @@ def SelectCardFromDeck():
     count = 0
     while wU:
         printSide(deck[count][0], white)
-        if deck[count-1]:
-            mvaddstr(sh // 2 + 2, sw // 2 + 55, "<", brightorange)
-        else:
+        try:
+            if deck[count-1]:
+                mvaddstr(sh // 2 + 2, sw // 2 + 55, "<", brightorange)
+        except:
             mvaddstr(sh // 2 + 2, sw // 2 + 55, "<", gray)
-        if deck[count+1]:
-            mvaddstr(sh // 2 + 2, sw // 2 + 99, ">", brightorange)
-        else:
+        try:
+            if deck[count+1]:
+                mvaddstr(sh // 2 + 2, sw // 2 + 99, ">", brightorange)
+        except:
             mvaddstr(sh // 2 + 2, sw // 2 + 99, ">", brightorange)
         checkInput = True
         while checkInput:
-            key = str(unicurses.getkey().lower(),"utf-8") #Grab input and Decode bytes
             if key == "KEY_LEFT" or key == "a":
                 checkInput == False
                 count += 1

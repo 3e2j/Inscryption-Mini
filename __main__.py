@@ -3,7 +3,7 @@ import sys
 
 
 Developer_Mode = True #Dev stats
-TurnOffSoundForLinux = False # Dev command (LINUX NOT SUPPORTED)
+TurnOffSoundForLinux = True # Dev command (LINUX NOT SUPPORTED)
 
 
 import subprocess

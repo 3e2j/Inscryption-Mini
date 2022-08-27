@@ -34,30 +34,40 @@ def waitUntil(WaitIdOrKey, isKeyboardInput, *arguments, triangle=False):
     wU = True
     if Developer_Mode:
         unicurses.mvaddstr(3, 0, f"Listening for {WaitIdOrKey}, Keyboard: '{isKeyboardInput}'    ")
+    import uuid
+    UUID = uuid.uuid4().hex
+    unicurses.mvaddstr(26, 0, UUID)
     while wU == True:
         if isKeyboardInput is not False:
-            try:
-                key = str(unicurses.getkey(),"utf-8") #Grab input and Decode bytes
-                if key == isKeyboardInput or [item for item in arguments if item[0] == key]:  # Enter
-                    wU = False
-                    if Developer_Mode:
-                        unicurses.mvaddstr(3, 0, f"Completed Wait Key Loop for {WaitIdOrKey}    ")
-                    waitUntilKiller.append(WaitIdOrKey)
-                    if WaitIdOrKey == "leshyTalking":
-                        deleteKey("leshyTalking")
-                    else:
-                        deleteResidueKeys(WaitIdOrKey)
-                    unicurses.flushinp()
+            from engine.screenSetup import key
+            if key == isKeyboardInput or key == [item for item in arguments if item[0]]:  # Enter
+                wU = False
+                if Developer_Mode:
+                    unicurses.mvaddstr(3, 0, f"Completed Wait Key Loop for {WaitIdOrKey}    ")
+                waitUntilKiller.append(WaitIdOrKey)
+                UUID = False
+                if WaitIdOrKey == "leshyTalking":
+                    deleteKey("leshyTalking")
                 else:
-                    if triangle:
-                        from engine.screenSetup import brightorange, sw, sh
-                        from game.dialouge.leshy import eyepos
-                        unicurses.mvaddstr(sh // 2 + eyepos - 3, sw // 2, "▲", brightorange)
-                        sleep(0.5)
-                        unicurses.mvaddstr(sh // 2 + eyepos - 3, sw // 2, "▲", brightorange | unicurses.A_BOLD)
-                        sleep(0.5)
-            except:
-                pass  # Avoids "none" error
+                    deleteResidueKeys(WaitIdOrKey)
+            else:
+                if triangle:
+                    from engine.screenSetup import brightorange, sw, sh
+                    from game.dialouge.leshy import eyepos
+                    @threaded
+                    def DisplayTriangle():
+                        while not UUID == False:
+                            unicurses.mvaddstr(sh // 2 + eyepos - 3, sw // 2, "▲", brightorange)
+                            sleep(0.5)
+                            if UUID == False:
+                                break
+                            unicurses.mvaddstr(sh // 2 + eyepos - 3, sw // 2, "▲", brightorange | unicurses.A_BOLD)
+                            sleep(0.5)
+                        unicurses.move(sh // 2 + eyepos - 3, 0)  # Triangle
+                        unicurses.clrtoeol()
+                        unicurses.move(y, x)
+                    DisplayTriangle()
+                    triangle = False
 
         else:
             if WaitIdOrKey in waitUntilKiller:  # Checks if waitID has been added to waitUntilKiller

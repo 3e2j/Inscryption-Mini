@@ -13,6 +13,8 @@ brightorange = None
 sh = None
 sw = None
 
+key = None
+
 import time
 from time import localtime, sleep
 
@@ -35,7 +37,6 @@ def CursesStartup(RunThroughFullGame):
 
         unicurses.clear()  # Clear the whole Screen
         #unicurses.timeout(100)  # Refresh rate
-        unicurses.nodelay(StandardScreen, True)
         unicurses.start_color() # init color
         unicurses.use_default_colors()  # Makes the terminal the original color
         unicurses.keypad(StandardScreen, True); #Makes arrow-keys work
@@ -107,6 +108,21 @@ def CursesStartup(RunThroughFullGame):
                 sleep(0.02)
 
         RefreshTheScreenContantly()
+
+        unicurses.nodelay(StandardScreen, True)
+
+        @threaded
+        def GetCurrentKeyPress():
+            global key
+            while True:
+                try:
+                    key = str(unicurses.getkey(), "utf-8")  # Grab input and Decode bytes
+                except:
+                    key = None
+                unicurses.mvaddstr(23, 0, key)
+                sleep(0.5)
+
+        GetCurrentKeyPress()
 
         from threading import activeCount
         @threaded
