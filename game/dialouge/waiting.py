@@ -52,21 +52,17 @@ def waitUntil(WaitIdOrKey, isKeyboardInput, *arguments, triangle=False):
             else:
                 if triangle:
                     from engine.screenSetup import brightorange, sw, sh
-                    from game.dialouge.leshy import eyepos
                     @threaded
                     def DisplayTriangle():
                         while not UUID == False:
-                            unicurses.mvaddstr(sh // 2 + eyepos - 3, sw // 2, "▲", brightorange)
+                            unicurses.mvaddstr(sh // 2 -28, sw // 2, "▲", brightorange)
                             sleep(0.5)
                             if UUID == False:
                                 break
-                            unicurses.mvaddstr(sh // 2 + eyepos - 3, sw // 2, "▲", brightorange | unicurses.A_BOLD)
+                            unicurses.mvaddstr(sh // 2 -28, sw // 2, "▲", brightorange | unicurses.A_BOLD)
                             sleep(0.5)
-                        y = 0
-                        x = 0
-                        unicurses.move(sh // 2 + eyepos - 3, 0)  # Triangle
-                        unicurses.clrtoeol()
-                        unicurses.move(y, x)
+                        from game.dialouge.dialouge import clearLine
+                        clearLine(-28)
                     DisplayTriangle()
                     triangle = False
 

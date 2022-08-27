@@ -65,3 +65,10 @@ def centreFadeOut(x, heightChange, widthChange, TotalTime):
     unicurses.mvaddstr(sh // 2 + heightChange, sw // 2 - len(x) // 2 + widthChange, x, gray)
     sleep(TotalTime / 4)
     unicurses.mvaddstr(sh // 2 + heightChange, sw // 2 - len(x) // 2 + widthChange, x, dark_gray)
+
+def clearLine(heightChange):
+    y = 0
+    x = 0
+    unicurses.move(sh // 2 + heightChange, 0)
+    unicurses.clrtoeol()
+    unicurses.move(y, x)

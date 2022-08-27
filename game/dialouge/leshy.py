@@ -199,7 +199,5 @@ def leshyTalk(speech, tone="calm", skippable=False, volume=0.4, position=(0,0,0)
         #endingEyesNonSkip
 
     #Remove old line
-    y = 0
-    x = 0
-    unicurses.move(sh // 2 + eyepos -2, 0) #Line
-    unicurses.clrtoeol()
+    from game.dialouge.dialouge import clearLine
+    clearLine(-27)

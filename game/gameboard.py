@@ -59,9 +59,9 @@ type = {
     }
 
 def PlaceCard(cardNum, row, CardType): #Assumes cardNum is 1-4
-    cardCentering = -38 + (20 * (cardNum-1)) #Centering; changes 1-4 to 0-3
+    cardCentering = -38 + (20 * cardNum) #Centering; changes 1-4 to 0-3
     soundPosition = -0.2
-    cardHeight = -15 + (12 * (row -1)) #Height; changes 1-3 to 0-2
+    cardHeight = -15 + (12 * row) #Height; changes 1-3 to 0-2
     mvaddstr(sh // 2 + cardHeight, sw // 2 + cardCentering, type[CardType][0]) # Drawing out the card
     mvaddstr(sh // 2 + cardHeight + 1, sw // 2 + cardCentering, type[CardType][1])
     mvaddstr(sh // 2 + cardHeight + 2, sw // 2 + cardCentering, type[CardType][2])
@@ -97,18 +97,26 @@ def positionPlacement(CardType, oldSelect=0):
     wU = True
     while wU:
         ResetKey()
-        #add position markers with light ups
-        #add cangoleft/right
+        posCenter = -30
+        from game.dialouge.dialouge import clearLine
+        clearLine(21)
+        mvaddstr(sh // 2 + 21 ,sw // 2 + posCenter + (20 * placementCount),"^", brightorange)
+
         checkInput = True
         SelectCardReturn = False
         while checkInput:
             from engine.screenSetup import key
-            if key == "KEY_LEFT" or key == "a":
-                placementCount -= 1
-                checkInput = False
-            if key == "KEY_RIGHT" or key == "d":
-                placementCount += 1
-                checkInput = False
+            if not placementCount - 1 == -1:
+                if key == "KEY_LEFT" or key == "a":
+                    placementCount -= 1
+                    checkInput = False
+            # elif key == "KEY_LEFT" or key == "a":
+            #     from game.dialouge.leshy import leshyTalk
+            #     leshyTalk("You cannot go further then the board")
+            if not placementCount + 1 == 4:
+                if key == "KEY_RIGHT" or key == "d":
+                    placementCount += 1
+                    checkInput = False
             if key == "^[":
                 SelectCardReturn = True
                 checkInput = False
@@ -119,7 +127,7 @@ def positionPlacement(CardType, oldSelect=0):
     if SelectCardReturn:
         SelectCardFromDeck(oldSelect)
     else:
-        PlaceCard(placementCount+1, 3, CardType)
+        PlaceCard(placementCount, 2, CardType)
 
 import unicurses
 
