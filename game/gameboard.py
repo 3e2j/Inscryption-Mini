@@ -4,7 +4,15 @@ from time import sleep
 from __main__ import Developer_Mode
 
 
-from game.card import blankCardSpace, lobster, biglobster, lobster2, biglobster2
+from game.card import \
+    blankCardSpace, \
+    bigblank, \
+    lobster, \
+    biglobster, \
+    lobster2, \
+    biglobster2, \
+    squirrel, \
+    bigsquirrel
 
 from engine.soundEngine import PlaySound
 import random
@@ -40,84 +48,108 @@ def startBoard():
         cardHeight += 12
     global BoardID
     BoardID = [
-        [0, 0, 0, 0],
-        [0, 0, 0, 0],
-        [0, 0, 0, 0]
+        ["blankCardSpace", "blankCardSpace", "blankCardSpace", "blankCardSpace"],#0
+        ["blankCardSpace", "blankCardSpace", "blankCardSpace", "blankCardSpace"],#1
+        ["blankCardSpace", "blankCardSpace", "blankCardSpace", "blankCardSpace"]#2
     ]
-    deck.append(["lobster",lobster[12],lobster[13]]) # type, attack, health
-    deck.append(["lobster2", lobster2[12], lobster2[13]])  # type, attack, health
+    deck.append(["squirrel",squirrel[12],squirrel[13], squirrel[14]]) # type, attack, health
+    deck.append(["lobster2",lobster2[12],lobster2[13], lobster2[14]]) # type, attack, health
     if Developer_Mode:
-        mvaddstr(22, 0, BoardID)
+        #mvaddstr(22, 0, BoardID)
         mvaddstr(23,0,deck)
 
-type = {
+reference = {
         "blankCardSpace" : blankCardSpace,
+        "bigblank" : bigblank,
         "lobster" : lobster,
         "biglobster" : biglobster,
         "lobster2": lobster2,
-        "biglobster2": biglobster2
+        "biglobster2": biglobster2,
+        "squirrel" : squirrel,
+        "bigsquirrel": bigsquirrel
     }
 
-def PlaceCard(cardNum, row, CardType): #Assumes cardNum is 1-4
+def PlaceCardOrColorChange(cardNum, row, deckCardInfo, placement = True, color = white): #Assumes cardNum is 1-4
     cardCentering = -38 + (20 * cardNum) #Centering; changes 1-4 to 0-3
     soundPosition = -0.2
     cardHeight = -15 + (12 * row) #Height; changes 1-3 to 0-2
-    mvaddstr(sh // 2 + cardHeight, sw // 2 + cardCentering, type[CardType][0]) # Drawing out the card
-    mvaddstr(sh // 2 + cardHeight + 1, sw // 2 + cardCentering, type[CardType][1])
-    mvaddstr(sh // 2 + cardHeight + 2, sw // 2 + cardCentering, type[CardType][2])
-    mvaddstr(sh // 2 + cardHeight + 3, sw // 2 + cardCentering, type[CardType][3])
-    mvaddstr(sh // 2 + cardHeight + 4, sw // 2 + cardCentering, type[CardType][4])
-    mvaddstr(sh // 2 + cardHeight + 5, sw // 2 + cardCentering, type[CardType][5])
-    mvaddstr(sh // 2 + cardHeight + 6, sw // 2 + cardCentering, type[CardType][6])
-    mvaddstr(sh // 2 + cardHeight + 7, sw // 2 + cardCentering, type[CardType][7])
-    mvaddstr(sh // 2 + cardHeight + 8, sw // 2 + cardCentering, type[CardType][8])
-    mvaddstr(sh // 2 + cardHeight + 9, sw // 2 + cardCentering, type[CardType][9])
-    mvaddstr(sh // 2 + cardHeight + 10, sw // 2 + cardCentering, type[CardType][10])
-    mvaddstr(sh // 2 + cardHeight + 11, sw // 2 + cardCentering, type[CardType][11])
 
-    mvaddstr(sh // 2 + cardHeight + 10, sw // 2 + cardCentering + 2, f"{type[CardType][12]}†") # Attack
-    mvaddstr(sh // 2 + cardHeight + 10, sw // 2 + cardCentering + 13, f"{type[CardType][13]}♥")  # Attack
-    CardPlaySound("normal",(soundPosition, 0, 1))
-    global BoardID
-    BoardID[row - 1][cardNum - 1] = [CardType,type[CardType][12],type[CardType][13]]
-    mvaddstr(22,0,BoardID)
-    printSideBig(CardType, white)
+    if deckCardInfo == "blankCardSpace":
+        mvaddstr(sh // 2 + cardHeight, sw // 2 + cardCentering, blankCardSpace[0], color)
+        cardHeight += 1
+        for _ in range(0,10):
+            mvaddstr(sh // 2 + cardHeight, sw // 2 + cardCentering, blankCardSpace[1], color)
+            cardHeight += 1
+        mvaddstr(sh // 2 + cardHeight, sw // 2 + cardCentering, blankCardSpace[11], color)
+    else:
+        CardType = deckCardInfo[0]
+        mvaddstr(sh // 2 + cardHeight, sw // 2 + cardCentering, reference[CardType][0], color)  # Drawing out the card
+        mvaddstr(sh // 2 + cardHeight + 1, sw // 2 + cardCentering, reference[CardType][1], color)
+        mvaddstr(sh // 2 + cardHeight + 2, sw // 2 + cardCentering, reference[CardType][2], color)
+        mvaddstr(sh // 2 + cardHeight + 3, sw // 2 + cardCentering, reference[CardType][3], color)
+        mvaddstr(sh // 2 + cardHeight + 4, sw // 2 + cardCentering, reference[CardType][4], color)
+        mvaddstr(sh // 2 + cardHeight + 5, sw // 2 + cardCentering, reference[CardType][5], color)
+        mvaddstr(sh // 2 + cardHeight + 6, sw // 2 + cardCentering, reference[CardType][6], color)
+        mvaddstr(sh // 2 + cardHeight + 7, sw // 2 + cardCentering, reference[CardType][7], color)
+        mvaddstr(sh // 2 + cardHeight + 8, sw // 2 + cardCentering, reference[CardType][8], color)
+        mvaddstr(sh // 2 + cardHeight + 9, sw // 2 + cardCentering, reference[CardType][9], color)
+        mvaddstr(sh // 2 + cardHeight + 10, sw // 2 + cardCentering, reference[CardType][10], color)
+        mvaddstr(sh // 2 + cardHeight + 11, sw // 2 + cardCentering, reference[CardType][11], color)
+        mvaddstr(sh // 2 + cardHeight + 10, sw // 2 + cardCentering + 2, f"{deckCardInfo[1]}†", color)  # Attack
+        mvaddstr(sh // 2 + cardHeight + 10, sw // 2 + cardCentering + 13, f"{deckCardInfo[2]}♥", color)  # Attack
+        mvaddstr(sh // 2 + cardHeight + 10, sw // 2 + cardCentering + 9 - deckCardInfo[3], "δ" * deckCardInfo[3], color)  # Attack
+    if placement:
+        CardPlaySound("normal",(soundPosition, 0, 1))
+        global BoardID
+        BoardID[row][cardNum] = [CardType,reference[CardType][12],reference[CardType][13],reference[CardType][14]]
+        #mvaddstr(22,0,BoardID)
 
-def printSideBig(CardType, color):
-    count = 0
-    portrait = f"big{CardType}"
-    for x in range(0,31):
-        mvaddstr(sh // 2 -12 + count, sw // 2 + 58, type[portrait][count], color)
-        count +=1
-    mvaddstr(sh // 2 - 12 + 28, sw // 2 + 64, f"{type[CardType][12]}†", color)
-    mvaddstr(sh // 2 - 12 + 28, sw // 2 + 90, f"{type[CardType][13]}♥", color)
+def printSideBig(deckCardInfo, color, blank=False):
+    if blank == True:
+        count = 0
+        for _ in range (0,31):
+            mvaddstr(sh // 2 - 12 + count, sw // 2 + 58, bigblank[0], color)
+            count += 1
+    else:
+        count = 0
+        portrait = f"big{deckCardInfo[0]}"
+        for _ in range(0,31):
+            mvaddstr(sh // 2 -12 + count, sw // 2 + 58, reference[portrait][count], color)
+            count +=1
+        mvaddstr(sh // 2 - 12 + 28, sw // 2 + 64, f"{deckCardInfo[1]}†", color)
+        mvaddstr(sh // 2 - 12 + 28, sw // 2 + 90, f"{deckCardInfo[2]}♥", color)
+        mvaddstr(sh // 2 + 15 + 28, sw // 2 + 90 - deckCardInfo[3], "δ" * deckCardInfo[3], color)
 
-def positionPlacement(CardType, oldSelect=0):
+def positionPlacement(oldSelect=0):
     placementCount = 0
+    sacrificeMade = False
     wU = True
+    from game.dialouge.dialouge import clearLine
     while wU:
         ResetKey()
         posCenter = -30
-        from game.dialouge.dialouge import clearLine
         clearLine(21)
+        mvaddstr(33,0,BoardID[2][placementCount])
+        PlaceCardOrColorChange(placementCount, 2, BoardID[2][placementCount], False, brightorange)
         mvaddstr(sh // 2 + 21 ,sw // 2 + posCenter + (20 * placementCount),"^", brightorange)
+
+        def changeOldCardToWhite():
+            PlaceCardOrColorChange(placementCount, 2, BoardID[2][placementCount], False, white)
 
         checkInput = True
         SelectCardReturn = False
         while checkInput:
             from engine.screenSetup import key
-            if not placementCount - 1 == -1:
-                if key == "KEY_LEFT" or key == "a":
-                    placementCount -= 1
-                    checkInput = False
-            # elif key == "KEY_LEFT" or key == "a":
-            #     from game.dialouge.leshy import leshyTalk
-            #     leshyTalk("You cannot go further then the board")
-            if not placementCount + 1 == 4:
-                if key == "KEY_RIGHT" or key == "d":
-                    placementCount += 1
-                    checkInput = False
-            if key == "^[":
+            if key == "KEY_LEFT" or key == "a" and not placementCount - 1 == -1:
+                changeOldCardToWhite()
+                placementCount -= 1
+                checkInput = False
+            if key == "KEY_RIGHT" or key == "d" and not placementCount + 1 == 4:
+                changeOldCardToWhite()
+                placementCount += 1
+                checkInput = False
+            if key == "^[" or key == "x" and not sacrificeMade:
+                changeOldCardToWhite()
                 SelectCardReturn = True
                 checkInput = False
                 wU = False
@@ -125,50 +157,61 @@ def positionPlacement(CardType, oldSelect=0):
                 checkInput = False
                 wU = False
     if SelectCardReturn:
+        clearLine(21)
         SelectCardFromDeck(oldSelect)
     else:
-        PlaceCard(placementCount, 2, CardType)
+        clearLine(21)
+        PlaceCardOrColorChange(placementCount, 2, deck[oldSelect])
+        deck.remove(deck[oldSelect])
+        try:
+            printSideBig(deck[0][0], gray)
+        except:
+            SelectCardFromDeck(0,True)
+            printSideBig(None, None, True)
 
 import unicurses
 
-def SelectCardFromDeck(count=0):
-    wU = True
-    while wU:
-        ResetKey()
-        canGoLeft = False
-        canGoRight = False
-        printSideBig(deck[count][0], white)
-        if not count -1 == -1:
-            mvaddstr(sh // 2 + 2, sw // 2 + 55, "<", brightorange)
-            canGoLeft = True
-        else:
-            mvaddstr(sh // 2 + 2, sw // 2 + 55, "<", gray)
-        try:
-            if deck[count+1]:
-                mvaddstr(sh // 2 + 2, sw // 2 + 99, ">", brightorange)
-                canGoRight = True
-        except:
-            mvaddstr(sh // 2 + 2, sw // 2 + 99, ">", gray)
+#First in the event of the players turn, allows a selection from their current deck.
+def SelectCardFromDeck(count=0, turnOffArrows=False):
+    if not turnOffArrows:
+        wU = True
+        while wU:
+            ResetKey()
+            canGoLeft = False
+            canGoRight = False
+            printSideBig(deck[count], white)
+            #Place marker indicating left/right avaliability
+            if not count -1 == -1:
+                mvaddstr(sh // 2 + 2, sw // 2 + 55, "<", brightorange)
+                canGoLeft = True
+            else:
+                mvaddstr(sh // 2 + 2, sw // 2 + 55, "<", gray)
+            try:
+                if deck[count+1]:
+                    mvaddstr(sh // 2 + 2, sw // 2 + 99, ">", brightorange)
+                    canGoRight = True
+            except:
+                mvaddstr(sh // 2 + 2, sw // 2 + 99, ">", gray)
 
-        checkInput = True
+            checkInput = True
 
-        while checkInput == True:
-            from engine.screenSetup import key
-            if canGoLeft:
-                if key == "KEY_LEFT" or key == "a":
+            while checkInput == True:
+                #Grab key
+                from engine.screenSetup import key
+                if canGoLeft and key == "KEY_LEFT" or key == "a":
                     count -= 1
                     checkInput = False
-            if canGoRight:
-                if key == "KEY_RIGHT" or key == "d":
+                if canGoRight and key == "KEY_RIGHT" or key == "d":
                     count += 1
                     checkInput = False
-            if key == "^J" or key == 'z':
-                checkInput = False
-                wU = False
-        mvaddstr(31,0,count)
-    printSideBig(deck[count][0], gray)
-    positionPlacement(deck[count][0],count)
-    pass
+                if key == "^J" or key == 'z':
+                    checkInput = False
+                    wU = False
+        printSideBig(deck[count], gray) # Gray's out the portrait to show selected
+        positionPlacement(count) #Moves onto placement
+    else:
+        mvaddstr(sh // 2 + 2, sw // 2 + 55, " ")
+        mvaddstr(sh // 2 + 2, sw // 2 + 99, " ")
 
 def CardPlaySound(tone="normal", position=(0,0,0)):
     if tone == "normal":
