@@ -189,16 +189,13 @@ def leshyTalk(speech, tone="calm", skippable=False, volume=0.4, position=(0,0,0)
     if not skippable:
         waitUntil("leshyTalking","^J","z", triangle=True)
         SetEyes("Open")
+        clearLine(-27)
     else:
-        pass
-        #@threaded
-        #def endingEyesNonSkip():
-        #    while endingEyesNonSkipKill == 0 or not count == 4:
-        #        waitTimerSecs(1)
-        #        count += 1
-        #    endingEyesNonSkipKill = 0
-        #    SetEyes("Open")
-        #endingEyesNonSkip
+        @threaded
+        def endingEyesNonSkip(OldSpeech):
+            waitTimerSecs(3)
+            if speech == OldSpeech:
+                clearLine(-27)
+                SetEyes("Open")
 
-    #Remove old line
-    clearLine(-27)
+        endingEyesNonSkip(speech)

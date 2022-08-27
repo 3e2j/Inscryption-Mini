@@ -133,7 +133,7 @@ def positionPlacement(oldSelect=0): # Position on one of the 4 avaliable places 
         posCenter = -30
         clearLine(21)
         PlaceCardOrColorChange(placementCount, 2, BoardID[2][placementCount], False, brightorange)
-        if deck[oldSelect][3] > 0: # Checks if a sacrifice is being made
+        if deck[oldSelect][3] > 0 and not sacrificeMade: # Checks if a sacrifice is being made
             sacrificeRequired = True
             PlaceCardOrColorChange(placementCount, 2, BoardID[2][placementCount], False, red)
         else: # No sacrifice could be made
@@ -181,6 +181,9 @@ def positionPlacement(oldSelect=0): # Position on one of the 4 avaliable places 
                         sacrificeMade = True
                         sacrificeRequired = False
                         placing = True
+                elif sacrificeRequired and sacrificeMade == False and BoardID[2][placementCount] == "blankCardSpace":
+                    from game.dialouge.leshy import leshyTalk
+                    leshyTalk(f"The {reference[deck[oldSelect][0]][15]} requires {deck[oldSelect][3]} blood.", skippable=True)
     if SelectCardReturn:
         clearLine(21)
         SelectCardFromDeck(oldSelect)

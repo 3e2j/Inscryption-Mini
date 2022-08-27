@@ -80,9 +80,8 @@ def waitUntil(WaitIdOrKey, isKeyboardInput, *arguments, triangle=False):
             unicurses.refresh()
 def waitTimerSecs(Seconds):
     while not Seconds == 0:
-        for x in range(0, 4):
-            sleep(0.25)
-            if Developer_Mode:
-                unicurses.mvaddstr(3, 0, f"waiting for {Seconds} seconds    ")
-            unicurses.refresh()
+        sleep(1)
+        if Developer_Mode:
+            unicurses.mvaddstr(3, 0, f"waiting for {Seconds} seconds    ")
+        unicurses.refresh()
         Seconds -= 1

@@ -28,7 +28,8 @@ squirrel = [
     '└───────────────┘', #11
     1,
     0,
-    0
+    0,
+    "Squirrel" # actual name
 ]
 
 lobster = [
@@ -46,7 +47,8 @@ lobster = [
     '└───────────────┘', #11
     1, #Health
     3, #attack
-    2
+    2,
+    "lobster"
 ]
 lobster2 = [
     '┌───────────────┐', #0
@@ -63,7 +65,8 @@ lobster2 = [
     '└───────────────┘', #11
     1, #Health
     2, #attack
-    1
+    1,
+    "testlobster"
 ]
 
 bigblank = [
