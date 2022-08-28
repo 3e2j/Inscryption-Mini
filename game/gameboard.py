@@ -17,7 +17,9 @@ from game.BoardArt import \
     lobster2, \
     biglobster2, \
     squirrel, \
-    bigsquirrel
+    bigsquirrel, \
+    wolf, \
+    bigwolf
 
 from engine.soundEngine import PlaySound
 
@@ -46,9 +48,11 @@ def leshyTutorialChecker():
         if LastEvent == 'sacrifice':
             leshyTalk("An honorable death. Play the lobster.")
         if LastEvent == 'CardPlacelobster':
+            deck.append(["wolf", wolf[12], wolf[13], wolf[14]])  # type, attack, health, blood
+            deck.append(["wolf", wolf[12], wolf[13], wolf[14]])  # type, attack, health, blood
             leshyTalk("Wolves require two sacrifices. You do not have enough.")
-            leshyTalk("Ring the bell to end your turn... and commence combat.")
             BellObject(spawn=True)
+            leshyTalk("Ring the bell to end your turn... and commence combat.")
             tutorialPhase += 1
 
 
@@ -94,7 +98,9 @@ reference = {
         "lobster2": lobster2,
         "biglobster2": biglobster2,
         "squirrel" : squirrel,
-        "bigsquirrel": bigsquirrel
+        "bigsquirrel": bigsquirrel,
+        "wolf": wolf,
+        "bigwolf": bigwolf
     }
 
 
@@ -239,7 +245,11 @@ def positionPlacement(oldSelect=0, spectating = False): # Position on one of the
                         placementCount += 1
                         checkInput = False
 
-            if key == "^[" or key == "x" or key == 's' or key == "KEY_DOWN" and not sacrificeMade:
+            if (key == "^[" or key == "x" or key == 's' or key == "KEY_DOWN") and not sacrificeMade:
+                if not sacrifices == []:
+                    for position in sacrifices:
+                        changeOldCardToWhite(BoardID[2][position], position)
+
                 if not bellSelected:
                     changeOldCardToWhite()
                 else:
@@ -271,7 +281,7 @@ def positionPlacement(oldSelect=0, spectating = False): # Position on one of the
                         sacrificeMade = True
                         sacrificeRequired = False
                         placing = True
-                elif sacrificeRequired and sacrificeMade == False and BoardID[2][placementCount] == "blankCardSpace":
+                elif sacrificeRequired and not sacrificeMade and BoardID[2][placementCount] == "blankCardSpace":
                     leshyTalk(f"The {reference[deck[oldSelect][0]][15]} requires {deck[oldSelect][3]} blood.", skippable=True)
     if SelectCardReturn:
         clearLine(21)

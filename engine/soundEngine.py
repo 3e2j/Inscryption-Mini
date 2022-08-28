@@ -1,4 +1,3 @@
-
 from __main__ import TurnOffSoundForLinux
 # import PyOpenAL (will require an OpenAL shared library)
 if not TurnOffSoundForLinux:
@@ -40,19 +39,25 @@ from unicurses import mvaddstr
 def PlaySound(sound_path, volume=1, position=(0,0,0), LoopValue=False, *args):
 	if not TurnOffSoundForLinux:
 		from __main__ import working_directory
-		soundfile = oalOpen(f'{working_directory}/sounds/{sound_path}.ogg')  # Path grab
+		if LoopValue:
+			pyoggSetStreamBufferSize(4096 * 4)
+			oalSetStreamBufferCount(12)
+			soundfile = oalStream(f'{working_directory}/sounds/{sound_path}.ogg')  # Path grab
+		else:
+			soundfile = oalOpen(f'{working_directory}/sounds/{sound_path}.ogg')  # Path grab
 
 		Source.set_gain(soundfile, volume) #Volume
 		Source.set_position(soundfile, position) #3D audio, if pos is False, will play normal (0,0,0)
 		soundfile.play()
 		if Developer_Mode:
 			import unicurses
-			unicurses.mvaddstr(9, 0, f'Last played: {sound_path}.ogg		') # {working_directory}/sounds/
+			unicurses.mvaddstr(9, 0, f'Last played: {sound_path}.ogg {LoopValue}		') # {working_directory}/sounds/
 
 		if LoopValue: #Looping sounds (IE: Music)
 			while LoopValue not in StopSoundList: #Loop until trigger
 				while soundfile.get_state() == AL_PLAYING and LoopValue not in StopSoundList: # check if the file is still playing
 					# wait until the file is done playing
+					soundfile.update()
 					sleep(1)
 				soundfile.play()
 				# release resources
@@ -62,7 +67,6 @@ def PlaySound(sound_path, volume=1, position=(0,0,0), LoopValue=False, *args):
 				sleep(1)
 		for x in args:
 			x
-
 		soundfile.destroy()
 
 		if Developer_Mode:

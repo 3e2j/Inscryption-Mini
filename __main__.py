@@ -8,13 +8,16 @@ TurnOffSoundForLinux = False # Dev command (LINUX NOT SUPPORTED)
 import subprocess
 def install(package):
     subprocess.check_call([sys.executable, "-m", "pip", "install", package])
+
 try:
     x = open("save-file.txt", "x")
     install("uni-curses")
+    install("uni-curses")
     install("pyogg")
-    install("PyOpenAL")
+    install("pyopenal")
     install("pynput")
     install("pathlib")
+
     x.write("ImportProcess = True")
 except:
     pass
@@ -41,7 +44,6 @@ If you wish to see the original prototype of the game, enable this file.
 Note: It wasn't finished and did not run through Curses, just base Python.
 '''
 #import old.playarea.py
-
 import engine.screenSetup
 
 if Developer_Mode == True:

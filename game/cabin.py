@@ -1,4 +1,4 @@
-from engine.soundEngine import PlaySound,StopLoopingSound, StopSoundList
+from engine.soundEngine import PlaySound#,StopLoopingSound, StopSoundList
 from game.dialouge.waiting import waitTimerSecs
 from game.dialouge.leshy import *
 
@@ -8,6 +8,7 @@ tutorial = False
 
 # This is the main cabin that will be used for the remainer of rounds
 def StartCabin():
+    sleep(0.5)
     PlaySound("stereo/cabin/cabin_ambience", 1, (0,0,0), "CabinAmbience")
     global tutorial
     tutorial = True
@@ -69,6 +70,7 @@ def StartCabin():
     leshyTalk("You've won this match.")
     leshyTalk("They won't all be so easy.")
     leshyTalk("Lets begin.")
+    #StopLoopingSound("CabinAmbience")
     PlaySound("stereo/cabin/gametable_ambience", 1, (0,0,0), "GametableAmbience")
     waitUntil("z",False)
 
