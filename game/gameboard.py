@@ -57,9 +57,9 @@ def startBoard():
         ["blankCardSpace", "blankCardSpace", "blankCardSpace", "blankCardSpace"]#2
     ]
     deck.append(["squirrel",squirrel[12],squirrel[13], squirrel[14]]) # type, attack, health, blood #NOTE THIS IS THE ONLY TIME THAT THE DEFAULT NUMBERS ARE USED
-    #deck.append(["lobster2",lobster2[12],lobster2[13], lobster2[14]]) # type, attack, health, blood
-    #deck.append(["squirrel", squirrel[12], squirrel[13], squirrel[14]])  # type, attack, health, blood #NOTE THIS IS THE ONLY TIME THAT THE DEFAULT NUMBERS ARE USED
-    #deck.append(["lobster2", lobster2[12], lobster2[13], lobster2[14]])  # type, attack, health, blood
+    deck.append(["lobster2",lobster2[12],lobster2[13], lobster2[14]]) # type, attack, health, blood
+    deck.append(["squirrel", squirrel[12], squirrel[13], squirrel[14]])  # type, attack, health, blood #NOTE THIS IS THE ONLY TIME THAT THE DEFAULT NUMBERS ARE USED
+    deck.append(["lobster2", lobster2[12], lobster2[13], lobster2[14]])  # type, attack, health, blood
 
     if Developer_Mode:
         #mvaddstr(22, 0, BoardID)
@@ -217,14 +217,14 @@ def positionPlacement(oldSelect=0, spectating = False): # Position on one of the
                 SelectCardReturn = True
                 checkInput = False
                 wU = False
-            if (key == "^J" or key == 'z') and BoardID[2][placementCount] == "blankCardSpace" and not deck == [] and not spectating:
+            if (key == "^J" or key == 'z'):
                 checkInput = False
                 if bellSelected:
                     bellPressed = True
                     wU = False
-                elif placing: # Will not continue if sacrifice is not made
+                elif placing and BoardID[2][placementCount] == "blankCardSpace" and not spectating and not deck == []: # Will not continue if sacrifice is not made
                     wU = False
-                if sacrificeRequired and sacrificeMade == False and not BoardID[2][placementCount] == "blankCardSpace":
+                if sacrificeRequired and not sacrificeMade and not BoardID[2][placementCount] == "blankCardSpace" and not spectating:
                     sacrifices.append(placementCount) #appends position of sacrifice
                     PlaySound("mono/card/sacrifice_mark",0.7,(-0.2+(0.1*placementCount),0,1))
                     if len(sacrifices) == deck[oldSelect][3]:
@@ -253,7 +253,7 @@ def positionPlacement(oldSelect=0, spectating = False): # Position on one of the
             PlaceCardOrColorChange(placementCount, 2, deck[oldSelect])
             deck.pop(oldSelect)
             if deck == []: # spectator mode sendback
-                leshyTalk("It seems you are out of cards. How unfortunate.", tone="curious")
+                leshyTalk("It seems you are out of cards. How unfortunate.", tone="curious", skippable=True)
                 SelectCardFromDeck(0, True)
             else: #repeat
                 SelectCardFromDeck()

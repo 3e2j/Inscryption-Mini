@@ -172,7 +172,7 @@ def leshyTalk(speech, tone="calm", skippable=False, volume=0.4, position=(0,0,0)
             "voice_curious#10",
             "voice_curious#11"
         ]
-        PlaySound(random.choice(curious), volume, position)
+        PlaySound(f"stereo/leshy/{random.choice(curious)}", volume, position)
     if tone == "frustrated":
         frustrated = [
             "voice_frustrated#1",
@@ -184,7 +184,7 @@ def leshyTalk(speech, tone="calm", skippable=False, volume=0.4, position=(0,0,0)
             "voice_frustrated#7",
             "voice_frustrated#8"
         ]
-        PlaySound(random.choice(frustrated), volume, position)
+        PlaySound(f"stereo/leshy/{random.choice(frustrated)}", volume, position)
 
     if not skippable:
         waitUntil("leshyTalking","^J","z", triangle=True)
