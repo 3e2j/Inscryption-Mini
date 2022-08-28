@@ -38,7 +38,7 @@ tutorialPhase = 0
 from game.cabin import tutorial
 
 def leshyTutorialChecker():
-    mvaddstr(19,0,LastEvent)
+    #mvaddstr(19,0,LastEvent)
     global tutorialPhase
     if tutorialPhase == 0:
         if LastEvent == 'CardPlacesquirrel':
@@ -50,6 +50,8 @@ def leshyTutorialChecker():
         if LastEvent == 'CardPlacelobster':
             deck.append(["wolf", wolf[12], wolf[13], wolf[14]])  # type, attack, health, blood
             deck.append(["wolf", wolf[12], wolf[13], wolf[14]])  # type, attack, health, blood
+            mvaddstr(sh // 2 + 2, sw // 2 + 55, " ")
+            mvaddstr(sh // 2 + 2, sw // 2 + 99, " ")
             leshyTalk("Wolves require two sacrifices. You do not have enough.")
             BellObject(spawn=True)
             leshyTalk("Ring the bell to end your turn... and commence combat.")
@@ -182,6 +184,9 @@ def positionPlacement(oldSelect=0, spectating = False): # Position on one of the
     bellPressed = False
     placing = False
     SelectCardReturn = False
+
+    sacrificeSpeechGiven=False
+
     wU = True # Looper
     from game.dialouge.dialouge import clearLine
     sacrifices = []
@@ -281,8 +286,9 @@ def positionPlacement(oldSelect=0, spectating = False): # Position on one of the
                         sacrificeMade = True
                         sacrificeRequired = False
                         placing = True
-                elif sacrificeRequired and not sacrificeMade and BoardID[2][placementCount] == "blankCardSpace":
+                elif sacrificeRequired and not sacrificeMade and BoardID[2][placementCount] == "blankCardSpace" and not sacrificeSpeechGiven:
                     leshyTalk(f"The {reference[deck[oldSelect][0]][15]} requires {deck[oldSelect][3]} blood.", skippable=True)
+                    sacrificeSpeechGiven = True
     if SelectCardReturn:
         clearLine(21)
         SelectCardFromDeck(oldSelect)

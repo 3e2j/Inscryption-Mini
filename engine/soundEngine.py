@@ -6,6 +6,7 @@ if not TurnOffSoundForLinux:
 
 # import the time module, for sleeping during playback
 from time import sleep
+import unicurses
 
 
 '''
@@ -32,17 +33,25 @@ def StopLoopingSound(LoopValue): #Store value in StopSoundList
 	global StopSoundList
 	StopSoundList.append(LoopValue)
 
-from __main__ import Developer_Mode
+from __main__ import Developer_Mode, working_directory
 from unicurses import mvaddstr
+
+cabin_ambience = oalOpen(f'{working_directory}/sounds/stereo/cabin/cabin_ambience.ogg')
+gametable_ambience = oalOpen(f'{working_directory}/sounds/stereo/cabin/gametable_ambience.ogg')
+
+preInitLongSounds = {
+	"stereo/cabin/cabin_ambience":cabin_ambience,
+	"stereo/cabin/gametable_ambience":gametable_ambience,
+}
+
 
 @threaded
 def PlaySound(sound_path, volume=1, position=(0,0,0), LoopValue=False, *args):
 	if not TurnOffSoundForLinux:
-		from __main__ import working_directory
 		if LoopValue:
 			pyoggSetStreamBufferSize(4096 * 4)
 			oalSetStreamBufferCount(12)
-			soundfile = oalStream(f'{working_directory}/sounds/{sound_path}.ogg')  # Path grab
+			soundfile = preInitLongSounds[sound_path]  # Path grab
 		else:
 			soundfile = oalOpen(f'{working_directory}/sounds/{sound_path}.ogg')  # Path grab
 
@@ -50,14 +59,12 @@ def PlaySound(sound_path, volume=1, position=(0,0,0), LoopValue=False, *args):
 		Source.set_position(soundfile, position) #3D audio, if pos is False, will play normal (0,0,0)
 		soundfile.play()
 		if Developer_Mode:
-			import unicurses
-			unicurses.mvaddstr(9, 0, f'Last played: {sound_path}.ogg {LoopValue}		') # {working_directory}/sounds/
+			unicurses.mvaddstr(9, 0, f'Last played: {sound_path}.ogg {LoopValue}		') # {working_directory}/sounds/stereo/leshy/
 
 		if LoopValue: #Looping sounds (IE: Music)
 			while LoopValue not in StopSoundList: #Loop until trigger
 				while soundfile.get_state() == AL_PLAYING and LoopValue not in StopSoundList: # check if the file is still playing
 					# wait until the file is done playing
-					soundfile.update()
 					sleep(1)
 				soundfile.play()
 				# release resources
@@ -70,5 +77,104 @@ def PlaySound(sound_path, volume=1, position=(0,0,0), LoopValue=False, *args):
 		soundfile.destroy()
 
 		if Developer_Mode:
-			import unicurses
-			unicurses.mvaddstr(10, 0, f'Sound Ended: {sound_path}.ogg		') # {working_directory}/sounds/
+			unicurses.mvaddstr(10, 0, f'Sound Ended: {sound_path}.ogg		') # {working_directory}/sounds/stereo/leshy/
+from playsound import playsound
+
+#Preloads all of leshy's sounds to stop buffer issues
+voice_calm1 = oalOpen(f'{working_directory}/sounds/stereo/leshy/voice_calm#1.ogg')
+voice_calm2 = oalOpen(f'{working_directory}/sounds/stereo/leshy/voice_calm#2.ogg')
+voice_calm3 = oalOpen(f'{working_directory}/sounds/stereo/leshy/voice_calm#3.ogg')
+voice_calm4 = oalOpen(f'{working_directory}/sounds/stereo/leshy/voice_calm#4.ogg')
+voice_calm5 = oalOpen(f'{working_directory}/sounds/stereo/leshy/voice_calm#5.ogg')
+voice_calm6 = oalOpen(f'{working_directory}/sounds/stereo/leshy/voice_calm#6.ogg')
+voice_calm7 = oalOpen(f'{working_directory}/sounds/stereo/leshy/voice_calm#7.ogg')
+voice_calm8 = oalOpen(f'{working_directory}/sounds/stereo/leshy/voice_calm#8.ogg')
+voice_calm9 = oalOpen(f'{working_directory}/sounds/stereo/leshy/voice_calm#9.ogg')
+voice_calm10 = oalOpen(f'{working_directory}/sounds/stereo/leshy/voice_calm#10.ogg')
+voice_calm11 = oalOpen(f'{working_directory}/sounds/stereo/leshy/voice_calm#11.ogg')
+voice_calm12 = oalOpen(f'{working_directory}/sounds/stereo/leshy/voice_calm#12.ogg')
+
+voice_curious1 = oalOpen(f'{working_directory}/sounds/stereo/leshy/voice_curious#1.ogg')
+voice_curious2 = oalOpen(f'{working_directory}/sounds/stereo/leshy/voice_curious#2.ogg')
+voice_curious3 = oalOpen(f'{working_directory}/sounds/stereo/leshy/voice_curious#3.ogg')
+voice_curious4 = oalOpen(f'{working_directory}/sounds/stereo/leshy/voice_curious#4.ogg')
+voice_curious5 = oalOpen(f'{working_directory}/sounds/stereo/leshy/voice_curious#5.ogg')
+voice_curious6 = oalOpen(f'{working_directory}/sounds/stereo/leshy/voice_curious#6.ogg')
+voice_curious7 = oalOpen(f'{working_directory}/sounds/stereo/leshy/voice_curious#7.ogg')
+voice_curious8 = oalOpen(f'{working_directory}/sounds/stereo/leshy/voice_curious#8.ogg')
+voice_curious9 = oalOpen(f'{working_directory}/sounds/stereo/leshy/voice_curious#9.ogg')
+voice_curious10 = oalOpen(f'{working_directory}/sounds/stereo/leshy/voice_curious#10.ogg')
+voice_curious11 = oalOpen(f'{working_directory}/sounds/stereo/leshy/voice_curious#11.ogg')
+
+voice_frustrated1 = oalOpen(f'{working_directory}/sounds/stereo/leshy/voice_frustrated#1.ogg')
+voice_frustrated2 = oalOpen(f'{working_directory}/sounds/stereo/leshy/voice_frustrated#2.ogg')
+voice_frustrated3 = oalOpen(f'{working_directory}/sounds/stereo/leshy/voice_frustrated#3.ogg')
+voice_frustrated4 = oalOpen(f'{working_directory}/sounds/stereo/leshy/voice_frustrated#4.ogg')
+voice_frustrated5 = oalOpen(f'{working_directory}/sounds/stereo/leshy/voice_frustrated#5.ogg')
+voice_frustrated6 = oalOpen(f'{working_directory}/sounds/stereo/leshy/voice_frustrated#6.ogg')
+voice_frustrated7 = oalOpen(f'{working_directory}/sounds/stereo/leshy/voice_frustrated#7.ogg')
+voice_frustrated8 = oalOpen(f'{working_directory}/sounds/stereo/leshy/voice_frustrated#8.ogg')
+
+choicesCalm = [
+		voice_calm1,
+		voice_calm2,
+		voice_calm3,
+		voice_calm4,
+		voice_calm5,
+		voice_calm6,
+		voice_calm7,
+		voice_calm8,
+		voice_calm9,
+		voice_calm10,
+		voice_calm11,
+		voice_calm12
+	]
+
+choicesCurious = [
+		voice_curious1,
+		voice_curious2,
+		voice_curious3,
+		voice_curious4,
+		voice_curious5,
+		voice_curious6,
+		voice_curious7,
+		voice_curious8,
+		voice_curious9,
+		voice_curious10,
+		voice_curious11
+	]
+choicesFrustrated = [
+		voice_frustrated1,
+		voice_frustrated2,
+		voice_frustrated3,
+		voice_frustrated4,
+		voice_frustrated5,
+		voice_frustrated6,
+		voice_frustrated7,
+		voice_frustrated8
+	]
+import random
+@threaded
+def leshySound(tone, volume=0.4, position=(0,0,0)):
+	try:
+		if tone == 'calm':
+			soundfileLeshy = random.choice(choicesCalm)
+		if tone == 'curious':
+			soundfileLeshy = random.choice(curious)
+		if tone == 'frustrated':
+			soundfileLeshy = random.choice(frustrated)
+		Source.set_gain(soundfileLeshy, volume)
+		Source.set_position(soundfileLeshy, position)
+		if Developer_Mode:
+			unicurses.mvaddstr(9, 0, f'Last played: leshy {tone}		')
+		soundfileLeshy.play()
+		while soundfileLeshy.get_state() == AL_PLAYING:
+			sleep(1)
+		if Developer_Mode:
+			unicurses.mvaddstr(10, 0, f'Sound Ended: leshy {tone}		')
+	except Exception:
+		print(Exception)
+	try:
+		soundfile.destroy()
+	except:
+		pass

@@ -135,7 +135,7 @@ def SetEyes(eyeMode):
 
 # Tone can be either -  calm, curious, or frustrated
 def leshyTalk(speech, tone="calm", skippable=False, volume=0.4, position=(0,0,0)):
-    from engine.soundEngine import PlaySound
+    from engine.soundEngine import leshySound
     from engine.screenSetup import StandardScreen
     clearLine(-27)
     #talk
@@ -157,7 +157,7 @@ def leshyTalk(speech, tone="calm", skippable=False, volume=0.4, position=(0,0,0)
             "voice_calm#11",
             "voice_calm#12"
         ]
-        PlaySound(f"stereo/leshy/{random.choice(calm)}", volume, position)
+        leshySound('calm', volume, position)
     if tone == "curious":
         curious = [
             "voice_curious#1",
@@ -172,7 +172,7 @@ def leshyTalk(speech, tone="calm", skippable=False, volume=0.4, position=(0,0,0)
             "voice_curious#10",
             "voice_curious#11"
         ]
-        PlaySound(f"stereo/leshy/{random.choice(curious)}", volume, position)
+        leshySound('curious', volume, position)
     if tone == "frustrated":
         frustrated = [
             "voice_frustrated#1",
@@ -184,12 +184,13 @@ def leshyTalk(speech, tone="calm", skippable=False, volume=0.4, position=(0,0,0)
             "voice_frustrated#7",
             "voice_frustrated#8"
         ]
-        PlaySound(f"stereo/leshy/{random.choice(frustrated)}", volume, position)
+        leshySound('frustrated', volume, position)
 
     if not skippable:
         waitUntil("leshyTalking","^J","z", triangle=True)
         SetEyes("Open")
         clearLine(-27)
+        sleep(0.5)
     else:
         @threaded
         def endingEyesNonSkip(OldSpeech):
@@ -197,5 +198,4 @@ def leshyTalk(speech, tone="calm", skippable=False, volume=0.4, position=(0,0,0)
             if speech == OldSpeech:
                 clearLine(-27)
                 SetEyes("Open")
-
         endingEyesNonSkip(speech)

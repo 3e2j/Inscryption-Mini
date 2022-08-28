@@ -2,7 +2,7 @@ import os
 import sys
 
 
-Developer_Mode = True #Dev stats
+Developer_Mode = False #Dev stats
 TurnOffSoundForLinux = False # Dev command (LINUX NOT SUPPORTED)
 
 import subprocess
@@ -11,12 +11,12 @@ def install(package):
 
 try:
     x = open("save-file.txt", "x")
-    install("uni-curses")
-    install("uni-curses")
-    install("pyogg")
-    install("pyopenal")
-    install("pynput")
-    install("pathlib")
+    install("uni-curses") # Main terminal
+    install("pyogg") # Supports ogg format (compresses file size)
+    install("pyopenal") # Used for most sounds
+    install("playsound") # Used for leshy's voice
+    install("pynput") # Keyboard send functions
+    install("pathlib") # Grab working directory
 
     x.write("ImportProcess = True")
 except:
