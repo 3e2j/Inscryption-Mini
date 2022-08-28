@@ -34,6 +34,7 @@ def StartCabin():
     SelectCardFromDeck()
     leshyTalk("Stoats cost 1 blood. Sacrifices must be made.")
     leshyTalk("An honorable death. Play the stoat.")
+    SelectCardFromDeck()
     leshyTalk("Wolves require two sacrifices. You do not have enough.")
     #Summon bell
     leshyTalk("Ring the bell to end your turn... and commence combat.")

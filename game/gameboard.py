@@ -54,9 +54,12 @@ def startBoard():
     ]
     deck.append(["squirrel",squirrel[12],squirrel[13], squirrel[14]]) # type, attack, health, blood #NOTE THIS IS THE ONLY TIME THAT THE DEFAULT NUMBERS ARE USED
     deck.append(["lobster2",lobster2[12],lobster2[13], lobster2[14]]) # type, attack, health, blood
+    deck.append(["squirrel", squirrel[12], squirrel[13], squirrel[14]])  # type, attack, health, blood #NOTE THIS IS THE ONLY TIME THAT THE DEFAULT NUMBERS ARE USED
+    deck.append(["lobster2", lobster2[12], lobster2[13], lobster2[14]])  # type, attack, health, blood
+
     if Developer_Mode:
         #mvaddstr(22, 0, BoardID)
-        mvaddstr(23,0,deck)
+        mvaddstr(59,0,deck)
 
 reference = {
         "blankCardSpace" : blankCardSpace,
@@ -97,7 +100,10 @@ def PlaceCardOrColorChange(cardNum, row, deckCardInfo, placement = True, color =
         mvaddstr(sh // 2 + cardHeight + 11, sw // 2 + cardCentering, reference[CardType][11], color)
         mvaddstr(sh // 2 + cardHeight + 10, sw // 2 + cardCentering + 2, f"{deckCardInfo[1]}†", color)  # Attack
         mvaddstr(sh // 2 + cardHeight + 10, sw // 2 + cardCentering + 13, f"{deckCardInfo[2]}♥", color)  # Attack
-        mvaddstr(sh // 2 + cardHeight + 10, sw // 2 + cardCentering + 9 - deckCardInfo[3], "δ" * deckCardInfo[3], color)  # Attack
+        if not color == white:
+            mvaddstr(sh // 2 + cardHeight + 10, sw // 2 + cardCentering + 9 - deckCardInfo[3], "δ" * deckCardInfo[3], color)  # Attack
+        else:
+            mvaddstr(sh // 2 + cardHeight + 10, sw // 2 + cardCentering + 9 - deckCardInfo[3], "δ" * deckCardInfo[3], red)  # Attack
     if placement:
         CardPlaySound("normal",(soundPosition+(0.1*cardNum), 0, 1))
         global BoardID
@@ -165,7 +171,7 @@ def positionPlacement(oldSelect=0): # Position on one of the 4 avaliable places 
                 SelectCardReturn = True
                 checkInput = False
                 wU = False
-            if key == "^J" or key == 'z':
+            if (key == "^J" or key == 'z') and BoardID[2][placementCount] == "blankCardSpace":
                 checkInput = False
                 if placing: # Will not continue if sacrifice is not made
                     wU = False
