@@ -8,7 +8,6 @@ tutorial = False
 
 # This is the main cabin that will be used for the remainer of rounds
 def StartCabin():
-    #sleep(2) # allow playsound to boot
     PlaySound("stereo/cabin/cabin_ambience", 1, (0,0,0), "cabin_ambience")
     global tutorial
     tutorial = True

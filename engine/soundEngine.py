@@ -47,37 +47,40 @@ preInitLongSounds = {
 
 @threaded
 def PlaySound(sound_path, volume=1, position=(0,0,0), LoopValue=False, *args):
-	if not TurnOffSoundForLinux:
-		if LoopValue:
-			pyoggSetStreamBufferSize(4096 * 4)
-			oalSetStreamBufferCount(12)
-			soundfile = preInitLongSounds[sound_path]  # Path grab
-		else:
-			soundfile = oalOpen(f'{working_directory}/sounds/{sound_path}.ogg')  # Path grab
+	try:
+		if not TurnOffSoundForLinux:
+			if LoopValue:
+				pyoggSetStreamBufferSize(4096 * 4)
+				oalSetStreamBufferCount(12)
+				soundfile = preInitLongSounds[sound_path]  # Path grab
+			else:
+				soundfile = oalOpen(f'{working_directory}/sounds/{sound_path}.ogg')  # Path grab
 
-		Source.set_gain(soundfile, volume) #Volume
-		Source.set_position(soundfile, position) #3D audio, if pos is False, will play normal (0,0,0)
-		soundfile.play()
-		if Developer_Mode:
-			unicurses.mvaddstr(9, 0, f'Last played: {sound_path}.ogg {LoopValue}		') # {working_directory}/sounds/stereo/leshy/
+			Source.set_gain(soundfile, volume) #Volume
+			Source.set_position(soundfile, position) #3D audio, if pos is False, will play normal (0,0,0)
+			soundfile.play()
+			if Developer_Mode:
+				unicurses.mvaddstr(9, 0, f'Last played: {sound_path}.ogg {LoopValue}		') # {working_directory}/sounds/stereo/leshy/
 
-		if LoopValue: #Looping sounds (IE: Music)
-			while LoopValue not in StopSoundList: #Loop until trigger
-				while soundfile.get_state() == AL_PLAYING and LoopValue not in StopSoundList: # check if the file is still playing
-					# wait until the file is done playing
+			if LoopValue: #Looping sounds (IE: Music)
+				while LoopValue not in StopSoundList: #Loop until trigger
+					while soundfile.get_state() == AL_PLAYING and LoopValue not in StopSoundList: # check if the file is still playing
+						# wait until the file is done playing
+						sleep(1)
+					soundfile.play()
+					# release resources
+				StopSoundList.remove(LoopValue) #
+			else: #Same as loop code but without LoopSound check
+				while soundfile.get_state() == AL_PLAYING:
 					sleep(1)
-				soundfile.play()
-				# release resources
-			StopSoundList.remove(LoopValue) #
-		else: #Same as loop code but without LoopSound check
-			while soundfile.get_state() == AL_PLAYING:
-				sleep(1)
-		for x in args:
-			x
-		soundfile.destroy()
+			for x in args:
+				x
+			soundfile.destroy()
 
-		if Developer_Mode:
-			unicurses.mvaddstr(10, 0, f'Sound Ended: {sound_path}.ogg		') # {working_directory}/sounds/stereo/leshy/
+			if Developer_Mode:
+				unicurses.mvaddstr(10, 0, f'Sound Ended: {sound_path}.ogg		') # {working_directory}/sounds/stereo/leshy/
+	except:
+		pass
 from playsound import playsound
 
 #Preloads all of leshy's sounds to stop buffer issues

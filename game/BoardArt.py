@@ -93,6 +93,18 @@ bigblank = [
     '                                       '
 ]
 
+knife = [ # been squished down due to non-space replacement.
+'█', # 0
+'█',
+'█████',
+'███', # 3
+'█ █',
+'█ █',
+'█', # 6
+'█',
+'█' # 8
+]
+
 
 bell = [
 '           ██████           ', #0

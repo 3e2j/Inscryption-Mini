@@ -9,6 +9,7 @@ from engine.threadingEngine import threaded
 
 
 from game.BoardArt import \
+    knife,\
     bell, \
     blankCardSpace, \
     bigblank, \
@@ -47,11 +48,9 @@ def leshyTutorialChecker():
             leshyTalk("Lobster's require 1 sacrifice")
         if LastEvent == 'sacrifice':
             leshyTalk("An honorable death. Play the lobster.")
-        if LastEvent == 'CardPlacelobster':
-            deck.append(["wolf", wolf[12], wolf[13], wolf[14]])  # type, attack, health, blood
-            deck.append(["wolf", wolf[12], wolf[13], wolf[14]])  # type, attack, health, blood
-            mvaddstr(sh // 2 + 2, sw // 2 + 55, " ")
-            mvaddstr(sh // 2 + 2, sw // 2 + 99, " ")
+            tutorialPhase += 1
+    if tutorialPhase == 1:
+        if LastEvent == 'SelectCardFromDeck':
             leshyTalk("Wolves require two sacrifices. You do not have enough.")
             BellObject(spawn=True)
             leshyTalk("Ring the bell to end your turn... and commence combat.")
@@ -86,12 +85,16 @@ def startBoard():
     ]
     deck.append(["squirrel",squirrel[12],squirrel[13], squirrel[14]]) # type, attack, health, blood #NOTE THIS IS THE ONLY TIME THAT THE DEFAULT NUMBERS ARE USED
     deck.append(["lobster", lobster[12], lobster[13], lobster[14]])  # type, attack, health, blood
+    deck.append(["wolf", wolf[12], wolf[13], wolf[14]])  # type, attack, health, blood
+    deck.append(["wolf", wolf[12], wolf[13], wolf[14]])  # type, attack, health, blood
+    deck.append(["squirrel", squirrel[12], squirrel[13], squirrel[14]])
 
     if Developer_Mode:
         #mvaddstr(22, 0, BoardID)
         mvaddstr(59,0,deck)
 
 reference = {
+        "knife":knife,
         "bell" : bell,
         "blankCardSpace" : blankCardSpace,
         "bigblank" : bigblank,
@@ -202,14 +205,14 @@ def positionPlacement(oldSelect=0, spectating = False): # Position on one of the
 
         ResetKey()
         try:
-            if deck[oldSelect][3] > 0 and not sacrificeMade and not spectating and not bellSelected: # Checks if a sacrifice is being made
+            if deck[oldSelect][3] > 0 and not sacrificeMade and not spectating and not bellSelected and not placementCount in sacrifices: # Checks if a sacrifice is being made
                 sacrificeRequired = True
                 PlaceCardOrColorChange(placementCount, 2, BoardID[2][placementCount], False, red)
-            elif not bellSelected: # No sacrifice could be made
+            elif not bellSelected and not placementCount in sacrifices: # No sacrifice could be made
                 PlaceCardOrColorChange(placementCount, 2, BoardID[2][placementCount], False, brightorange)
                 placing = True
         except: # Empty deck exception
-            if not bellSelected:
+            if not bellSelected and not placementCount in sacrifices:
                 PlaceCardOrColorChange(placementCount, 2, BoardID[2][placementCount], False, brightorange)
                 placing = True
         if not placementCount == -1: #normal
@@ -271,6 +274,23 @@ def positionPlacement(oldSelect=0, spectating = False): # Position on one of the
                     wU = False
                 if sacrificeRequired and not sacrificeMade and not BoardID[2][placementCount] == "blankCardSpace" and not placementCount in sacrifices and not spectating:
                     sacrifices.append(placementCount) #appends position of sacrifice
+                    #Sacrifice knife
+                    #top
+                    mvaddstr(sh // 2 + 10, sw // 2 + (-38 + (20 * placementCount)) + 8, reference["knife"][0], dark_gray)
+                    mvaddstr(sh // 2 + 11, sw // 2 + (-38 + (20 * placementCount)) + 8, reference["knife"][1], dark_gray)
+                    mvaddstr(sh // 2 + 12, sw // 2 + (-38 + (20 * placementCount)) + 6, reference["knife"][2], dark_gray)
+                    mvaddstr(sh // 2 + 13, sw // 2 + (-38 + (20 * placementCount)) + 7, reference["knife"][3], dark_gray)
+                    #mid
+                    mvaddstr(sh // 2 + 14, sw // 2 + (-38 + (20 * placementCount)) + 7, reference["knife"][1], dark_gray)
+                    mvaddstr(sh // 2 + 14, sw // 2 + (-38 + (20 * placementCount)) + 9, reference["knife"][1], dark_gray)
+
+                    mvaddstr(sh // 2 + 15, sw // 2 + (-38 + (20 * placementCount)) + 7, reference["knife"][1], dark_gray)
+                    mvaddstr(sh // 2 + 15, sw // 2 + (-38 + (20 * placementCount)) + 9, reference["knife"][1], dark_gray)
+                    #bottom
+                    mvaddstr(sh // 2 + 16, sw // 2 + (-38 + (20 * placementCount)) + 8, reference["knife"][0], dark_gray)
+                    mvaddstr(sh // 2 + 17, sw // 2 + (-38 + (20 * placementCount)) + 8, reference["knife"][0], dark_gray)
+                    mvaddstr(sh // 2 + 18, sw // 2 + (-38 + (20 * placementCount)) + 8, reference["knife"][0], dark_gray)
+
                     PlaySound("mono/card/sacrifice_mark",0.7,(-0.2+(0.1*placementCount),0,1))
                     if len(sacrifices) == deck[oldSelect][3]:
                         for position in sacrifices:
@@ -374,8 +394,8 @@ def SelectCardFromDeck(count=0, turnOffArrows=False):
                     checkInput = False
                     wU = False
 
-                    if tutorial:
-                        leshyTutorialChecker()
+                if tutorial:
+                    leshyTutorialChecker()
 
 
     else:
