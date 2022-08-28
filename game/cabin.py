@@ -2,12 +2,16 @@ from engine.soundEngine import PlaySound,StopLoopingSound, StopSoundList
 from game.dialouge.waiting import waitTimerSecs
 from game.dialouge.leshy import *
 
-from game.gameboard import SelectCardFromDeck, startBoard, BellObject
+tutorial = False
+
 
 
 # This is the main cabin that will be used for the remainer of rounds
 def StartCabin():
     PlaySound("stereo/cabin/cabin_ambience", 1, (0,0,0), "CabinAmbience")
+    global tutorial
+    tutorial = True
+
     #PlaySound("stereo/cabin/gametable_ambience", 1, (0, 0, 0), "GametableAmbience")
     #sleep(3)
     #PlaySound("stereo/misc/eyes_opening", 0.8)
@@ -20,24 +24,16 @@ def StartCabin():
     #leshyTalk("Allow me to remind you.")
 
     #EngageBoard
+    from game.gameboard import SelectCardFromDeck, startBoard, BellObject
     startBoard()
 
     waitTimerSecs(1)
 
     #give squirrel + a low level card
     leshyTalk("Play the squirrel card.")
-    BellObject(spawn=True)
     SelectCardFromDeck()
-    #PlaceCard(4,2,"lobster")
-
-    leshyTalk("Now play your stoat.")
-    SelectCardFromDeck()
-    leshyTalk("Stoats cost 1 blood. Sacrifices must be made.")
-    leshyTalk("An honorable death. Play the stoat.")
-    SelectCardFromDeck()
-    leshyTalk("Wolves require two sacrifices. You do not have enough.")
     #Summon bell
-    leshyTalk("Ring the bell to end your turn... and commence combat.")
+
     #Bell Ring
     leshyTalk("Your stoat stands unopposed.")
     leshyTalk("The number on the bottom left is the attack power: 1.")

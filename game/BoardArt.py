@@ -47,7 +47,7 @@ lobster = [
     '└───────────────┘', #11
     1, #Health
     3, #attack
-    2,
+    1,
     "lobster"
 ]
 lobster2 = [
