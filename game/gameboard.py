@@ -68,17 +68,19 @@ def leshyTutorialChecker():
             tutorialPhase += 1
     if tutorialPhase == 2:
         if LastEvent == 'BellPressed':
-            leshyTalk("Your stoat stands unopposed.")
+            leshyTalk("Your lobster stands unopposed.")
             leshyTalk("The number on the bottom left is the attack power: 1.")
             Scales(scaleSpawn=True)
             #dealdmg
             leshyTalk("Your lobster dealt me 1 damage. I added it to the scale")
             leshyTalk("You win if you tip my side all the way down")
-            # tipping
+            scaleTempStorage = scaleTip
+            Scales(gray,6)
             leshyTalk("Like this.")
+            Scales(gray, scaleTempStorage, scaleRefresh=True)
             leshyTalk("My turn.", skippable=True)
             # Play coyote ON MID
-            leshyTalk("Your stoat stands in the way of my coyote.")
+            leshyTalk("Your lobster stands in the way of my coyote.")
             # deal dmg
             leshyTalk("My cyotote dealt 2 damage to your lobster.")
             leshyTalk("That means your lobster's health is 2 less.")
@@ -440,8 +442,10 @@ def SelectCardFromDeck(count=0, turnOffArrows=False):
         printSideBig(None, None, True)
         positionPlacement(spectating=True)
 
-def Scales(color = gray, scaleWeight=0, scaleSpawn = False):
+scaleTip = 0
 
+def Scales(color = gray, scaleWeight=0, scaleSpawn = False, scaleRefresh = False):
+    global scaleTip
     scaleDictionary = {
         -5 : scaleneg5,
         -4 : scaleneg4,
@@ -456,25 +460,46 @@ def Scales(color = gray, scaleWeight=0, scaleSpawn = False):
         5 : scale5
     }
 
-    scaleChoice = scaleDictionary[scaleWeight]
-
-    def scalePrint():
+    def scalePrint(Weight):
         count = 0
         for _ in range(0, 22):
-            mvaddstr(sh // 2 + count - 18, sw // 2 - 83, scaleChoice[count], color)
+            mvaddstr(sh // 2 + count - 18, sw // 2 - 83, scaleDictionary[Weight][count], color)
             count += 1
         sleep(0.15)
 
     if scaleSpawn:
         PlaySound("mono/scale/scale_enter",0.5, (-0.2, 0, 0.6))
         color = dark_gray
-        scalePrint()
+        scalePrint(scaleWeight)
         color = mediocre_gray
-        scalePrint()
+        scalePrint(scaleWeight)
         color = gray
-        scalePrint()
+        scalePrint(scaleWeight)
+    if scaleRefresh:
+        scaleTip = scaleWeight
+        scalePrint(scaleTip)
+        PlaySound("mono/scale/scale_tick", 0.5, (-0.2, 0, 0.6))
+    elif not scaleWeight == 0:
+        if scaleWeight > 0:
+            pointSyntax = +1
+        else:
+            pointSyntax = -1
+        count = 0
+        for point in range(0, scaleWeight): # add a point
+            scaleTip += pointSyntax
+            count += 1
+            if not (scaleTip >= 6 or scaleTip <= -6): # not overboard, doesnt cause error
+                scalePrint(scaleTip)
+            else: # accounts for scale tip delay
+                sleep(0.15)
+            if scaleWeight < 0: # Turn pitch down if being attacked
+                PlaySound("mono/scale/scale_tick", 0.5, (-0.2, 0, 0.6), pitch= 1 - 0.05 * count)
+            else: # Turn pitch up if attacking
+                PlaySound("mono/scale/scale_tick", 0.5, (-0.2, 0, 0.6), pitch= 1 + 0.05 * count)
+            sleep(0.1)
+        sleep(0.5)
     else:
-        scalePrint()
+        scalePrint(scaleWeight)
 
 def BellObject(color = gray, spawn=False, pressed = False):
     global LastEvent

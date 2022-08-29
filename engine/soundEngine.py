@@ -47,7 +47,7 @@ preInitLongSounds = { #Any Sounds with Looping
 
 
 @threaded
-def PlaySound(sound_path, volume=1, position=(0,0,0), LoopValue=False): #*args
+def PlaySound(sound_path, volume=1, position=(0,0,0), LoopValue=False, pitch = 1): #*args
 	try:
 		if not TurnOffSoundForLinux:
 			if LoopValue:
@@ -59,6 +59,7 @@ def PlaySound(sound_path, volume=1, position=(0,0,0), LoopValue=False): #*args
 
 			Source.set_gain(soundfile, volume) #Volume
 			Source.set_position(soundfile, position) #3D audio, if pos is False, will play normal (0,0,0)
+			Source.set_pitch(soundfile, pitch)
 			soundfile.play()
 			if Developer_Mode:
 				unicurses.mvaddstr(9, 0, f'Last played: {sound_path}.ogg {LoopValue}		') # {working_directory}/sounds/stereo/leshy/
