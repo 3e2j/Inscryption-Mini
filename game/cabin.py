@@ -1,6 +1,11 @@
+from unicurses import mvaddstr
+from engine.screenSetup import sh, sw, gray
+mvaddstr(sh//2,sw//2 - len("Loading...")//2, "Loading...", gray)
 from engine.soundEngine import PlaySound,StopLoopingSound # When it loads this it has time to pre-init the sounds
 from game.dialouge.waiting import waitTimerSecs
 from game.dialouge.leshy import *
+from game.dialouge.dialouge import clearLine
+clearLine(0)
 
 tutorial = False
 
@@ -24,13 +29,14 @@ def StartCabin():
     #leshyTalk("Allow me to remind you.")
 
     #EngageBoard
-    from game.gameboard import SelectCardFromDeck, startBoard, BellObject
+    from game.gameboard import SelectCardFromDeck, startBoard, BellObject, Scales
     startBoard()
 
     waitTimerSecs(1)
 
     #give squirrel + a low level card
     leshyTalk("Play the squirrel card.")
+    Scales()
     SelectCardFromDeck()
     #Summon bell
 

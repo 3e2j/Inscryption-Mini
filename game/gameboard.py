@@ -9,7 +9,8 @@ from engine.threadingEngine import threaded
 
 
 from game.BoardArt import \
-    knife,\
+    scale0, \
+    knife, \
     bell, \
     blankCardSpace, \
     bigblank, \
@@ -403,6 +404,19 @@ def SelectCardFromDeck(count=0, turnOffArrows=False):
         mvaddstr(sh // 2 + 2, sw // 2 + 99, " ")
         printSideBig(None, None, True)
         positionPlacement(spectating=True)
+
+def Scales(color = gray, scaleWeight=0):
+
+    scaleDictionary = {
+        0 : scale0
+    }
+
+    scaleChoice = scaleDictionary[scaleWeight]
+
+    count = 0
+    for _ in range(0, 22):
+        mvaddstr(sh // 2 + count - 18, sw // 2 - 83, scaleChoice[count], color)
+        count += 1
 
 def BellObject(color = gray, spawn=False, pressed = False):
     global LastEvent
