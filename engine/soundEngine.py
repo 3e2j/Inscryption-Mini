@@ -36,17 +36,18 @@ def StopLoopingSound(LoopValue): #Store value in StopSoundList
 from __main__ import Developer_Mode, working_directory
 from unicurses import mvaddstr
 
+#Long Sounds
 cabin_ambience = oalOpen(f'{working_directory}/sounds/stereo/cabin/cabin_ambience.ogg')
 gametable_ambience = oalOpen(f'{working_directory}/sounds/stereo/cabin/gametable_ambience.ogg')
 
-preInitLongSounds = {
+preInitLongSounds = { #Any Sounds with Looping
 	"stereo/cabin/cabin_ambience":cabin_ambience,
 	"stereo/cabin/gametable_ambience":gametable_ambience,
 }
 
 
 @threaded
-def PlaySound(sound_path, volume=1, position=(0,0,0), LoopValue=False, *args):
+def PlaySound(sound_path, volume=1, position=(0,0,0), LoopValue=False): #*args
 	try:
 		if not TurnOffSoundForLinux:
 			if LoopValue:
@@ -73,8 +74,8 @@ def PlaySound(sound_path, volume=1, position=(0,0,0), LoopValue=False, *args):
 			else: #Same as loop code but without LoopSound check
 				while soundfile.get_state() == AL_PLAYING:
 					sleep(1)
-			for x in args:
-				x
+			# for x in args:
+			# 	x
 			soundfile.destroy()
 
 			if Developer_Mode:

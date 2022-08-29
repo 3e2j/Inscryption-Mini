@@ -29,33 +29,18 @@ def StartCabin():
     #leshyTalk("Allow me to remind you.")
 
     #EngageBoard
-    from game.gameboard import SelectCardFromDeck, startBoard, BellObject, Scales
+    from game.gameboard import SelectCardFromDeck, startBoard
     startBoard()
 
     waitTimerSecs(1)
 
     #give squirrel + a low level card
     leshyTalk("Play the squirrel card.")
-    Scales()
     SelectCardFromDeck()
     #Summon bell
 
     #Bell Ring
-    leshyTalk("Your stoat stands unopposed.")
-    leshyTalk("The number on the bottom left is the attack power: 1.")
     #Engage combat
-    leshyTalk("Your stoat dealt 1 damage. I added it to the scale.")
-    leshyTalk("You win if you tip my side all the way down")
-    #tipping
-    leshyTalk("Like this.")
-    leshyTalk("My turn.", skippable=True)
-    #Play coyote ON MID
-    leshyTalk("Your stoat stands in the way of my coyote.")
-    #deal dmg
-    leshyTalk("My cyotote dealt 2 damage to your stoat.")
-    leshyTalk("That means your stoat's health is 2 less.")
-    leshyTalk("If a creatures health reaches 0, it dies.")
-    leshyTalk("It's your turn again.")
     leshyTalk("You may draw from your deck or you may draw a squirrel", skippable=True)
     #if takes power card then
     leshyTalk("How reckless of you.")

@@ -9,7 +9,17 @@ from engine.threadingEngine import threaded
 
 
 from game.BoardArt import \
+    scaleneg5, \
+    scaleneg4, \
+    scaleneg3, \
+    scaleneg2, \
+    scaleneg1, \
     scale0, \
+    scale1, \
+    scale2, \
+    scale3, \
+    scale4, \
+    scale5, \
     knife, \
     bell, \
     blankCardSpace, \
@@ -56,11 +66,30 @@ def leshyTutorialChecker():
             BellObject(spawn=True)
             leshyTalk("Ring the bell to end your turn... and commence combat.")
             tutorialPhase += 1
+    if tutorialPhase == 2:
+        if LastEvent == 'BellPressed':
+            leshyTalk("Your stoat stands unopposed.")
+            leshyTalk("The number on the bottom left is the attack power: 1.")
+            Scales(scaleSpawn=True)
+            #dealdmg
+            leshyTalk("Your lobster dealt me 1 damage. I added it to the scale")
+            leshyTalk("You win if you tip my side all the way down")
+            # tipping
+            leshyTalk("Like this.")
+            leshyTalk("My turn.", skippable=True)
+            # Play coyote ON MID
+            leshyTalk("Your stoat stands in the way of my coyote.")
+            # deal dmg
+            leshyTalk("My cyotote dealt 2 damage to your lobster.")
+            leshyTalk("That means your lobster's health is 2 less.")
+            leshyTalk("If a creatures health reaches 0, it dies.")
+            leshyTalk("It's your turn again.")
+            tutorialPhase += 1
 
 
 def startBoard():
     cardCentringOriginal = -38
-    soundPositionOriginal = -0.2
+    soundPositionOriginal = -0.15
     cardHeight = -15
     for cardRow in range(0,3):
         cardCentering = cardCentringOriginal
@@ -119,7 +148,7 @@ bellEnabled = False
 def PlaceCardOrColorChange(cardNum, row, deckCardInfo, placement = True, color = white): #Updates to board
 
     cardCentering = -38 + (20 * cardNum) #Centering; changes 1-4 to 0-3
-    soundPosition = -0.2
+    soundPosition = -0.15
     cardHeight = -15 + (12 * row) #Height; changes 1-3 to 0-2
 
     if deckCardInfo == "blankCardSpace":
@@ -153,7 +182,7 @@ def PlaceCardOrColorChange(cardNum, row, deckCardInfo, placement = True, color =
         global BoardID
         BoardID[row][cardNum] = [CardType,deckCardInfo[1],deckCardInfo[2],deckCardInfo[3]]
 
-def printSideBig(deckCardInfo, color, blank=False): # Prints preview of deck on right-hand side of screen
+def printSideBig(deckCardInfo, color, blank=False, positionInDeck = "TurnedOff"): # Prints preview of deck on right-hand side of screen
     if blank == True:
         count = 0
         for _ in range (0,31):
@@ -162,6 +191,10 @@ def printSideBig(deckCardInfo, color, blank=False): # Prints preview of deck on 
     else:
         count = 0
         portrait = f"big{deckCardInfo[0]}"
+        if not positionInDeck == "TurnedOff":
+            mvaddstr(sh // 2 - 13, sw // 2 + 76 - len(str(positionInDeck)), f"{positionInDeck+1}/{len(deck)}", color)
+        else:
+            mvaddstr(sh // 2 - 13, sw // 2 + 76 - 3, f"               ", color)
         for _ in range(0,31):
             mvaddstr(sh // 2 -12 + count, sw // 2 + 58, reference[portrait][count], color)
             count +=1
@@ -292,16 +325,18 @@ def positionPlacement(oldSelect=0, spectating = False): # Position on one of the
                     mvaddstr(sh // 2 + 17, sw // 2 + (-38 + (20 * placementCount)) + 8, reference["knife"][0], dark_gray)
                     mvaddstr(sh // 2 + 18, sw // 2 + (-38 + (20 * placementCount)) + 8, reference["knife"][0], dark_gray)
 
-                    PlaySound("mono/card/sacrifice_mark",0.7,(-0.2+(0.1*placementCount),0,1))
+                    PlaySound("mono/card/sacrifice_mark",0.7,(-0.15+(0.1*placementCount),0,1))
                     if len(sacrifices) == deck[oldSelect][3]:
+                        sleep(0.75)
                         for position in sacrifices:
+                            PlaySound("mono/card/sacrifice_default", 0.7, (-0.15 + (0.1 * position), 0, 1))
                             BoardID[2][position] = "blankCardSpace"
-                            PlaySound("mono/card/sacrifice_default", 0.7, (-0.2 + (0.1 * position), 0, 1))
                             changeOldCardToWhite(BoardID[2][position], position)
+                            sleep(0.2)
 
-                            LastEvent = "sacrifice"
-                            if tutorial:
-                                leshyTutorialChecker()
+                        LastEvent = "sacrifice"
+                        if tutorial:
+                            leshyTutorialChecker()
 
                         sacrifices.clear()
                         sacrificeMade = True
@@ -359,7 +394,7 @@ def SelectCardFromDeck(count=0, turnOffArrows=False):
             ResetKey()
             canGoLeft = False
             canGoRight = False
-            printSideBig(deck[count], white)
+            printSideBig(deck[count], white, positionInDeck = count)
             #Place marker indicating left/right avaliability
             if not count -1 == -1:
                 mvaddstr(sh // 2 + 2, sw // 2 + 55, "<", brightorange)
@@ -405,18 +440,41 @@ def SelectCardFromDeck(count=0, turnOffArrows=False):
         printSideBig(None, None, True)
         positionPlacement(spectating=True)
 
-def Scales(color = gray, scaleWeight=0):
+def Scales(color = gray, scaleWeight=0, scaleSpawn = False):
 
     scaleDictionary = {
-        0 : scale0
+        -5 : scaleneg5,
+        -4 : scaleneg4,
+        -3 : scaleneg3,
+        -2 : scaleneg2,
+        -1 : scaleneg1,
+        0 : scale0,
+        1 : scale1,
+        2 : scale2,
+        3 : scale3,
+        4 : scale4,
+        5 : scale5
     }
 
     scaleChoice = scaleDictionary[scaleWeight]
 
-    count = 0
-    for _ in range(0, 22):
-        mvaddstr(sh // 2 + count - 18, sw // 2 - 83, scaleChoice[count], color)
-        count += 1
+    def scalePrint():
+        count = 0
+        for _ in range(0, 22):
+            mvaddstr(sh // 2 + count - 18, sw // 2 - 83, scaleChoice[count], color)
+            count += 1
+        sleep(0.15)
+
+    if scaleSpawn:
+        PlaySound("mono/scale/scale_enter",0.5, (-0.2, 0, 0.6))
+        color = dark_gray
+        scalePrint()
+        color = mediocre_gray
+        scalePrint()
+        color = gray
+        scalePrint()
+    else:
+        scalePrint()
 
 def BellObject(color = gray, spawn=False, pressed = False):
     global LastEvent
@@ -460,16 +518,15 @@ def BellObject(color = gray, spawn=False, pressed = False):
 
         if pressed:
 
-            LastEvent = 'BellPressed'
-            if tutorial:
-                leshyTutorialChecker()
-
             color = gray
             Pressed()
             PlaySound("mono/bell/combatbell_ring",0.8,(-0.3,0,0.8))
             sleep(0.5)
             NotPressed()
-            #Commense opponents turn
+
+            LastEvent = 'BellPressed'
+            if tutorial:
+                leshyTutorialChecker()
         else:
             NotPressed()
 
