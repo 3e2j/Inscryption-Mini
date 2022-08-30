@@ -3,7 +3,7 @@ from engine.screenSetup import sh,sw,white,dark_gray,mediocre_gray, gray,brighto
 from game.dialouge.leshy import leshyTalk
 from time import sleep
 from __main__ import Developer_Mode
-from random import choice
+from random import choice, uniform
 
 from engine.threadingEngine import threaded
 
@@ -72,17 +72,34 @@ def leshyTutorialChecker():
             leshyTalk("The number on the bottom left is the attack power: 1.")
             Scales(scaleSpawn=True)
             #dealdmg
+            sleep(0.3)
+            tutorialPhase += 1
+    if tutorialPhase == 3:
+        if LastEvent == 'PlayerAttack':
             leshyTalk("Your lobster dealt me 1 damage. I added it to the scale")
+            tutorialPhase += 1
+    if tutorialPhase == 4:
+        if LastEvent == 'ScaleTipPlayerAttack':
             leshyTalk("You win if you tip my side all the way down")
             scaleTempStorage = scaleTip
-            Scales(gray,6)
+            Scales(gray,4)
             leshyTalk("Like this.")
             Scales(gray, scaleTempStorage, scaleRefresh=True)
+            sleep(1)
             leshyTalk("My turn.", skippable=True)
+            sleep(2)
+            count = 0
+            for x in range(0,4): # find lobster placement
+                if not BoardID[2][count] == "blankCardSpace":
+                    position = count
+                    break
+                count += 1
+            PlaceCardOrColorChange(position, 1, ["wolf", wolf[12], wolf[13], wolf[14]])
+            sleep(2)
             # Play coyote ON MID
-            leshyTalk("Your lobster stands in the way of my coyote.")
+            leshyTalk("Your lobster stands in the way of my wolf.")
             # deal dmg
-            leshyTalk("My cyotote dealt 2 damage to your lobster.")
+            leshyTalk("My wolf dealt 2 damage to your lobster.")
             leshyTalk("That means your lobster's health is 2 less.")
             leshyTalk("If a creatures health reaches 0, it dies.")
             leshyTalk("It's your turn again.")
@@ -146,6 +163,54 @@ bellEnabled = False
 
 
 
+def AttackPhase():
+    global LastEvent
+    #Starts by attacking from the players perspective
+    totalDirectDmg = AttackCard() # Player Attack
+    LastEvent = "PlayerAttack"
+    leshyTutorialChecker()
+
+    Scales(scaleWeight=totalDirectDmg) # ScaleChange
+    LastEvent = "ScaleTipPlayerAttack"
+    leshyTutorialChecker()
+    pass
+
+def AttackCard(opponent=False):
+    # playersRow = []
+    # opponentsRow = []
+    # for card in range(0, 4):
+    #     if not BoardID[2][card] == "blankCardSpace":
+    #         playersRow.append([BoardID[2][card], card])
+    # for card in range(0, 4):
+    #     if not BoardID[1][card] == "blankCardSpace":
+    #         opponentsRow.append([BoardID[2][card], card])
+    order = []
+    blockedAttack = []
+    directAttack = []
+    totalDirectDmg = 0
+    if not opponent: #Player Attack
+        #Detect spaces
+        for card in range(0, 4):
+            if not BoardID[2][card] == "blankCardSpace": # Detect players row
+                order.append(card)
+                if not BoardID[1][card] == "blankCardSpace": #Detect if blocked space (opponents card)
+                    blockedAttack.append(BoardID[2][card])
+                else: #Not blocked
+                    directAttack.append(BoardID[2][card])
+        #Attacking
+        for card in order:
+            if BoardID[2][card] in directAttack:
+                PlaySound("mono/card/card_attack_directly",round(uniform(0.65,0.75),2),(-0.15+(0.1*card),0,1))
+                #animation
+                totalDirectDmg += BoardID[2][card][1]
+            else: #blockedAttack
+                #sound
+                BoardID[1][card][2] -= BoardID[2][card][1] #Opponents card's health - Players dmg
+                #animation
+            sleep(0.3)
+        return totalDirectDmg
+    else:
+        pass
 
 def PlaceCardOrColorChange(cardNum, row, deckCardInfo, placement = True, color = white): #Updates to board
 
@@ -178,7 +243,8 @@ def PlaceCardOrColorChange(cardNum, row, deckCardInfo, placement = True, color =
         mvaddstr(sh // 2 + cardHeight + 10, sw // 2 + cardCentering + 13, f"{deckCardInfo[2]}♥", color)  # Attack
         if color == white:
             color = red
-        mvaddstr(sh // 2 + cardHeight + 10, sw // 2 + cardCentering + 9 - deckCardInfo[3], "δ" * deckCardInfo[3],color)  # Attack
+        if row == 2:
+            mvaddstr(sh // 2 + cardHeight + 10, sw // 2 + cardCentering + 9 - deckCardInfo[3], "δ" * deckCardInfo[3],color)  # Attack
     if placement:
         CardPlaySound("normal",(soundPosition+(0.1*cardNum), 0, 1))
         global BoardID
@@ -418,15 +484,15 @@ def SelectCardFromDeck(count=0, turnOffArrows=False):
                 if canGoLeft and key == "KEY_LEFT" or key == "a":
                     count -= 1
                     checkInput = False
-                if canGoRight and key == "KEY_RIGHT" or key == "d":
+                elif canGoRight and key == "KEY_RIGHT" or key == "d":
                     count += 1
                     checkInput = False
-                if key == "w" or key == "KEY_UP":
+                elif key == "w" or key == "KEY_UP":
                     printSideBig(deck[count], gray)  # Gray's out the portrait to show selected
                     positionPlacement(spectating=True)  # Moves onto placement
                     checkInput = False
                     wU = False
-                if key == "^J" or key == 'z':
+                elif key == "^J" or key == 'z':
                     printSideBig(deck[count], brightorange)  # Gray's out the portrait to show selected
                     positionPlacement(count, False)  # Moves onto placement
                     checkInput = False
@@ -552,6 +618,8 @@ def BellObject(color = gray, spawn=False, pressed = False):
             LastEvent = 'BellPressed'
             if tutorial:
                 leshyTutorialChecker()
+
+            AttackPhase()
         else:
             NotPressed()
 
