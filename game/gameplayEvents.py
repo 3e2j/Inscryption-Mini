@@ -14,7 +14,7 @@ Game Events and triggers for doing certain actions. Contained in own Script to k
 Will trigger certain events upon certain inputs. Mainly used for the tutorial section of the game.
 '''
 
-def GameEvents():
+def GameEvents(dmgdealt=0):
     from game.gameboard import LastEvent, BoardID # Reloads Last Event
 
     if tutorial:
@@ -83,3 +83,26 @@ def GameEvents():
             if LastEvent == 'ScaleTipOpponentAttack':
                 leshyTalk("It's your turn again.")
                 tutorialPhase += 1
+        if tutorialPhase == 7:
+            if LastEvent == 'DrawingCard':
+                leshyTalk("You may draw from your deck or you may draw a squirrel", skippable=True)
+                tutorialPhase += 1
+        if tutorialPhase == 8:
+            if LastEvent == 'DrewSquirrel':
+                leshyTalk("How dull.", skippable=True)
+                tutorialPhase += 1
+            elif LastEvent == 'DrewPower':
+                leshyTalk("How reckless of you.", skippable=True)
+                tutorialPhase += 1
+        if tutorialPhase == 9:
+            if LastEvent == 'ScaleTipPlayerAttack':
+                leshyTalk("because you are learning I will pass.")
+            if LastEvent == 'RoundNotOverCheck': # makes sure it doesn't skip to 10 immediately
+                tutorialPhase += 1
+        if tutorialPhase == 10:
+            if LastEvent == 'ScaleTipPlayerAttack':
+                leshyTalk(f"{dmgdealt} damage dealt, {dmgdealt} weights on the scale.")
+                tutorialPhase += 1
+        if tutorialPhase == 11:
+            if LastEvent == 'RoundNotOverCheck':
+                leshyTalk("Pass.")

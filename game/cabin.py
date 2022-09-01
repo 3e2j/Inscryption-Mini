@@ -37,25 +37,6 @@ def StartCabin():
     #give squirrel + a low level card
     leshyTalk("Play the squirrel card.")
     SelectCardFromDeck()
-    #Summon bell
-
-    #Bell Ring
-    #Engage combat
-    leshyTalk("You may draw from your deck or you may draw a squirrel", skippable=True)
-    #if takes power card then
-    leshyTalk("How reckless of you.")
-
-    #wait for player to make a move and ring bell
-    leshyTalk("because you are learning I will pass.")
-    #if use power card
-    leshyTalk("The wolf demands two sacrifices.")
-
-    leshyTalk("Fear not... the beast is sacrificed, but not removed from your deck")
-    leshyTalk("It's suffering was real. But you will see it again.")
-    #wait until turn
-    leshyTalk("INSERT DAMAGE dealt, INSERT DAMAGE weights on the scale.")
-    #while move
-    leshyTalk("Pass.")
     #wait until completion
     leshyTalk("You've won this match.")
     leshyTalk("They won't all be so easy.")

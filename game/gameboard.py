@@ -35,7 +35,9 @@ from game.boardArt import \
     stump , \
     boulder, \
     coyote, \
-    bigcoyote
+    bigcoyote, \
+    squirrelback, \
+    powerback
 
 from engine.soundEngine import PlaySound
 
@@ -46,6 +48,8 @@ BoardID = [
         ["blankCardSpace", "blankCardSpace", "blankCardSpace", "blankCardSpace"],#1
         ["blankCardSpace", "blankCardSpace", "blankCardSpace", "blankCardSpace"]#2
     ]
+actualDeck = [] # Users current GAME deck of cards
+remainingDeck = [] # Users current GAME deck of cards
 deck = [] # Users current GAME deck of cards
 LastEvent = "" #CardPlace{TYPE}, positionPlacement{TYPE},sacrifice,SelectCardFromDeck,BellPressed, BellSpawn
 
@@ -101,15 +105,34 @@ reference = {
         "stump" : stump,
         "boulder" : boulder,
         "coyote" : coyote,
-        "bigcoyote": bigcoyote
+        "bigcoyote": bigcoyote,
+        "squirrelback" : squirrelback,
+        "powerback" : powerback
 
     }
 
 
 
 bellEnabled = False
+candlesDiscovered = False
+roundOver = False
 
+def endRound(victory):
+    global roundOver
+    roundOver = True
+    global candlesDiscovered
+    if victory:
+        pass
+    else:
+        if not candlesDiscovered:
+            candlesDiscovered = True
+        pass
 
+def endRoundChecker():
+    if scaleTip == -5: #opponent wins
+        endRound(False)
+    elif scale0 == 5: # player wins
+        endRound(True)
 
 def AttackPhase(): # After bell ring
     global LastEvent
@@ -120,10 +143,9 @@ def AttackPhase(): # After bell ring
 
     Scales(scaleWeight=totalDirectDmg) # ScaleChange
     LastEvent = "ScaleTipPlayerAttack"
-    GameEvents()
+    GameEvents(totalDirectDmg)
 
-    if scaleTip == 5:
-        pass
+    endRoundChecker()
 
     #OpponentMoveForward
     #OpponentPlace(AI)
@@ -133,14 +155,14 @@ def AttackPhase(): # After bell ring
     GameEvents()
     Scales(scaleWeight=totalDirectDmg) # ScaleChange
     LastEvent = "ScaleTipOpponentAttack"
-    GameEvents()
+    GameEvents(totalDirectDmg)
 
-    if scaleTip == -5:
-        pass
+    endRoundChecker()
 
-    SelectCardFromDeck()
-    #Loop
-    pass
+    if not roundOver: # Round isn't over
+        LastEvent = "RoundNotOverCheck"
+        GameEvents()
+        drawNewCard()
 
 def AttackCard(opponent=False):
     order = [] # append card numbers
@@ -269,23 +291,23 @@ def printSideBig(deckCardInfo, color, blank=False, positionInDeck = "TurnedOff")
     if blank == True:
         count = 0
         for _ in range (0,31):
-            mvaddstr(sh // 2 - 12 + count, sw // 2 + 58, bigblank[0], color)
+            mvaddstr(sh // 2 - 18 + count, sw // 2 + 58, bigblank[0], color)
             count += 1
     else:
         count = 0
         portrait = f"big{deckCardInfo[0]}"
         if not positionInDeck == "TurnedOff":
-            mvaddstr(sh // 2 - 13, sw // 2 + 76 - len(str(positionInDeck)), f"{positionInDeck+1}/{len(deck)}", color)
+            mvaddstr(sh // 2 - 19, sw // 2 + 76 - len(str(positionInDeck)), f"{positionInDeck+1}/{len(deck)}", color)
         else:
-            mvaddstr(sh // 2 - 13, sw // 2 + 76 - 3, f"               ", color)
+            mvaddstr(sh // 2 - 19, sw // 2 + 76 - 3, f"               ", color)
         for _ in range(0,31):
-            mvaddstr(sh // 2 -12 + count, sw // 2 + 58, reference[portrait][count], color)
+            mvaddstr(sh // 2 -18 + count, sw // 2 + 58, reference[portrait][count], color)
             count +=1
-        mvaddstr(sh // 2 - 12 + 28, sw // 2 + 64, f"{deckCardInfo[1]}†", color)
-        mvaddstr(sh // 2 - 12 + 28, sw // 2 + 90, f"{deckCardInfo[2]}♥", color)
+        mvaddstr(sh // 2 - 18 + 28, sw // 2 + 64, f"{deckCardInfo[1]}†", color)
+        mvaddstr(sh // 2 - 18 + 28, sw // 2 + 90, f"{deckCardInfo[2]}♥", color)
         if color == white:
             color = red
-        mvaddstr(sh // 2 -10, sw // 2 + 90 - deckCardInfo[3], "δ" * deckCardInfo[3], color)
+        mvaddstr(sh // 2 -16, sw // 2 + 90 - deckCardInfo[3], "δ" * deckCardInfo[3], color)
 
 def positionPlacement(oldSelect=0, spectating = False): # Position on one of the 4 avaliable places to put a card (Includes sacrifices)
 
@@ -426,8 +448,8 @@ def positionPlacement(oldSelect=0, spectating = False): # Position on one of the
                 elif sacrificeRequired and not sacrificeMade and BoardID[2][placementCount] == "blankCardSpace" and not sacrificeSpeechGiven:
                     leshyTalk(f"The {reference[deck[oldSelect][0]][15]} requires {deck[oldSelect][3]} blood.", skippable=True)
                     sacrificeSpeechGiven = True
-    if SelectCardReturn:
-        clearLine(21)
+    if SelectCardReturn: # Return to picking card
+        mvaddstr(sh // 2 + 21 ,sw // 2 + posCenter + (20 * placementCount)," ")
         SelectCardFromDeck(oldSelect)
     else:
         if bellPressed:
@@ -437,7 +459,7 @@ def positionPlacement(oldSelect=0, spectating = False): # Position on one of the
             except:
                 printSideBig(None, None, True)
             BellObject(pressed=True)
-        else:
+        else: # places card
             PlaceCardOrColorChange(placementCount, 2, deck[oldSelect])
             changeOldCardToWhite(ignoreCard=True)
             tempStoreOldTitle = deck[oldSelect][0]
@@ -449,22 +471,14 @@ def positionPlacement(oldSelect=0, spectating = False): # Position on one of the
 
             LastEvent = f"CardPlace{tempStoreOldTitle}"
             GameEvents()
-
-
-            if deck == []: # spectator mode sendback
-                leshyTalk("It seems you are out of cards. How unfortunate.", tone="curious", skippable=True)
-                SelectCardFromDeck(0, True)
-
-            else: #repeat
-                sleep(0.4)
-                SelectCardFromDeck()
+            sleep(0.4)
+            SelectCardFromDeck()
 
 #First in the event of the players turn, allows a selection from their current deck.
 def SelectCardFromDeck(count=0, turnOffArrows=False):
 
     global LastEvent
     LastEvent = "SelectCardFromDeck"
-
 
     if not turnOffArrows and not deck == []:
         wU = True
@@ -475,16 +489,16 @@ def SelectCardFromDeck(count=0, turnOffArrows=False):
             printSideBig(deck[count], white, positionInDeck = count)
             #Place marker indicating left/right avaliability
             if not count -1 == -1:
-                mvaddstr(sh // 2 + 2, sw // 2 + 55, "<", brightorange)
+                mvaddstr(sh // 2 - 4, sw // 2 + 55, "<", brightorange)
                 canGoLeft = True
             else:
-                mvaddstr(sh // 2 + 2, sw // 2 + 55, "<", gray)
+                mvaddstr(sh // 2 - 4, sw // 2 + 55, "<", gray)
             try:
                 if deck[count+1]:
-                    mvaddstr(sh // 2 + 2, sw // 2 + 99, ">", brightorange)
+                    mvaddstr(sh // 2 - 4, sw // 2 + 99, ">", brightorange)
                     canGoRight = True
             except:
-                mvaddstr(sh // 2 + 2, sw // 2 + 99, ">", gray)
+                mvaddstr(sh // 2 - 4, sw // 2 + 99, ">", gray)
 
             checkInput = True
 
@@ -493,9 +507,11 @@ def SelectCardFromDeck(count=0, turnOffArrows=False):
                 from engine.screenSetup import key
                 if canGoLeft and key == "KEY_LEFT" or key == "a":
                     count -= 1
+                    CardPlaySound("quick", volume = 0.2)
                     checkInput = False
                 elif canGoRight and key == "KEY_RIGHT" or key == "d":
                     count += 1
+                    CardPlaySound("quick", volume = 0.2)
                     checkInput = False
                 elif key == "w" or key == "KEY_UP":
                     printSideBig(deck[count], gray)  # Gray's out the portrait to show selected
@@ -512,10 +528,86 @@ def SelectCardFromDeck(count=0, turnOffArrows=False):
 
 
     else:
-        mvaddstr(sh // 2 + 2, sw // 2 + 55, " ")
-        mvaddstr(sh // 2 + 2, sw // 2 + 99, " ")
+        mvaddstr(sh // 2 - 4, sw // 2 + 55, " ")
+        mvaddstr(sh // 2 - 4, sw // 2 + 99, " ")
         printSideBig(None, None, True)
         positionPlacement(spectating=True)
+
+squirrelCount = 9 #Starting squirrel count
+
+def drawNewCard():
+    cardCentering = 59
+    cardHeight = 13
+    selectingSquirrel = True
+    wU = True
+    global squirrelCount
+    global LastEvent
+
+    def printSquirrelCard(color=white):
+        if not squirrelCount == 0:
+            for line in range(0,12):
+                mvaddstr(sh // 2 + cardHeight + line, sw // 2 + cardCentering, squirrelback[line], color)
+        else:
+            for line in range(0,12):
+                mvaddstr(sh // 2 + cardHeight + line, sw // 2 + cardCentering, blankCardSpace[line], color)
+        if not color == white or color == gray:
+            mvaddstr(sh // 2 + cardHeight + 12, sw // 2 + cardCentering + 8, "^", color)
+        else:
+            mvaddstr(sh // 2 + cardHeight + 12, sw // 2 + cardCentering + 8, " ")
+    def printPowerCard(color=white):
+        for line in range(0,12):
+            mvaddstr(sh // 2 + cardHeight + line, sw // 2 + cardCentering + 20, powerback[line], color)
+        if not color == white or color == gray:
+            mvaddstr(sh // 2 + cardHeight + 12, sw // 2 + cardCentering +  20 + 8, "^", color)
+        else:
+            mvaddstr(sh // 2 + cardHeight + 12, sw // 2 + cardCentering + 20 + 8, " ")
+
+
+    printSquirrelCard(brightorange)
+    printPowerCard()
+
+    LastEvent = "DrawingCard"
+    GameEvents()
+
+    while wU:
+        if selectingSquirrel:
+            printSquirrelCard(brightorange)
+            printPowerCard(white)
+        else:
+            printSquirrelCard()
+            printPowerCard(brightorange)
+
+        checkInput = True
+        while checkInput:
+            from engine.screenSetup import key
+            if key == "KEY_LEFT" or key == "a":
+                selectingSquirrel = True
+                checkInput = False
+            elif key == "KEY_RIGHT" or key == "d":
+                selectingSquirrel = False
+                checkInput = False
+            elif key == "^J" or key == 'z':
+                if selectingSquirrel and not squirrelCount == 0:
+                    deck.append(["squirrel",squirrel[12],squirrel[13], squirrel[14]])
+                    squirrelCount -= 1
+                    LastEvent = "DrewSquirrel"
+                    GameEvents()
+                    wU = False
+                    checkInput = False
+                elif not selectingSquirrel:
+                    deck.append(["wolf", wolf[12], wolf[13], wolf[14]])
+                    #deck.append(choice())
+                    LastEvent = "DrewPower"
+                    GameEvents()
+                    wU = False
+                    checkInput = False
+
+    printSquirrelCard(gray)
+    printPowerCard(gray)
+    CardPlaySound("quick")
+    SelectCardFromDeck()
+
+
 
 scaleTip = 0
 
@@ -630,9 +722,7 @@ def BellObject(color = gray, spawn=False, pressed = False):
         else:
             NotPressed()
 
-
-
-def CardPlaySound(tone="normal", position=(0,0,0)):
+def CardPlaySound(tone="normal", position=(0,0,0), volume=0.7):
     if tone == "normal":
         normal = [
             "card#1",
@@ -646,7 +736,7 @@ def CardPlaySound(tone="normal", position=(0,0,0)):
             "card#9",
             "card#10"
         ]
-        PlaySound(f"mono/card/{choice(normal)}", 0.7, position)
+        PlaySound(f"mono/card/{choice(normal)}", volume, position)
     if tone == "quick":
         quick = [
             "cardquick#1",
@@ -654,7 +744,7 @@ def CardPlaySound(tone="normal", position=(0,0,0)):
             "cardquick#3",
             "cardquick#4"
         ]
-        PlaySound(f"mono/card/{choice(quick)}", 0.7, position)
+        PlaySound(f"mono/card/{choice(quick)}", volume, position)
     if tone == "glow":
         glow = [
             "cardslot_glow#1",
@@ -662,7 +752,7 @@ def CardPlaySound(tone="normal", position=(0,0,0)):
             "cardslot_glow#3",
             "cardslot_glow#4"
         ]
-        PlaySound(f"mono/card/{choice(glow)}", 0.7, position)
+        PlaySound(f"mono/card/{choice(glow)}", volume, position)
 
 
 from game.gameplayEvents import GameEvents # Game Events and triggers

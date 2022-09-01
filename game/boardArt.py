@@ -13,6 +13,36 @@ blankCardSpace = [
     '└───────────────┘'#this is obviously used
 ]
 
+squirrelback = [
+   '┌───────────────┐',  # 0
+   '│██           ██│',
+   '│  █         █  │',
+   '│ █  █ █  ██  █ │',
+   '│█   ███ ████  █│',
+   '│   ██ █ ██ █   │',
+   '│   ███████     │',
+   '│     ████      │',
+   '│     █  █      │',
+   '│    █  █  █    │',
+   '│  ██  ███  ██  │',
+   '└───────────────┘'
+]
+
+powerback = [
+    '┌───────────────┐',  # 0
+    '│█  █ █   █ █  █│',
+    '│ █  █     █  █ │',
+    '│  █   ███   █  │',
+    '│  █  █   █  █  │',
+    '│  █      █  █  │',
+    '│  █    ██   █  │',
+    '│  █    █    █  │',
+    '│  █         █  │',
+    '│ █  █  █  █  █ │',
+    '│█  █ █   █ █  █│',
+    '└───────────────┘'
+]
+
 squirrel = [
     '┌───────────────┐',  # 0
     '│   SQUIRREL    │',
@@ -26,8 +56,8 @@ squirrel = [
     '│    █    █     │',
     '│               │',# This is the line that will have stats
     '└───────────────┘', #11
-    1,
-    0,
+    0,#attack
+    1,#health
     0,
     "Squirrel" # actual name
 ]
@@ -45,8 +75,8 @@ lobster = [
     '│      ███      │',
     '│               │', #This is the line that will have stats
     '└───────────────┘', #11
-    1, #Health
-    3, #attack
+    1, #attack
+    3, #health
     1,
     "lobster"
 ]
@@ -62,10 +92,10 @@ coyote = [
     '│█   █ █   ███  │',
     '│ ██ ██ █████   │',
     '│  █ █          │',
-    '│               │',  # This is the line that will have stats
-    '└───────────────┘',  # 11
-    1,  # Health
+    '│               │',
+    '└───────────────┘', # 11
     2,  # attack
+    1,  # health
     1,
     "coyote"
 ]
@@ -81,10 +111,10 @@ wolf = [
     '│   ██ █ █ ██   │',
     '│   █████████   │',
     '│    █ █ █ █    │',
-    '│               │',  # This is the line that will have stats
-    '└───────────────┘',  # 11
-    2,  # Health
-    3,  # attack
+    '│               │',
+    '└───────────────┘', # 11
+    2,  # attack
+    3,  # health
     2,
     "wolf"
 ]
@@ -100,10 +130,10 @@ stump = [
     '│   █ █     █   │',
     '│  █  █ █  ██   │',
     '│ █  █  ██  ███ │',
-    '│               │',  # This is the line that will have stats
-    '└───────────────┘',  # 11
-    3,  # Health
+    '│               │',
+    '└───────────────┘', # 11
     0,  # attack
+    3,  # health
     0, #cannot obtain
     "stump"
 ]
@@ -119,10 +149,10 @@ boulder = [
     '│ ██  █  ██  █  │',
     '│ █ ██ █    █ █ │',
     '│  ██ █████████ │',
-    '│               │',  # This is the line that will have stats
-    '└───────────────┘',  # 11
-    5,  # Health
-    0,  # attack
+    '│               │',
+    '└───────────────┘', # 11
+    0,  # Health
+    5,  # attack
     0, #cannot obtain
     "boulder"
 ]
@@ -138,10 +168,10 @@ lobster2 = [
     '│     █████     │',
     '│    ███████    │',
     '│      ███      │',
-    '│               │', #This is the line that will have stats
+    '│               │',
     '└───────────────┘', #11
-    1, #Health
-    2, #attack
+    1, #attack
+    2, #health
     1,
     "testlobster"
 ]
