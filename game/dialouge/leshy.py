@@ -187,7 +187,7 @@ def leshyTalk(speech, tone="calm", skippable=False, volume=0.4, position=(0,0,0)
         leshySound('frustrated', volume, position)
 
     if not skippable:
-        waitUntil("leshyTalking","^J","z", triangle=True)
+        waitUntil("leshyTalking",["^J","z"," "], triangle=True)
         SetEyes("Open")
         clearLine(-27)
         sleep(0.5)

@@ -39,7 +39,7 @@ def waitUntil(WaitIdOrKey, isKeyboardInput, *arguments, triangle=False):
     while wU == True:
         if isKeyboardInput is not False:
             from engine.screenSetup import key
-            if key == isKeyboardInput or [item for item in arguments if item[0]] == key:  # Enter
+            if key in isKeyboardInput:
                 wU = False
                 if Developer_Mode:
                     unicurses.mvaddstr(3, 0, f"Completed Wait Key Loop for {WaitIdOrKey}    ")

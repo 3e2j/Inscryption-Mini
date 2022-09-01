@@ -169,6 +169,7 @@ def leshySound(tone, volume=0.4, position=(0,0,0)):
 		if tone == 'frustrated':
 			soundfileLeshy = random.choice(frustrated)
 		Source.set_gain(soundfileLeshy, volume)
+		Source.set_pitch(soundfileLeshy, round(random.uniform(0.95,1.05),2)) # adds dynamic
 		Source.set_position(soundfileLeshy, position)
 		if Developer_Mode:
 			unicurses.mvaddstr(9, 0, f'Last played: leshy {tone}		')

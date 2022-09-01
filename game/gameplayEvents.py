@@ -101,7 +101,10 @@ def GameEvents(dmgdealt=0):
                 tutorialPhase += 1
         if tutorialPhase == 10:
             if LastEvent == 'ScaleTipPlayerAttack':
-                leshyTalk(f"{dmgdealt} damage dealt, {dmgdealt} weights on the scale.")
+                if dmgdealt == 1:
+                    leshyTalk(f"{dmgdealt} damage dealt, {dmgdealt} weight on the scale.")
+                else:
+                    leshyTalk(f"{dmgdealt} damage dealt, {dmgdealt} weights on the scale.")
                 tutorialPhase += 1
         if tutorialPhase == 11:
             if LastEvent == 'RoundNotOverCheck':

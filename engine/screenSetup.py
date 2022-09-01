@@ -135,7 +135,7 @@ def CursesStartup(RunThroughFullGame):
             while True:
                 key = str(unicurses.getkey(), "utf-8")  # Grab input and Decode bytes
                 #if Developer_Mode:
-                #    unicurses.mvaddstr(12, 0, f"{key}             ")
+                #    unicurses.mvaddstr(12, 0, f"{key}             ") # Set nodelay to False
 
         GetCurrentKeyPress()
 

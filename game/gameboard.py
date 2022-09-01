@@ -129,9 +129,9 @@ def endRound(victory):
         pass
 
 def endRoundChecker():
-    if scaleTip == -5: #opponent wins
+    if scaleTip <= -5: #opponent wins
         endRound(False)
-    elif scale0 == 5: # player wins
+    elif scaleTip >= 5: # player wins
         endRound(True)
 
 def AttackPhase(): # After bell ring
@@ -209,7 +209,7 @@ def AttackCard(opponent=False):
 
         #Detect spaces
         for card in range(0, 4):
-            if not BoardID[2][card] == "blankCardSpace" and not BoardID[2][card][0] == "stump" and not BoardID[2][card][0] == "boulder": # Detect players row
+            if not BoardID[2][card] == "blankCardSpace" and not BoardID[2][card][0] == "stump" and not BoardID[2][card][0] == "boulder" and not BoardID[2][card][1] == 0: # Detect players row
                 order.append(card)
                 if not BoardID[1][card] == "blankCardSpace": #Detect if blocked space (opponents card); Will beable to still attack stumps and boulders
                     blockedAttack.append(BoardID[2][card])
@@ -230,7 +230,7 @@ def AttackCard(opponent=False):
     else: # Opponent Attack
         #Detection
         for card in range(0, 4):
-            if not BoardID[1][card] == "blankCardSpace" and not BoardID[2][card][0] == "stump" and not BoardID[2][card][0] == "boulder": # Detects Opponents row
+            if not BoardID[1][card] == "blankCardSpace" and not BoardID[2][card][0] == "stump" and not BoardID[2][card][0] == "boulder" and not BoardID[1][card][1] == 0: # Detects Opponents row
                 order.append(card)
                 if not BoardID[2][card] == "blankCardSpace": # Detect if blocked space (players card)
                     blockedAttack.append(BoardID[1][card])
@@ -363,14 +363,14 @@ def positionPlacement(oldSelect=0, spectating = False): # Position on one of the
         while checkInput:
             from engine.screenSetup import key
             if not placementCount - 1 <= -1: # Not Bell
-                if key == "KEY_LEFT" or key == "a":
+                if key in ["KEY_LEFT","a"]:
                     if not placementCount in sacrifices:
                         changeOldCardToWhite()
                     placementCount -= 1
                     checkInput = False
             else: # Bell
                 if not placementCount -1 == -2 and bellEnabled and spectating: #cant go over bell
-                    if key == "KEY_LEFT" or key == "a":
+                    if key in ["KEY_LEFT","a"]:
                         changeOldCardToWhite()
                         bellSelected = True
                         placementCount -= 1
@@ -378,7 +378,7 @@ def positionPlacement(oldSelect=0, spectating = False): # Position on one of the
                         checkInput = False
 
             if not placementCount + 1 == 4:
-                if key == "KEY_RIGHT" or key == "d":
+                if key in ["KEY_RIGHT","d"]:
                     if not placementCount + 1 == 0: # cant go over board
                         if not placementCount in sacrifices:
                             changeOldCardToWhite()
@@ -391,7 +391,7 @@ def positionPlacement(oldSelect=0, spectating = False): # Position on one of the
                         placementCount += 1
                         checkInput = False
 
-            if (key == "^[" or key == "x" or key == 's' or key == "KEY_DOWN") and not sacrificeMade:
+            if key in ["^[","x",'s',"KEY_DOWN"] and not sacrificeMade:
                 if not sacrifices == []:
                     for position in sacrifices:
                         changeOldCardToWhite(BoardID[2][position], position)
@@ -403,7 +403,7 @@ def positionPlacement(oldSelect=0, spectating = False): # Position on one of the
                 SelectCardReturn = True
                 checkInput = False
                 wU = False
-            if (key == "^J" or key == 'z'):
+            if key in ["^J", 'z', ' ']:
                 checkInput = False
                 if bellSelected and spectating:
                     bellPressed = True
@@ -431,7 +431,7 @@ def positionPlacement(oldSelect=0, spectating = False): # Position on one of the
 
                     PlaySound("mono/card/sacrifice_mark",0.7,(-0.15+(0.1*placementCount),0,1))
                     if len(sacrifices) == deck[oldSelect][3]:
-                        sleep(0.75)
+                        sleep(0.3)
                         for position in sacrifices:
                             PlaySound("mono/card/sacrifice_default", 0.7, (-0.15 + (0.1 * position), 0, 1))
                             BoardID[2][position] = "blankCardSpace"
@@ -481,11 +481,13 @@ def SelectCardFromDeck(count=0, turnOffArrows=False):
     LastEvent = "SelectCardFromDeck"
 
     if not turnOffArrows and not deck == []:
+
+        canGoLeft = False
+        canGoRight = False
+
         wU = True
         while wU:
             ResetKey()
-            canGoLeft = False
-            canGoRight = False
             printSideBig(deck[count], white, positionInDeck = count)
             #Place marker indicating left/right avaliability
             if not count -1 == -1:
@@ -493,32 +495,34 @@ def SelectCardFromDeck(count=0, turnOffArrows=False):
                 canGoLeft = True
             else:
                 mvaddstr(sh // 2 - 4, sw // 2 + 55, "<", gray)
+                canGoLeft = False
             try:
                 if deck[count+1]:
                     mvaddstr(sh // 2 - 4, sw // 2 + 99, ">", brightorange)
                     canGoRight = True
             except:
                 mvaddstr(sh // 2 - 4, sw // 2 + 99, ">", gray)
+                canGoRight = False
 
             checkInput = True
 
             while checkInput == True:
                 #Grab key
                 from engine.screenSetup import key
-                if canGoLeft and key == "KEY_LEFT" or key == "a":
+                if canGoLeft and key in ["KEY_LEFT","a"]:
                     count -= 1
                     CardPlaySound("quick", volume = 0.2)
                     checkInput = False
-                elif canGoRight and key == "KEY_RIGHT" or key == "d":
+                elif canGoRight and key in ["KEY_RIGHT","d"]:
                     count += 1
                     CardPlaySound("quick", volume = 0.2)
                     checkInput = False
-                elif key == "w" or key == "KEY_UP":
+                elif key in ["w","KEY_UP"]:
                     printSideBig(deck[count], gray)  # Gray's out the portrait to show selected
                     positionPlacement(spectating=True)  # Moves onto placement
                     checkInput = False
                     wU = False
-                elif key == "^J" or key == 'z':
+                elif key in ["^J", 'z', ' ']:
                     printSideBig(deck[count], brightorange)  # Gray's out the portrait to show selected
                     positionPlacement(count, False)  # Moves onto placement
                     checkInput = False
@@ -580,13 +584,13 @@ def drawNewCard():
         checkInput = True
         while checkInput:
             from engine.screenSetup import key
-            if key == "KEY_LEFT" or key == "a":
+            if key in ["KEY_LEFT","a"]:
                 selectingSquirrel = True
                 checkInput = False
-            elif key == "KEY_RIGHT" or key == "d":
+            elif key in ["KEY_RIGHT","d"]:
                 selectingSquirrel = False
                 checkInput = False
-            elif key == "^J" or key == 'z':
+            elif key in ["^J",'z']:
                 if selectingSquirrel and not squirrelCount == 0:
                     deck.append(["squirrel",squirrel[12],squirrel[13], squirrel[14]])
                     squirrelCount -= 1
