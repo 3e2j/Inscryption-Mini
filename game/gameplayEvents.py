@@ -66,16 +66,16 @@ def GameEvents():
                 # Plays card infront of placed card
                 for cardPos in range(0,4): # find lobster placement
                     if not BoardID[2][cardPos] == "blankCardSpace":
-                        from game.boardArt import wolf
-                        PlaceCardOrColorChange(cardPos, 1, ["wolf", wolf[12], wolf[13], wolf[14]])
+                        from game.boardArt import coyote
+                        PlaceCardOrColorChange(cardPos, 1, ["coyote", coyote[12], coyote[13], coyote[14]])
                         break
                 sleep(2)
-                leshyTalk("Your lobster stands in the way of my wolf.")
+                leshyTalk("Your lobster stands in the way of my coyote.")
                 tutorialPhase += 1
 
         if tutorialPhase == 5:
             if LastEvent == 'OpponentAttack':
-                leshyTalk("My wolf dealt 2 damage to your lobster.")
+                leshyTalk("My coyote dealt 2 damage to your lobster.")
                 leshyTalk("That means your lobster's health is 2 less.")
                 leshyTalk("If a creatures health reaches 0, it dies.")
                 tutorialPhase += 1

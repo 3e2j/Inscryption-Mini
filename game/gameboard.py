@@ -31,7 +31,11 @@ from game.boardArt import \
     squirrel, \
     bigsquirrel, \
     wolf, \
-    bigwolf
+    bigwolf, \
+    stump , \
+    boulder, \
+    coyote, \
+    bigcoyote
 
 from engine.soundEngine import PlaySound
 
@@ -75,14 +79,14 @@ def startBoard():
     deck.append(["lobster", lobster[12], lobster[13], lobster[14]])  # type, attack, health, blood
     deck.append(["wolf", wolf[12], wolf[13], wolf[14]])  # type, attack, health, blood
     deck.append(["wolf", wolf[12], wolf[13], wolf[14]])  # type, attack, health, blood
-    deck.append(["squirrel", squirrel[12], squirrel[13], squirrel[14]])
+    #deck.append(["squirrel", squirrel[12], squirrel[13], squirrel[14]])
 
     if Developer_Mode:
         #mvaddstr(22, 0, BoardID)
         mvaddstr(59,0,deck)
 
 reference = {
-        "knife":knife,
+        "knife" : knife,
         "bell" : bell,
         "blankCardSpace" : blankCardSpace,
         "bigblank" : bigblank,
@@ -91,9 +95,14 @@ reference = {
         "lobster2": lobster2,
         "biglobster2": biglobster2,
         "squirrel" : squirrel,
-        "bigsquirrel": bigsquirrel,
-        "wolf": wolf,
-        "bigwolf": bigwolf
+        "bigsquirrel" : bigsquirrel,
+        "wolf" : wolf,
+        "bigwolf" : bigwolf,
+        "stump" : stump,
+        "boulder" : boulder,
+        "coyote" : coyote,
+        "bigcoyote": bigcoyote
+
     }
 
 
@@ -113,17 +122,21 @@ def AttackPhase(): # After bell ring
     LastEvent = "ScaleTipPlayerAttack"
     GameEvents()
 
-    #Check for end game
+    if scaleTip == 5:
+        pass
 
     #OpponentMoveForward
-    #OpponentPlace
+    #OpponentPlace(AI)
+
     totalDirectDmg = AttackCard(opponent=True)
     LastEvent = "OpponentAttack"
     GameEvents()
     Scales(scaleWeight=totalDirectDmg) # ScaleChange
     LastEvent = "ScaleTipOpponentAttack"
     GameEvents()
-    #Check for end game
+
+    if scaleTip == -5:
+        pass
 
     SelectCardFromDeck()
     #Loop
@@ -135,13 +148,48 @@ def AttackCard(opponent=False):
     directAttack = [] # append card data
     totalDirectDmg = 0
 
+    def animationAttack(card):
+        global BoardID
+        if not opponent: #Player
+            PlaceCardOrColorChange(card,2,BoardID[2][card],False,brightorange) #changes players card to orange
+            PlaceCardOrColorChange(card, 1, BoardID[1][card], False, red) #changes opponents card to red
+            sleep(0.3)
+            PlaceCardOrColorChange(card, 2, BoardID[2][card], False, white)  # changes players card to white
+            try: # sometimes it's a BlankCardSpace, causes error
+                if BoardID[1][card][2] <= 0: #checks if opponents card is dead
+                    sleep(0.1)
+                    PlaySound("mono/card/card_death", round(uniform(0.5, 0.6), 2), (-0.15 + (0.1 * card), 0, 1))
+                    BoardID[1][card] = "blankCardSpace"
+                    PlaceCardOrColorChange(card, 1, BoardID[1][card], False, red)  # updates blank space with red
+                    sleep(0.2)
+            except:
+                pass
+            PlaceCardOrColorChange(card, 1, BoardID[1][card], False, white)  # changes opponents card to white
+        else: #Opponent
+            PlaceCardOrColorChange(card, 1, BoardID[1][card], False, brightorange)  # changes opponents card to orange
+            PlaceCardOrColorChange(card, 2, BoardID[2][card], False, red)  # changes players card to red
+            sleep(0.3)
+            PlaceCardOrColorChange(card, 1, BoardID[1][card], False, white)  # changes opponents card to white
+            try:
+                if BoardID[2][card][2] <= 0:  # checks if players card is dead
+                    sleep(0.1)
+                    PlaySound("mono/card/card_death", round(uniform(0.5, 0.6), 2), (-0.15 + (0.1 * card), 0, 1))
+                    BoardID[2][card] = "blankCardSpace"
+                    PlaceCardOrColorChange(card, 2, BoardID[2][card], False, red)  # updates blank space with red
+                    sleep(0.2)
+            except:
+                pass
+            PlaceCardOrColorChange(card, 2, BoardID[2][card], False, white)  # changes players card to white
+
+
+
     if not opponent: #Player Attack
 
         #Detect spaces
         for card in range(0, 4):
-            if not BoardID[2][card] == "blankCardSpace": # Detect players row
+            if not BoardID[2][card] == "blankCardSpace" and not BoardID[2][card][0] == "stump" and not BoardID[2][card][0] == "boulder": # Detect players row
                 order.append(card)
-                if not BoardID[1][card] == "blankCardSpace": #Detect if blocked space (opponents card)
+                if not BoardID[1][card] == "blankCardSpace": #Detect if blocked space (opponents card); Will beable to still attack stumps and boulders
                     blockedAttack.append(BoardID[2][card])
                 else: #Not blocked
                     directAttack.append(BoardID[2][card])
@@ -150,18 +198,17 @@ def AttackCard(opponent=False):
         for card in order:
             if BoardID[2][card] in directAttack:
                 PlaySound("mono/card/card_attack_directly",round(uniform(0.5,0.6),2),(-0.15+(0.1*card),0,1))
-                #animation
                 totalDirectDmg += BoardID[2][card][1] # total damage positive (player attacking)
             else: #blockedAttack
                 PlaySound("mono/card/card_attack_creature", round(uniform(0.5, 0.6), 2),(-0.15 + (0.1 * card), 0, 1))
                 BoardID[1][card][2] -= BoardID[2][card][1] #Opponents card's health - Players dmg
-                #animation
+            animationAttack(card)
             sleep(0.3)
 
     else: # Opponent Attack
         #Detection
         for card in range(0, 4):
-            if not BoardID[1][card] == "blankCardSpace": # Detects Opponents row
+            if not BoardID[1][card] == "blankCardSpace" and not BoardID[2][card][0] == "stump" and not BoardID[2][card][0] == "boulder": # Detects Opponents row
                 order.append(card)
                 if not BoardID[2][card] == "blankCardSpace": # Detect if blocked space (players card)
                     blockedAttack.append(BoardID[1][card])
@@ -172,12 +219,11 @@ def AttackCard(opponent=False):
         for card in order:
             if BoardID[1][card] in directAttack:
                 PlaySound("mono/card/card_attack_directly", round(uniform(0.5, 0.6), 2),(-0.15 + (0.1 * card), 0, 1))
-                # animation
                 totalDirectDmg -= BoardID[1][card][1] # totalDmg negative (opponent attacking)
             else:  # blockedAttack
                 PlaySound("mono/card/card_attack_damage", round(uniform(0.5, 0.6), 2), (-0.15 + (0.1 * card), 0, 1))
                 BoardID[2][card][2] -= BoardID[1][card][1]  # Players card's health - Opponent dmg
-                # animation
+            animationAttack(card)
             sleep(0.3)
     return totalDirectDmg
 
@@ -527,8 +573,8 @@ def Scales(color = gray, scaleWeight=0, scaleSpawn = False, scaleRefresh = False
                 PlaySound("mono/scale/scale_tick", round(uniform(0.6,0.7),2), (-0.2, 0, 0.6), pitch= 1 + 0.05 * count)
             sleep(0.1)
         sleep(0.5)
-    else:
-        scalePrint(scaleWeight)
+    # else:
+    #     scalePrint(scaleTip)
 
 def BellObject(color = gray, spawn=False, pressed = False):
     global LastEvent
