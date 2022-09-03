@@ -3,41 +3,12 @@ from engine.screenSetup import sh,sw,white,dark_gray,mediocre_gray, gray,brighto
 from game.dialouge.leshy import leshyTalk
 from time import sleep
 from __main__ import Developer_Mode
-from random import choice, uniform
+from random import choice, uniform, shuffle, randint
 
 from engine.threadingEngine import threaded
 
 
-from game.boardArt import \
-    scaleneg5, \
-    scaleneg4, \
-    scaleneg3, \
-    scaleneg2, \
-    scaleneg1, \
-    scale0, \
-    scale1, \
-    scale2, \
-    scale3, \
-    scale4, \
-    scale5, \
-    knife, \
-    bell, \
-    blankCardSpace, \
-    bigblank, \
-    lobster, \
-    biglobster, \
-    lobster2, \
-    biglobster2, \
-    squirrel, \
-    bigsquirrel, \
-    wolf, \
-    bigwolf, \
-    stump , \
-    boulder, \
-    coyote, \
-    bigcoyote, \
-    squirrelback, \
-    powerback
+from game.boardArt import *
 
 from engine.soundEngine import PlaySound
 
@@ -49,13 +20,17 @@ BoardID = [
         ["blankCardSpace", "blankCardSpace", "blankCardSpace", "blankCardSpace"]#2
     ]
 
+IsTutorial = False
+
 actualDeck = [] # Users current GAME deck of cards
 remainingDeck = [] # Users current GAME deck of cards
 deck = [] # Users current GAME deck of cards
 cardsDiscovered = []
 LastEvent = "" #CardPlace{TYPE}, positionPlacement{TYPE},sacrifice,SelectCardFromDeck,BellPressed, BellSpawn
 
-def startBoard():
+squirrelCount = 9 #Starting squirrel count
+
+def startBoard(clearBoard=False):
     cardCentringOriginal = -38
     soundPositionOriginal = -0.15
     cardHeight = -15
@@ -71,9 +46,10 @@ def startBoard():
             heightAddition = 0
             mvaddstr(sh // 2 + cardHeight +11, sw // 2 + cardCentering, blankCardSpace[11], white)
             cardCentering += 20
-            CardPlaySound("glow",(soundPosition, 0,1))
-            soundPosition += 0.1
-            sleep(0.2)
+            if not clearBoard:
+                CardPlaySound("glow",(soundPosition, 0,1))
+                soundPosition += 0.1
+                sleep(0.2)
         cardHeight += 12
     global BoardID
     BoardID = [
@@ -81,61 +57,228 @@ def startBoard():
         ["blankCardSpace", "blankCardSpace", "blankCardSpace", "blankCardSpace"],#1
         ["blankCardSpace", "blankCardSpace", "blankCardSpace", "blankCardSpace"]#2
     ]
-    deck.append(["squirrel",squirrel[12],squirrel[13], squirrel[14]]) # type, attack, health, blood #NOTE THIS IS THE ONLY TIME THAT THE DEFAULT NUMBERS ARE USED
-    deck.append(["lobster", lobster[12], lobster[13], lobster[14]])  # type, attack, health, blood
-    deck.append(["wolf", wolf[12], wolf[13], wolf[14]])  # type, attack, health, blood
-    deck.append(["wolf", wolf[12], wolf[13], wolf[14]])  # type, attack, health, blood
-    #deck.append(["squirrel", squirrel[12], squirrel[13], squirrel[14]])
 
     if Developer_Mode:
         #mvaddstr(22, 0, BoardID)
         mvaddstr(59,0,deck)
 
-reference = {
+def StartGame(tutorial=False): # Only used once from cabin.py
+    if tutorial:
+        global IsTutorial
+        IsTutorial = True
+        actualDeck.append(["lobster", lobster[12], lobster[13], lobster[14]])  # type, attack, health, blood
+        actualDeck.append(["wolf", wolf[12], wolf[13], wolf[14]])  # type, attack, health, blood
+        actualDeck.append(["wolf", wolf[12], wolf[13], wolf[14]])  # type, attack, health, blood
+        actualDeck.append(["riversnapper", wolf[12], wolf[13], wolf[14]])
+
+        remainingDeck.append(["riversnapper", wolf[12], wolf[13], wolf[14]])
+        deck.append(["squirrel", squirrel[12], squirrel[13], squirrel[14]])  # type, attack, health, blood #NOTE THIS IS THE ONLY TIME THAT THE DEFAULT NUMBERS ARE USED
+        deck.append(["lobster", lobster[12], lobster[13], lobster[14]])  # type, attack, health, blood
+        deck.append(["wolf", wolf[12], wolf[13], wolf[14]])  # type, attack, health, blood
+        deck.append(["wolf", wolf[12], wolf[13], wolf[14]])  # type, attack, health, blood
+        SelectCardFromDeck()
+    else:
+        BellObject(spawn=True)
+        Scales(scaleSpawn=True)
+        drawNewCard(True)
+        #will replace with save file later
+        cardsDiscovered.extend(("lobster","wolf","riversnapper","bullfrog"))
+        actualDeck.append(["lobster", lobster[12], lobster[13], lobster[14]])  # type, attack, health, blood
+        actualDeck.append(["wolf", wolf[12], wolf[13], wolf[14]])  # type, attack, health, blood
+        actualDeck.append(["wolf", wolf[12], wolf[13], wolf[14]])  # type, attack, health, blood
+        actualDeck.append(["riversnapper", wolf[12], wolf[13], wolf[14]])
+        startNewRound()
+
+reference = { # Reference for all strings to lists
+    #misc
         "knife" : knife,
         "bell" : bell,
         "blankCardSpace" : blankCardSpace,
+        "squirrelback": squirrelback,
+        "powerback": powerback,
         "bigblank" : bigblank,
-        "lobster" : lobster,
-        "biglobster" : biglobster,
-        "lobster2": lobster2,
-        "biglobster2": biglobster2,
-        "squirrel" : squirrel,
-        "bigsquirrel" : bigsquirrel,
-        "wolf" : wolf,
-        "bigwolf" : bigwolf,
+    #terrain
         "stump" : stump,
         "boulder" : boulder,
+    #cards
+        "lobster" : lobster,
+        "lobster2": lobster2,
+        "squirrel" : squirrel,
+        "wolf" : wolf,
+        "alpha" : alpha,
         "coyote" : coyote,
+        "skunk" : skunk,
+        "skink" : skink,
+        "ant" : ant,
+        "bee" : bee,
+        "ringworm" : ringworm,
+        "bullfrog"  : bullfrog,
+        "riversnapper" : riversnapper,
+    #bigcards
+        "biglobster" : biglobster,
+        "biglobster2": biglobster2,
+        "bigsquirrel" : bigsquirrel,
+        "bigwolf" : bigwolf,
+        "bigalpha" : bigalpha,
         "bigcoyote": bigcoyote,
-        "squirrelback" : squirrelback,
-        "powerback" : powerback
-
+        "bigskunk": bigskunk,
+        "bigskink": bigskink,
+        "bigant" : bigant,
+        "bigbee" : bigbee,
+        "bigringworm" : bigringworm,
+        "bigbullfrog" : bigbullfrog,
+        "bigriversnapper" : bigriversnapper
     }
 
 
+# End Game
 
 bellEnabled = False
 candlesDiscovered = False
 roundOver = False
 
 def endRound(victory):
+    global LastEvent
     global roundOver
     roundOver = True
     global candlesDiscovered
     if victory:
-        pass
+        LastEvent = "PlayerWin"
+        GameEvents()
+        global IsTutorial
+        if IsTutorial:
+            IsTutorial = False
+        startNewRound()
     else:
         if not candlesDiscovered:
             candlesDiscovered = True
-        pass
-    #Remove old values (IE: TurnMax)
+            LastEvent = "OpponentWinCandles"
+            GameEvents()
+        else:
+            LastEvent = "OpponentWin"
+            GameEvents()
 
 def endRoundChecker():
     if scaleTip <= -5: #opponent wins
         endRound(False)
     elif scaleTip >= 5: # player wins
         endRound(True)
+
+
+#Pre-game
+
+def startNewRound():
+    startBoard(True) # Clears board
+    randomStumpBoulderChoice() # Puts new terrain
+    buildOpponentTurnPlan()
+    selectRandomPlayerCards()
+    opponentAI()
+    SelectCardFromDeck()
+
+from game.blueprints import grabRandomBlueprint
+def buildOpponentTurnPlan(): # <- This should be moved to a starter module
+    global TurnPlan
+    global TurnTaken
+    blueprint = grabRandomBlueprint()
+    TurnTaken = 0
+    MaxTurn = len(blueprint) - 4  # -4 is the variables
+    replacements = [x for x in blueprint[3] if x in cardsDiscovered]
+
+    for _x_ in range(0,4): # Remove old data
+        blueprint.pop(0)
+
+    for x in replacements: # Add replacements
+        selectedSlot = randint(0, len(blueprint)-1)
+        blueprint[selectedSlot].append(x)
+    # difficulty -> replacement count
+    # -> add replacements
+    TurnPlan = blueprint
+
+def randomStumpBoulderChoice(): # <- This should be moved to a starter module
+    pass
+
+def selectRandomPlayerCards():
+    global deck
+    global remainingDeck
+    deck = [] # clear old deck
+
+    deck.append(["squirrel", squirrel[12], squirrel[13], squirrel[14]])
+    squirrelCount = 9
+
+    remainingDeck = actualDeck
+    shuffle(remainingDeck)
+    selectedCardsToBeDrawn = []
+
+    count = 0
+    for x in remainingDeck:
+        if not count == 3:
+            selectedCardsToBeDrawn.append(x)
+            count +=1
+
+    for card in selectedCardsToBeDrawn:
+        remainingDeck.remove(card)
+        deck.append(card)
+
+
+#During game opponent AI
+
+TurnTaken = 0
+MaxTurn = 0
+TurnPlan = [] # <- nested turn plan ie: [[turn1data],[turn2data]]
+
+def opponentAI():
+    global BoardID
+
+    blockedSlots = []
+    def findBlockedSlots():
+        blockedSlots.clear()
+        for cardPos in range(0, 4):  # Slots that are blocked up ahead
+            if not BoardID[1][cardPos] == "blankCardSpace":
+                blockedSlots.append(cardPos)
+
+
+    def playQueuedCards():
+        findBlockedSlots()
+        global TurnTaken
+        global TurnPlan
+        avaliableSlots = []
+
+        for cardPos in range(0, 4):  # Avaliable slots
+            if BoardID[0][cardPos] == "blankCardSpace":
+                avaliableSlots.append(cardPos)
+
+        shuffle(avaliableSlots)  # makes sure it's always shuffled
+
+        def blockCheck(count=0):
+            if count == len(avaliableSlots):
+                return avaliableSlots[0]
+            elif avaliableSlots[count] in blockedSlots:
+                return blockCheck(count + 1)
+            else:
+                return avaliableSlots[count]
+
+        for card in TurnPlan[TurnTaken]:
+            if not avaliableSlots == []:
+                usingSlot = blockCheck()
+                PlaceCardOrColorChange(usingSlot, 0, [card, reference[card][12], reference[card][13], reference[card][14]])
+                avaliableSlots.remove(usingSlot)
+            #Else it will -> break
+        TurnTaken += 1
+
+
+    def moveCardsFoward():
+        findBlockedSlots()
+        for card in range(0,4):
+            if not BoardID[0][card] == "blankCardSpace": # Opponent original position
+                if not card in blockedSlots:
+                    PlaceCardOrColorChange(card, 1,BoardID[0][card])
+                    PlaceCardOrColorChange(card, 0, False, placingABlankCard=True)
+                    sleep(0.3)
+
+
+    moveCardsFoward()
+    if TurnTaken <= len(TurnPlan)-1:
+        playQueuedCards()
 
 def AttackPhase(): # After bell ring
     global LastEvent
@@ -150,12 +293,13 @@ def AttackPhase(): # After bell ring
 
     endRoundChecker()
 
-    #OpponentMoveForward
-    #OpponentPlace(AI)
+    if not IsTutorial:
+        opponentAI() # Moves cards forward and plays queue
 
     totalDirectDmg = AttackCard(opponent=True)
     LastEvent = "OpponentAttack"
     GameEvents()
+
     Scales(scaleWeight=totalDirectDmg) # ScaleChange
     LastEvent = "ScaleTipOpponentAttack"
     GameEvents(totalDirectDmg)
@@ -176,7 +320,7 @@ def AttackCard(opponent=False):
     def animationAttack(card):
         global BoardID
         if not opponent: #Player
-            PlaceCardOrColorChange(card,2,BoardID[2][card],False,brightorange) #changes players card to orange
+            PlaceCardOrColorChange(card, 2, BoardID[2][card],False,brightorange) #changes players card to orange
             PlaceCardOrColorChange(card, 1, BoardID[1][card], False, red) #changes opponents card to red
             sleep(0.3)
             PlaceCardOrColorChange(card, 2, BoardID[2][card], False, white)  # changes players card to white
@@ -205,52 +349,16 @@ def AttackCard(opponent=False):
             except:
                 pass
             PlaceCardOrColorChange(card, 2, BoardID[2][card], False, white)  # changes players card to white
-
-def randomStumpBoulderChoice(): # <- This should be moved to a starter module
-    pass
-
-def opponentMoveForward():
-    pass
-
-TurnTaken = 0
-MaxTurn = 0
-TurnPlan = [] # <- nested turn plan ie: [[turn1data],[turn2data]]
-
-from game.blueprints import grabRandomBlueprint
-def buildOpponentTurnPlan(blueprint): # <- This should be moved to a starter module
-    blueprint = grabRandomBlueprint()
-    # grab replacements
-    # remove undiscovered from replacements
-    # difficulty -> add replacements
-    # combine both
-    #change MaxTurn
-    # return
-    pass
-
-def opponentAI():
-    global TurnTaken
-    if TurnPlan == None: #No current plan
-        #grab random blueprint (prerequisites need to be met)
-        buildOpponentTurnPlan() # blueprint
-    def playQueuedCards():
-        TurnTaken += 1
-        #discard card or
-        #play card
-    if TurnTaken < TurnPlan:
-        playQueuedCards()
-
-
+    #Not animation
     if not opponent: #Player Attack
-
         #Detect spaces
         for card in range(0, 4):
-            if not BoardID[2][card] == "blankCardSpace" and not BoardID[2][card][0] == "stump" and not BoardID[2][card][0] == "boulder" and not BoardID[2][card][1] == 0: # Detect players row
+            if not BoardID[2][card] == "blankCardSpace" and not BoardID[2][card][1] == 0: # Detect players row
                 order.append(card)
                 if not BoardID[1][card] == "blankCardSpace": #Detect if blocked space (opponents card); Will beable to still attack stumps and boulders
                     blockedAttack.append(BoardID[2][card])
                 else: #Not blocked
                     directAttack.append(BoardID[2][card])
-
         #Attacking
         for card in order:
             if BoardID[2][card] in directAttack:
@@ -265,7 +373,7 @@ def opponentAI():
     else: # Opponent Attack
         #Detection
         for card in range(0, 4):
-            if not BoardID[1][card] == "blankCardSpace" and not BoardID[2][card][0] == "stump" and not BoardID[2][card][0] == "boulder" and not BoardID[1][card][1] == 0: # Detects Opponents row
+            if not BoardID[1][card] == "blankCardSpace" and not BoardID[1][card][1] == 0: # Detects Opponents row
                 order.append(card)
                 if not BoardID[2][card] == "blankCardSpace": # Detect if blocked space (players card)
                     blockedAttack.append(BoardID[1][card])
@@ -284,13 +392,16 @@ def opponentAI():
             sleep(0.3)
     return totalDirectDmg
 
-def PlaceCardOrColorChange(cardNum, row, deckCardInfo, placement = True, color = white): #Updates to board
 
+#During 'quiet' time
+
+def PlaceCardOrColorChange(cardNum, row, deckCardInfo, placement = True, color = white, placingABlankCard = False): #Updates to board
+    global BoardID
     cardCentering = -38 + (20 * cardNum) #Centering; changes 1-4 to 0-3
     soundPosition = -0.15
     cardHeight = -15 + (12 * row) #Height; changes 1-3 to 0-2
 
-    if deckCardInfo == "blankCardSpace":
+    if deckCardInfo == "blankCardSpace" or not deckCardInfo:
         mvaddstr(sh // 2 + cardHeight, sw // 2 + cardCentering, blankCardSpace[0], color)
         cardHeight += 1
         for _ in range(0,10):
@@ -317,9 +428,10 @@ def PlaceCardOrColorChange(cardNum, row, deckCardInfo, placement = True, color =
             color = red
         if row == 2:
             mvaddstr(sh // 2 + cardHeight + 10, sw // 2 + cardCentering + 9 - deckCardInfo[3], "δ" * deckCardInfo[3],color)  # Attack
-    if placement:
+    if placingABlankCard:
+        BoardID[row][cardNum] = "blankCardSpace"
+    elif placement:
         CardPlaySound("normal",(soundPosition+(0.1*cardNum), 0, 1))
-        global BoardID
         BoardID[row][cardNum] = [CardType,deckCardInfo[1],deckCardInfo[2],deckCardInfo[3]]
 
 def printSideBig(deckCardInfo, color, blank=False, positionInDeck = "TurnedOff"): # Prints preview of deck on right-hand side of screen
@@ -342,7 +454,10 @@ def printSideBig(deckCardInfo, color, blank=False, positionInDeck = "TurnedOff")
         mvaddstr(sh // 2 - 18 + 28, sw // 2 + 90, f"{deckCardInfo[2]}♥", color)
         if color == white:
             color = red
-        mvaddstr(sh // 2 -16, sw // 2 + 90 - deckCardInfo[3], "δ" * deckCardInfo[3], color)
+        if not portrait == "bigriversnapper":
+            mvaddstr(sh // 2 -16, sw // 2 + 90 - deckCardInfo[3], "δ" * deckCardInfo[3], color)
+        else:
+            mvaddstr(sh // 2 - 15, sw // 2 + 90 - deckCardInfo[3], "δ" * deckCardInfo[3], color)
 
 def positionPlacement(oldSelect=0, spectating = False): # Position on one of the 4 avaliable places to put a card (Includes sacrifices)
 
@@ -514,7 +629,6 @@ def SelectCardFromDeck(count=0, turnOffArrows=False):
 
     global LastEvent
     LastEvent = "SelectCardFromDeck"
-
     if not turnOffArrows and not deck == []:
 
         canGoLeft = False
@@ -572,9 +686,7 @@ def SelectCardFromDeck(count=0, turnOffArrows=False):
         printSideBig(None, None, True)
         positionPlacement(spectating=True)
 
-squirrelCount = 9 #Starting squirrel count
-
-def drawNewCard():
+def drawNewCard(spawn=False):
     cardCentering = 59
     cardHeight = 13
     selectingSquirrel = True
@@ -589,64 +701,76 @@ def drawNewCard():
         else:
             for line in range(0,12):
                 mvaddstr(sh // 2 + cardHeight + line, sw // 2 + cardCentering, blankCardSpace[line], color)
-        if not color == white or color == gray:
+        if not color in [white,gray]:
             mvaddstr(sh // 2 + cardHeight + 12, sw // 2 + cardCentering + 8, "^", color)
         else:
             mvaddstr(sh // 2 + cardHeight + 12, sw // 2 + cardCentering + 8, " ")
     def printPowerCard(color=white):
-        for line in range(0,12):
-            mvaddstr(sh // 2 + cardHeight + line, sw // 2 + cardCentering + 20, powerback[line], color)
-        if not color == white or color == gray:
+        if not len(remainingDeck) == 0:
+            for line in range(0,12):
+                mvaddstr(sh // 2 + cardHeight + line, sw // 2 + cardCentering + 20, powerback[line], color)
+        else:
+            for line in range(0,12):
+                mvaddstr(sh // 2 + cardHeight + line, sw // 2 + cardCentering + 20, blankCardSpace[line], color)
+        if not color in [white,gray]:
             mvaddstr(sh // 2 + cardHeight + 12, sw // 2 + cardCentering +  20 + 8, "^", color)
         else:
             mvaddstr(sh // 2 + cardHeight + 12, sw // 2 + cardCentering + 20 + 8, " ")
 
+    if spawn:
+        printSquirrelCard(gray)
+        printPowerCard(gray)
+    elif squirrelCount == 0 and len(remainingDeck) == 0:
+        printSquirrelCard(gray)
+        printPowerCard(gray)
+        SelectCardFromDeck()
+    else:
+        printSquirrelCard(brightorange)
+        printPowerCard()
 
-    printSquirrelCard(brightorange)
-    printPowerCard()
+        LastEvent = "DrawingCard"
+        GameEvents()
+        while wU:
+            if selectingSquirrel:
+                printSquirrelCard(brightorange)
+                printPowerCard(white)
+            else:
+                printSquirrelCard()
+                printPowerCard(brightorange)
 
-    LastEvent = "DrawingCard"
-    GameEvents()
-
-    while wU:
-        if selectingSquirrel:
-            printSquirrelCard(brightorange)
-            printPowerCard(white)
-        else:
-            printSquirrelCard()
-            printPowerCard(brightorange)
-
-        checkInput = True
-        while checkInput:
-            from engine.screenSetup import key
-            if key in ["KEY_LEFT","a"]:
-                selectingSquirrel = True
-                checkInput = False
-            elif key in ["KEY_RIGHT","d"]:
-                selectingSquirrel = False
-                checkInput = False
-            elif key in ["^J",'z']:
-                if selectingSquirrel and not squirrelCount == 0:
-                    deck.append(["squirrel",squirrel[12],squirrel[13], squirrel[14]])
-                    squirrelCount -= 1
-                    LastEvent = "DrewSquirrel"
-                    GameEvents()
-                    wU = False
+            checkInput = True
+            while checkInput:
+                from engine.screenSetup import key
+                if key in ["KEY_LEFT","a"]:
+                    selectingSquirrel = True
                     checkInput = False
-                elif not selectingSquirrel:
-                    deck.append(["wolf", wolf[12], wolf[13], wolf[14]])
-                    #deck.append(choice())
-                    LastEvent = "DrewPower"
-                    GameEvents()
-                    wU = False
+                elif key in ["KEY_RIGHT","d"]:
+                    selectingSquirrel = False
                     checkInput = False
+                elif key in ["^J",'z']:
+                    if selectingSquirrel and not squirrelCount == 0:
+                        deck.append(["squirrel",squirrel[12],squirrel[13], squirrel[14]])
+                        squirrelCount -= 1
+                        LastEvent = "DrewSquirrel"
+                        GameEvents()
+                        wU = False
+                        checkInput = False
+                    elif not selectingSquirrel and not len(remainingDeck) == 0:
+                        deckChoice = choice(remainingDeck)
+                        deck.append(deckChoice)
+                        remainingDeck.remove(deckChoice)
+                        LastEvent = "DrewPower"
+                        GameEvents()
+                        wU = False
+                        checkInput = False
 
-    printSquirrelCard(gray)
-    printPowerCard(gray)
-    CardPlaySound("quick")
-    SelectCardFromDeck()
+        printSquirrelCard(gray)
+        printPowerCard(gray)
+        CardPlaySound("quick")
+        SelectCardFromDeck()
 
 
+#Misc Features
 
 scaleTip = 0
 
@@ -688,10 +812,12 @@ def Scales(color = gray, scaleWeight=0, scaleSpawn = False, scaleRefresh = False
     elif not scaleWeight == 0:
         if scaleWeight > 0:
             pointSyntax = +1
+            scaleWeightLen = scaleWeight
         else:
             pointSyntax = -1
+            scaleWeightLen = -scaleWeight
         count = 0
-        for point in range(0, scaleWeight): # add a point
+        for point in range(0, scaleWeightLen): # add a point
             scaleTip += pointSyntax
             count += 1
             if not (scaleTip >= 6 or scaleTip <= -6): # not overboard, doesnt cause error
@@ -758,6 +884,9 @@ def BellObject(color = gray, spawn=False, pressed = False):
             AttackPhase()
         else:
             NotPressed()
+
+
+#Sounds
 
 def CardPlaySound(tone="normal", position=(0,0,0), volume=0.7):
     if tone == "normal":

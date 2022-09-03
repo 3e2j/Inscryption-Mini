@@ -1,5 +1,5 @@
-from game.cabin import tutorial
 from game.dialouge.leshy import leshyTalk
+from engine.soundEngine import PlaySound, StopLoopingSound
 from time import sleep
 
 from game.gameboard import \
@@ -15,9 +15,9 @@ Will trigger certain events upon certain inputs. Mainly used for the tutorial se
 '''
 
 def GameEvents(dmgdealt=0):
-    from game.gameboard import LastEvent, BoardID # Reloads Last Event
+    from game.gameboard import LastEvent, BoardID, IsTutorial # Reloads Last Event
 
-    if tutorial:
+    if IsTutorial:
         #Tutorial Section
         global tutorialPhase
 
@@ -109,3 +109,9 @@ def GameEvents(dmgdealt=0):
         if tutorialPhase == 11:
             if LastEvent == 'RoundNotOverCheck':
                 leshyTalk("Pass.")
+            if LastEvent == 'PlayerWin':
+                leshyTalk("You've won this match.")
+                leshyTalk("They won't all be so easy.")
+                leshyTalk("Lets begin.")
+                StopLoopingSound("cabin_ambience")
+                PlaySound("stereo/cabin/gametable_ambience", 1, (0, 0, 0), "gametable_ambience")

@@ -1,9 +1,9 @@
 from random import choice
-def grabRandomBlueprint(prerequisites):
+def grabRandomBlueprint(prerequisites=None):
     from game.gameboard import cardsDiscovered
     #Main choices
     choices = [
-        Bees,
+        Bees#,
         # BirdFlock,
         # CoyotePack
     ]
@@ -20,8 +20,13 @@ def grabRandomBlueprint(prerequisites):
 
     chosenBlueprint = choice(choices)
     allCreatureTypesPresent = []
-    [allCreatureTypesPresent.append(x) for x in chosenBlueprint if x not in allCreatureTypesPresent] # appends non-dupes to templist
-    [chosenBlueprint[3].remove(instanceOfCreature) for instanceOfCreature in allCreatureTypesPresent if instanceOfCreature not in cardsDiscovered] # removes randoms replacements that aren't discovered
+    [allCreatureTypesPresent.append(entity) for turn in chosenBlueprint[3::] for entity in turn if entity not in allCreatureTypesPresent] # appends non-dupes to templist
+    for instanceOfCreature in allCreatureTypesPresent:
+        if instanceOfCreature not in cardsDiscovered:
+            try: # If bees aren't discovered, and they aren't in replacements, they cant remove them
+                chosenBlueprint[3].remove(instanceOfCreature)
+            except:
+                pass
 
     return chosenBlueprint
 

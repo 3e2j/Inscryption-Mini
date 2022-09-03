@@ -134,7 +134,7 @@ def SetEyes(eyeMode):
         pass
 
 # Tone can be either -  calm, curious, or frustrated
-def leshyTalk(speech, tone="calm", skippable=False, volume=0.4, position=(0,0,0)):
+def leshyTalk(speech, tone="calm", skippable=False, volume=0.3, position=(0,0,0)):
     from engine.soundEngine import leshySound
     from engine.screenSetup import StandardScreen
     clearLine(-27)
