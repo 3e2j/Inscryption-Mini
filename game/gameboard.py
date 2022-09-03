@@ -48,9 +48,11 @@ BoardID = [
         ["blankCardSpace", "blankCardSpace", "blankCardSpace", "blankCardSpace"],#1
         ["blankCardSpace", "blankCardSpace", "blankCardSpace", "blankCardSpace"]#2
     ]
+
 actualDeck = [] # Users current GAME deck of cards
 remainingDeck = [] # Users current GAME deck of cards
 deck = [] # Users current GAME deck of cards
+cardsDiscovered = []
 LastEvent = "" #CardPlace{TYPE}, positionPlacement{TYPE},sacrifice,SelectCardFromDeck,BellPressed, BellSpawn
 
 def startBoard():
@@ -127,6 +129,7 @@ def endRound(victory):
         if not candlesDiscovered:
             candlesDiscovered = True
         pass
+    #Remove old values (IE: TurnMax)
 
 def endRoundChecker():
     if scaleTip <= -5: #opponent wins
@@ -203,6 +206,38 @@ def AttackCard(opponent=False):
                 pass
             PlaceCardOrColorChange(card, 2, BoardID[2][card], False, white)  # changes players card to white
 
+def randomStumpBoulderChoice(): # <- This should be moved to a starter module
+    pass
+
+def opponentMoveForward():
+    pass
+
+TurnTaken = 0
+MaxTurn = 0
+TurnPlan = [] # <- nested turn plan ie: [[turn1data],[turn2data]]
+
+from game.blueprints import grabRandomBlueprint
+def buildOpponentTurnPlan(blueprint): # <- This should be moved to a starter module
+    blueprint = grabRandomBlueprint()
+    # grab replacements
+    # remove undiscovered from replacements
+    # difficulty -> add replacements
+    # combine both
+    #change MaxTurn
+    # return
+    pass
+
+def opponentAI():
+    global TurnTaken
+    if TurnPlan == None: #No current plan
+        #grab random blueprint (prerequisites need to be met)
+        buildOpponentTurnPlan() # blueprint
+    def playQueuedCards():
+        TurnTaken += 1
+        #discard card or
+        #play card
+    if TurnTaken < TurnPlan:
+        playQueuedCards()
 
 
     if not opponent: #Player Attack
@@ -669,8 +704,6 @@ def Scales(color = gray, scaleWeight=0, scaleSpawn = False, scaleRefresh = False
                 PlaySound("mono/scale/scale_tick", round(uniform(0.6,0.7),2), (-0.2, 0, 0.6), pitch= 1 + 0.05 * count)
             sleep(0.1)
         sleep(0.5)
-    # else:
-    #     scalePrint(scaleTip)
 
 def BellObject(color = gray, spawn=False, pressed = False):
     global LastEvent
