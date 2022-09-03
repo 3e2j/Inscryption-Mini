@@ -80,7 +80,6 @@ def StartGame(tutorial=False): # Only used once from cabin.py
     else:
         BellObject(spawn=True)
         Scales(scaleSpawn=True)
-        drawNewCard(True)
         #will replace with save file later
         cardsDiscovered.extend(("lobster","wolf","riversnapper","bullfrog"))
         actualDeck.append(["lobster", lobster[12], lobster[13], lobster[14]])  # type, attack, health, blood
@@ -140,8 +139,10 @@ roundOver = False
 def endRound(victory):
     global LastEvent
     global roundOver
+    global scaleTip
     roundOver = True
     global candlesDiscovered
+    scaleTip = 0
     if victory:
         LastEvent = "PlayerWin"
         GameEvents()
@@ -170,18 +171,21 @@ def endRoundChecker():
 def startNewRound():
     startBoard(True) # Clears board
     randomStumpBoulderChoice() # Puts new terrain
-    buildOpponentTurnPlan()
-    selectRandomPlayerCards()
-    opponentAI()
-    SelectCardFromDeck()
+    buildOpponentTurnPlan() #creates turn plan for opponent
+    selectRandomPlayerCards() #Randomly chooses from actual deck
+    Scales(scaleRefresh=True) #Refresh Scales
+    drawNewCard(True) #Refresh New card textures
+    opponentAI() #Play first turn
+    SelectCardFromDeck() # Begin match
 
 from game.blueprints import grabRandomBlueprint
-def buildOpponentTurnPlan(): # <- This should be moved to a starter module
+
+def buildOpponentTurnPlan():
     global TurnPlan
     global TurnTaken
     blueprint = grabRandomBlueprint()
     TurnTaken = 0
-    MaxTurn = len(blueprint) - 4  # -4 is the variables
+    MaxNumOfTurns = len(blueprint) - 4  # -4 is the variables
     replacements = [x for x in blueprint[3] if x in cardsDiscovered]
 
     for _x_ in range(0,4): # Remove old data
@@ -194,27 +198,30 @@ def buildOpponentTurnPlan(): # <- This should be moved to a starter module
     # -> add replacements
     TurnPlan = blueprint
 
-def randomStumpBoulderChoice(): # <- This should be moved to a starter module
+def randomStumpBoulderChoice():
     pass
 
 def selectRandomPlayerCards():
     global deck
     global remainingDeck
-    deck = [] # clear old deck
+    deck.clear()
+    remainingDeck.clear()
 
+    #Squirrel pickup
     deck.append(["squirrel", squirrel[12], squirrel[13], squirrel[14]])
     squirrelCount = 9
 
-    remainingDeck = actualDeck
+    #Shuffle 'match' deck
+    remainingDeck = actualDeck.copy()
     shuffle(remainingDeck)
     selectedCardsToBeDrawn = []
 
+    #Pickup 3 cards
     count = 0
     for x in remainingDeck:
         if not count == 3:
             selectedCardsToBeDrawn.append(x)
             count +=1
-
     for card in selectedCardsToBeDrawn:
         remainingDeck.remove(card)
         deck.append(card)
@@ -223,11 +230,10 @@ def selectRandomPlayerCards():
 #During game opponent AI
 
 TurnTaken = 0
-MaxTurn = 0
+MaxNumOfTurns = 0
 TurnPlan = [] # <- nested turn plan ie: [[turn1data],[turn2data]]
 
 def opponentAI():
-    global BoardID
 
     blockedSlots = []
     def findBlockedSlots():
@@ -236,22 +242,23 @@ def opponentAI():
             if not BoardID[1][cardPos] == "blankCardSpace":
                 blockedSlots.append(cardPos)
 
-
+    #Plays next turn of cards
     def playQueuedCards():
         findBlockedSlots()
         global TurnTaken
         global TurnPlan
         avaliableSlots = []
 
-        for cardPos in range(0, 4):  # Avaliable slots
+        for cardPos in range(0, 4):  # Avaliable slots to place
             if BoardID[0][cardPos] == "blankCardSpace":
                 avaliableSlots.append(cardPos)
 
         shuffle(avaliableSlots)  # makes sure it's always shuffled
 
+        #Tries to place a card in a non-blocked position
         def blockCheck(count=0):
             if count == len(avaliableSlots):
-                return avaliableSlots[0]
+                return avaliableSlots[0] # If everything is blocked ahead then place the card nonetheless
             elif avaliableSlots[count] in blockedSlots:
                 return blockCheck(count + 1)
             else:
@@ -262,7 +269,7 @@ def opponentAI():
                 usingSlot = blockCheck()
                 PlaceCardOrColorChange(usingSlot, 0, [card, reference[card][12], reference[card][13], reference[card][14]])
                 avaliableSlots.remove(usingSlot)
-            #Else it will -> break
+            #Else it will -> break (No avaliable slots for placing - discards turn)
         TurnTaken += 1
 
 
@@ -271,11 +278,11 @@ def opponentAI():
         for card in range(0,4):
             if not BoardID[0][card] == "blankCardSpace": # Opponent original position
                 if not card in blockedSlots:
-                    PlaceCardOrColorChange(card, 1,BoardID[0][card])
-                    PlaceCardOrColorChange(card, 0, False, placingABlankCard=True)
+                    PlaceCardOrColorChange(card, 1,BoardID[0][card]) # New card pos
+                    PlaceCardOrColorChange(card, 0, False, placingABlankCard=True) # Replace old pos
                     sleep(0.3)
 
-
+    #Execute
     moveCardsFoward()
     if TurnTaken <= len(TurnPlan)-1:
         playQueuedCards()
@@ -286,20 +293,22 @@ def AttackPhase(): # After bell ring
     totalDirectDmg = AttackCard() # Player Attack
     LastEvent = "PlayerAttack"
     GameEvents()
-
-    Scales(scaleWeight=totalDirectDmg) # ScaleChange
+    # Scale change
+    Scales(scaleWeight=totalDirectDmg)
     LastEvent = "ScaleTipPlayerAttack"
     GameEvents(totalDirectDmg)
 
     endRoundChecker()
 
+    #Opponent moves forward and places cards
     if not IsTutorial:
         opponentAI() # Moves cards forward and plays queue
 
+    #Opponent attacks
     totalDirectDmg = AttackCard(opponent=True)
     LastEvent = "OpponentAttack"
     GameEvents()
-
+    #Scale change
     Scales(scaleWeight=totalDirectDmg) # ScaleChange
     LastEvent = "ScaleTipOpponentAttack"
     GameEvents(totalDirectDmg)
@@ -309,15 +318,15 @@ def AttackPhase(): # After bell ring
     if not roundOver: # Round isn't over
         LastEvent = "RoundNotOverCheck"
         GameEvents()
-        drawNewCard()
+        drawNewCard() #Loop back to start
 
 def AttackCard(opponent=False):
-    order = [] # append card numbers
-    blockedAttack = [] # append card data
-    directAttack = [] # append card data
+    order = [] # Order that cards attack, left to right
+    blockedAttack = [] # If attack is between creature vs creature
+    directAttack = [] # Influences scales
     totalDirectDmg = 0
 
-    def animationAttack(card):
+    def animationAttack(card): #Animation for attacking
         global BoardID
         if not opponent: #Player
             PlaceCardOrColorChange(card, 2, BoardID[2][card],False,brightorange) #changes players card to orange
@@ -355,13 +364,13 @@ def AttackCard(opponent=False):
         for card in range(0, 4):
             if not BoardID[2][card] == "blankCardSpace" and not BoardID[2][card][1] == 0: # Detect players row
                 order.append(card)
-                if not BoardID[1][card] == "blankCardSpace": #Detect if blocked space (opponents card); Will beable to still attack stumps and boulders
-                    blockedAttack.append(BoardID[2][card])
+                if BoardID[1][card] == "blankCardSpace": #Detect if blocked space (opponents card); Will beable to still attack stumps and boulders
+                    directAttack.append(card)
                 else: #Not blocked
-                    directAttack.append(BoardID[2][card])
+                    blockedAttack.append(card)
         #Attacking
         for card in order:
-            if BoardID[2][card] in directAttack:
+            if card in directAttack:
                 PlaySound("mono/card/card_attack_directly",round(uniform(0.5,0.6),2),(-0.15+(0.1*card),0,1))
                 totalDirectDmg += BoardID[2][card][1] # total damage positive (player attacking)
             else: #blockedAttack
@@ -375,14 +384,13 @@ def AttackCard(opponent=False):
         for card in range(0, 4):
             if not BoardID[1][card] == "blankCardSpace" and not BoardID[1][card][1] == 0: # Detects Opponents row
                 order.append(card)
-                if not BoardID[2][card] == "blankCardSpace": # Detect if blocked space (players card)
-                    blockedAttack.append(BoardID[1][card])
+                if BoardID[2][card] == "blankCardSpace": # Detect if blocked space (players card)
+                    directAttack.append(card)
                 else:
-                    directAttack.append(BoardID[1][card])
-
+                    blockedAttack.append(card)
         # Attacking
         for card in order:
-            if BoardID[1][card] in directAttack:
+            if card in directAttack:
                 PlaySound("mono/card/card_attack_directly", round(uniform(0.5, 0.6), 2),(-0.15 + (0.1 * card), 0, 1))
                 totalDirectDmg -= BoardID[1][card][1] # totalDmg negative (opponent attacking)
             else:  # blockedAttack
@@ -443,19 +451,19 @@ def printSideBig(deckCardInfo, color, blank=False, positionInDeck = "TurnedOff")
     else:
         count = 0
         portrait = f"big{deckCardInfo[0]}"
-        if not positionInDeck == "TurnedOff":
-            mvaddstr(sh // 2 - 19, sw // 2 + 76 - len(str(positionInDeck)), f"{positionInDeck+1}/{len(deck)}", color)
+        if not positionInDeck == "TurnedOff": # "TurnedOff" is temporary as bool cannot be used due to '0' being a pos
+            mvaddstr(sh // 2 - 19, sw // 2 + 76 - len(str(positionInDeck)), f"{positionInDeck+1}/{len(deck)}", color) # Status bar
         else:
-            mvaddstr(sh // 2 - 19, sw // 2 + 76 - 3, f"               ", color)
+            mvaddstr(sh // 2 - 19, sw // 2 + 76 - 3, f"               ", color) # disable status bar
         for _ in range(0,31):
-            mvaddstr(sh // 2 -18 + count, sw // 2 + 58, reference[portrait][count], color)
+            mvaddstr(sh // 2 -18 + count, sw // 2 + 58, reference[portrait][count], color) # Print portrait
             count +=1
-        mvaddstr(sh // 2 - 18 + 28, sw // 2 + 64, f"{deckCardInfo[1]}†", color)
+        mvaddstr(sh // 2 - 18 + 28, sw // 2 + 64, f"{deckCardInfo[1]}†", color) #Extras
         mvaddstr(sh // 2 - 18 + 28, sw // 2 + 90, f"{deckCardInfo[2]}♥", color)
         if color == white:
             color = red
         if not portrait == "bigriversnapper":
-            mvaddstr(sh // 2 -16, sw // 2 + 90 - deckCardInfo[3], "δ" * deckCardInfo[3], color)
+            mvaddstr(sh // 2 -16, sw // 2 + 90 - deckCardInfo[3], "δ" * deckCardInfo[3], color) # Accounting for double-line title
         else:
             mvaddstr(sh // 2 - 15, sw // 2 + 90 - deckCardInfo[3], "δ" * deckCardInfo[3], color)
 
@@ -474,9 +482,9 @@ def positionPlacement(oldSelect=0, spectating = False): # Position on one of the
     bellSelected = False
     bellPressed = False
     placing = False
-    SelectCardReturn = False
+    SelectCardReturn = False # Return to selecting card
 
-    sacrificeSpeechGiven=False
+    sacrificeSpeechGiven=False # Makes sure Opponent only gives speech once while in this menu (stops spamming)
 
     wU = True # Looper
     from game.dialouge.dialouge import clearLine
@@ -747,7 +755,7 @@ def drawNewCard(spawn=False):
                 elif key in ["KEY_RIGHT","d"]:
                     selectingSquirrel = False
                     checkInput = False
-                elif key in ["^J",'z']:
+                elif key in ["^J",'z',' ']:
                     if selectingSquirrel and not squirrelCount == 0:
                         deck.append(["squirrel",squirrel[12],squirrel[13], squirrel[14]])
                         squirrelCount -= 1

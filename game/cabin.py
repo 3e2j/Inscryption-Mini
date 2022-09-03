@@ -17,7 +17,7 @@ def StartCabin():
     #sleep(3)
     #PlaySound("stereo/misc/eyes_opening", 0.8)
     #SetEyes("Opening")
-    #StartEyes()
+    StartEyes()
     #waitTimerSecs(13)
     
     #leshyTalk("Another challenger... it has been ages.")
@@ -28,9 +28,9 @@ def StartCabin():
     from game.gameboard import startBoard, StartGame
     #startBoard()
 
-    #waitTimerSecs(1)
+    waitTimerSecs(1)
 
-    #leshyTalk("Play the squirrel card.")
+    leshyTalk("Play the squirrel card.")
     StartGame()
     #StartGame(True)
 
