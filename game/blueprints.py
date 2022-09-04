@@ -3,20 +3,26 @@ def grabRandomBlueprint(prerequisites=None):
     from game.gameboard import cardsDiscovered
     #Main choices
     choices = [
-        Bees#,
-        # BirdFlock,
-        # CoyotePack
+        Bees,
+        BirdFlock,
+        CoyotePack,
+        ElkHerd,
+        ElkJuggernaut,
+        Reptiles,
+        WolfPack
     ]
 
     prerequisitesCheck = [ #Card Prerequisites
-        "Ant",
-        "Pronghorn"
+        "ant",
+        "pronghorn"
     ]
 
     for creature in prerequisitesCheck:
         if creature in cardsDiscovered: # Creature prerequisite is met
-            if creature == "Ant":
+            if creature == "ant":
                 choices.append(AntSwarm)
+            if creature == "pronghorn":
+                choices.append(PronghornJuggernaut)
 
     chosenBlueprint = choice(choices)
     allCreatureTypesPresent = []
@@ -55,114 +61,83 @@ Bees = [
     [],
     []
 ]
-# BirdFlock = [
-#     "Bird",
-#     1,
-#     4,
-#     ["skunk", "coyote", "alpha"],
-#     ["sparrow", "sparrow"], # 1
-#     [],
-#     []
-# ]
-# CoyotePack = [
-#     "Canine",
-#     1,
-#     4,
-#     ["otter", "wolfcub", "porcupine", "alpha"],
-#     ["coyote", "coyote"], # 1
-#     [],
-#     []
-#
-# ]
-# Name [ElkHerd]
-# Dominant Tribes [Hooved]
-# MinDifficulty [11]
-# MaxDifficulty [14]
-# OldPreviewDifficulty [0]
-# PrerequisitesMet ? [True]
-# PreviewDifficulty [0]
-# RandomReplacementCards [Mole, Porcupine, RavenEgg, Rabbit, Alpha]
-# RedundantAbilities []
-# RegionSpecific ? [True]
-# unlockedCardPrerequisites []
-# Turn [1] ElkCub, ElkCub
-# Turn [2] ElkCub
-# Turn [3]
-# Turn [4]
-# Turn [5]
-# Turn [6] ElkCub
-# ~~~~~~~~~~~
-# Name [MooseJuggernaut]
-# Dominant Tribes [Hooved]
-# MinDifficulty [11]
-# MaxDifficulty [14]
-# OldPreviewDifficulty [0]
-# PrerequisitesMet ? [True]
-# PreviewDifficulty [0]
-# RandomReplacementCards [Raven, Bloodhound, Skunk, Pronghorn, Alpha]
-# RedundantAbilities []
-# RegionSpecific ? [True]
-# unlockedCardPrerequisites []
-# Turn [1] Moose, Mole
-# Turn [2]
-# Turn [3] ElkCub
-# Turn [4]
-# Turn [5] ElkCub
-# Turn [6]
-# Turn [7]
-# Turn [8] Mole
-# ~~~~~~~~~~~
-# Name [PronghornJuggernaut]
-# Dominant Tribes [Hooved]
-# MinDifficulty [1]
-# MaxDifficulty [4]
-# OldPreviewDifficulty [0]
-# PrerequisitesMet ? [True]
-# PreviewDifficulty [0]
-# RandomReplacementCards [ElkCub, Porcupine, Alpha]
-# RedundantAbilities [SplitStrike, WhackAMole]
-# RegionSpecific ? [True]
-# unlockedCardPrerequisites [Pronghorn (DiskCardGame.CardInfo)]
-# Turn [1] Pronghorn
-# Turn [2]
-# Turn [3]
-# ~~~~~~~~~~~
-# Name [RavenNest]
-# Dominant Tribes [Bird]
-# MinDifficulty [11]
-# MaxDifficulty [14]
-# OldPreviewDifficulty [0]
-# PrerequisitesMet ? [True]
-# PreviewDifficulty [0]
-# RandomReplacementCards [Porcupine, Alpha, ElkCub, WolfCub]
-# RedundantAbilities []
-# RegionSpecific ? [True]
-# unlockedCardPrerequisites []
-# Turn [1] RavenEgg, RavenEgg
-# Turn [2] RavenEgg
-# Turn [3] RavenEgg
-# Turn [4]
-# Turn [5]
-# Turn [6] ElkCub
-# ~~~~~~~~~~~
-# Name [Reptiles]
-# Dominant Tribes [Reptile]
-# MinDifficulty [5]
-# MaxDifficulty [10]
-# OldPreviewDifficulty [0]
-# PrerequisitesMet ? [True]
-# PreviewDifficulty [0]
-# RandomReplacementCards [Coyote, Alpha]
-# RedundantAbilities []
-# RegionSpecific ? [True]
-# unlockedCardPrerequisites []
-# Turn [1] Bullfrog
-# Turn [2] Adder, Adder
-# Turn [3] Bullfrog
-# Turn [4] Adder
-# Turn [5]
-# Turn [6]
-# Turn [7]
+BirdFlock = [
+    "Bird",
+    1,
+    4,
+    ["skunk", "coyote", "alpha"],
+    ["sparrow", "sparrow"], # 1
+    [],
+    []
+]
+CoyotePack = [
+    "Canine",
+    1,
+    4,
+    ["otter", "wolfcub", "porcupine", "alpha"],
+    ["coyote", "coyote"], # 1
+    [],
+    []
+
+]
+ElkHerd = [
+    "Hooved",
+    11,
+    14,
+    ["mole", "porcupine", "alpha"],
+    ["elkcub","elkcub"],
+    ["elkcub"],
+    [],
+    [],
+    [],
+    ["elkcub"]
+]
+ElkJuggernaut = [
+    "Hooved",
+    11,
+    14,
+    ["raven", "skunk", "pronghorn", "alpha"], #bloodhound
+    ["elk"], # mole
+    [],
+    ["elkcub"],
+    [],
+    [],
+    ["elkcub"],
+    [],
+    [],
+    ["elk"] #not elk but mole
+]
+PronghornJuggernaut = [
+    "Hooved",
+    1,
+    4,
+    ["elkcub", "porcupine", "alpha"],
+    ["pronghorn"],
+    [],
+    []
+]
+Reptiles = [
+    "Reptile",
+    5,
+    10,
+    ["coyote","alpha"],
+    ["bullfrog"],
+    ["adder","adder"],
+    ["bullfrog"],
+    ["adder"],
+    [],
+    [],
+    []
+]
+WolfPack = [
+    "Canine",
+    1,
+    4,
+    ["mole","porcupine", "alpha"], #opposum
+    ["wolfcub"],
+    ["alpha"],
+    []
+]
 # ~~~~~~~~~~~
 # Name [Skinks]
 # Dominant Tribes [Reptile]
@@ -218,17 +193,20 @@ Bees = [
 # Turn [7]
 # Turn [8] Sparrow
 # ~~~~~~~~~~~
-# Name [WolfPack]
-# Dominant Tribes [Canine]
-# MinDifficulty [1]
-# MaxDifficulty [4]
+# Name [RavenNest]
+# Dominant Tribes [Bird]
+# MinDifficulty [11]
+# MaxDifficulty [14]
 # OldPreviewDifficulty [0]
 # PrerequisitesMet ? [True]
 # PreviewDifficulty [0]
-# RandomReplacementCards [Mole, Porcupine, Opossum, Alpha]
+# RandomReplacementCards [Porcupine, Alpha, ElkCub, WolfCub]
 # RedundantAbilities []
 # RegionSpecific ? [True]
 # unlockedCardPrerequisites []
-# Turn [1] WolfCub
-# Turn [2] Alpha
-# Turn [3]
+# Turn [1] RavenEgg, RavenEgg
+# Turn [2] RavenEgg
+# Turn [3] RavenEgg
+# Turn [4]
+# Turn [5]
+# Turn [6] ElkCub

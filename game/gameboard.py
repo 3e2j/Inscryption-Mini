@@ -113,6 +113,15 @@ reference = { # Reference for all strings to lists
         "ringworm" : ringworm,
         "bullfrog"  : bullfrog,
         "riversnapper" : riversnapper,
+        "cat" : cat,
+        "wolfcub" : wolfcub,
+        "sparrow" : sparrow,
+        "pronghorm" : pronghorn,
+        "elkcub" : elkcub,
+        "elk" : elk,
+        "otter" : otter,
+        "porcupine" : porcupine,
+        "adder" : adder,
     #bigcards
         "biglobster" : biglobster,
         "biglobster2": biglobster2,
@@ -126,7 +135,16 @@ reference = { # Reference for all strings to lists
         "bigbee" : bigbee,
         "bigringworm" : bigringworm,
         "bigbullfrog" : bigbullfrog,
-        "bigriversnapper" : bigriversnapper
+        "bigriversnapper" : bigriversnapper,
+        "bigcat" : bigcat,
+        "bigwolfcub" : bigwolfcub,
+        "bigsparrow" : bigsparrow,
+        "bigpronghorn" : bigpronghorn,
+        "bigelkcub" : bigelkcub,
+        "bigelk" : bigelk,
+        "bigotter" : bigotter,
+        "bigporcupine" : bigporcupine,
+        "bigadder" : bigadder
     }
 
 
