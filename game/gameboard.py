@@ -10,7 +10,7 @@ from engine.threadingEngine import threaded
 
 from game.boardArt import *
 
-from engine.soundEngine import PlaySound
+from engine.soundEngine import PlaySound, StopLoopingSound
 
 from array import *
 
@@ -86,6 +86,8 @@ def StartGame(tutorial=False): # Only used once from cabin.py
         actualDeck.append(["wolf", wolf[12], wolf[13], wolf[14]])  # type, attack, health, blood
         actualDeck.append(["wolf", wolf[12], wolf[13], wolf[14]])  # type, attack, health, blood
         actualDeck.append(["riversnapper", wolf[12], wolf[13], wolf[14]])
+        StopLoopingSound("cabin_ambience")
+        PlaySound("stereo/cabin/gametable_ambience", 1, (0, 0, 0), "gametable_ambience")
         startNewRound()
 
 reference = { # Reference for all strings to lists
@@ -155,19 +157,20 @@ candlesDiscovered = False
 roundOver = False
 
 def endRound(victory):
-    global LastEvent
-    global roundOver
     global scaleTip
-    roundOver = True
+    global roundOver
+    global LastEvent
     global candlesDiscovered
+
+    roundOver = True
     scaleTip = 0
+
     if victory:
         LastEvent = "PlayerWin"
         GameEvents()
         global IsTutorial
         if IsTutorial:
             IsTutorial = False
-        startNewRound()
     else:
         if not candlesDiscovered:
             candlesDiscovered = True
@@ -186,15 +189,25 @@ def endRoundChecker():
 
 #Pre-game
 
+def mainStartingModule(): #Makes sure code doesn't stack
+    while not roundOver:
+        SelectCardFromDeck()
+        if not roundOver: # SelectCardFromDeck may trigger round over therefore no new card should be drawn
+            drawNewCard()  # Loop back to start
+    else: #If continue rounds -
+        startNewRound()
+
 def startNewRound():
+    global roundOver
+    roundOver = False
     startBoard(True) # Clears board
-    randomStumpBoulderChoice() # Puts new terrain
+    randomTerrainChoice() # Puts new terrain
     buildOpponentTurnPlan() #creates turn plan for opponent
     selectRandomPlayerCards() #Randomly chooses from actual deck
     Scales(scaleRefresh=True) #Refresh Scales
     drawNewCard(True) #Refresh New card textures
     opponentAI() #Play first turn
-    SelectCardFromDeck() # Begin match
+    mainStartingModule() # Begin match
 
 from game.blueprints import grabRandomBlueprint
 
@@ -216,12 +229,54 @@ def buildOpponentTurnPlan():
     # -> add replacements
     TurnPlan = blueprint
 
-def randomStumpBoulderChoice():
-    pass
+def randomTerrainChoice():
+    amountOfFoliage = randint(-2,3)
+    if amountOfFoliage <= 0:
+        return
+    else:
+        def boardGrabber(): # Grabs board info
+            slots = [[], []] # Opponent then Player
+            for cardPos in range(0, 4):  # Slots that are blocked up ahead
+                if BoardID[1][cardPos] == "blankCardSpace": # Opponent
+                    slots[0].append(cardPos)
+                if BoardID[2][cardPos] == "blankCardSpace": # Player
+                    slots[1].append(cardPos)
+            shuffle(slots[0])
+            shuffle(slots[1])
+            return slots
+        for terrainCard in range(0,amountOfFoliage):
+            slots = boardGrabber()
+            cardChoice = choice(["stump","boulder"])
+            inPlayersPosition = choice([True,False])
+            # Override if 2 cards are already present in the row
+            if len(slots[1]) == 3 : # Only one card can be placed in players position
+                inPlayersPosition = False
+            elif len(slots[0]) == 2:
+                inPlayersPosition = True
+            #Execute
+            counter = 0
+            while not counter == 4:
+                if inPlayersPosition:
+                    if slots[1][counter] in slots[0]:
+                        PlaceCardOrColorChange(slots[1][counter],2,[cardChoice,reference[cardChoice][12],reference[cardChoice][13],reference[cardChoice][14]])
+                        slots[1].pop(0)
+                        counter = 4
+                    else:
+                        counter += 1
+                else:
+                    if slots[0][counter] in slots[1]:
+                        PlaceCardOrColorChange(slots[0][counter], 1,[cardChoice, reference[cardChoice][12], reference[cardChoice][13],reference[cardChoice][14]])
+                        slots[0].pop(0)
+                        counter = 4
+                    else:
+                        counter += 1
+            sleep(0.3)
+
 
 def selectRandomPlayerCards():
     global deck
     global remainingDeck
+    global squirrelCount
     deck.clear()
     remainingDeck.clear()
 
@@ -287,6 +342,7 @@ def opponentAI():
                 usingSlot = blockCheck()
                 PlaceCardOrColorChange(usingSlot, 0, [card, reference[card][12], reference[card][13], reference[card][14]])
                 avaliableSlots.remove(usingSlot)
+                sleep(0.3)
             #Else it will -> break (No avaliable slots for placing - discards turn)
         TurnTaken += 1
 
@@ -318,25 +374,26 @@ def AttackPhase(): # After bell ring
 
     endRoundChecker()
 
-    #Opponent moves forward and places cards
-    if not IsTutorial:
-        opponentAI() # Moves cards forward and plays queue
+    if not roundOver:
+        #Opponent moves forward and places cards
+        if not IsTutorial:
+            opponentAI() # Moves cards forward and plays queue
 
-    #Opponent attacks
-    totalDirectDmg = AttackCard(opponent=True)
-    LastEvent = "OpponentAttack"
-    GameEvents()
-    #Scale change
-    Scales(scaleWeight=totalDirectDmg) # ScaleChange
-    LastEvent = "ScaleTipOpponentAttack"
-    GameEvents(totalDirectDmg)
+        #Opponent attacks
+        totalDirectDmg = AttackCard(opponent=True)
+        LastEvent = "OpponentAttack"
+        GameEvents()
+        #Scale change
+        Scales(scaleWeight=totalDirectDmg) # ScaleChange
+        LastEvent = "ScaleTipOpponentAttack"
+        GameEvents(totalDirectDmg)
 
     endRoundChecker()
 
     if not roundOver: # Round isn't over
         LastEvent = "RoundNotOverCheck"
         GameEvents()
-        drawNewCard() #Loop back to start
+        #Goes back to mainStartingModule
 
 def AttackCard(opponent=False):
     order = [] # Order that cards attack, left to right
@@ -793,7 +850,6 @@ def drawNewCard(spawn=False):
         printSquirrelCard(gray)
         printPowerCard(gray)
         CardPlaySound("quick")
-        SelectCardFromDeck()
 
 
 #Misc Features

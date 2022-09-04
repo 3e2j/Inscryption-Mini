@@ -92,14 +92,14 @@ def StartEyes():
             mvaddstr(sh // 2 + eyepos+2, (sw // 2) - (len(NormalOffset) // 2), eyeDraw[2], white)  # Bottom
             mvaddstr(sh // 2 + eyepos+1, (sw // 2) - (len(NormalOffset) // 2), eyeDraw[1], white)  # Mid
             napms(2400) and refresh()
-            mvaddstr(sh // 2 + eyepos + 6, (sw // 2) - (len(TeethOffset) // 2), teethDraw[3], white)
-            napms(170) and refresh()
-            mvaddstr(sh // 2 + eyepos + 5, (sw // 2) - (len(TeethOffset) // 2), teethDraw[2], white)
-            napms(170) and refresh()
-            mvaddstr(sh // 2 + eyepos + 4, (sw // 2) - (len(TeethOffset) // 2), teethDraw[1], white)
-            napms(170) and refresh()
-            mvaddstr(sh // 2 + eyepos + 3, (sw // 2) - (len(TeethOffset) // 2), teethDraw[0], white)
-            napms(170) and refresh()
+            # mvaddstr(sh // 2 + eyepos + 6, (sw // 2) - (len(TeethOffset) // 2), teethDraw[3], white) # Teeth
+            # napms(170) and refresh()
+            # mvaddstr(sh // 2 + eyepos + 5, (sw // 2) - (len(TeethOffset) // 2), teethDraw[2], white)
+            # napms(170) and refresh()
+            # mvaddstr(sh // 2 + eyepos + 4, (sw // 2) - (len(TeethOffset) // 2), teethDraw[1], white)
+            # napms(170) and refresh()
+            # mvaddstr(sh // 2 + eyepos + 3, (sw // 2) - (len(TeethOffset) // 2), teethDraw[0], white)
+            # napms(170) and refresh()
             SetEyes("Open")
         while "Talking" in eyesStatus:
             mvaddstr(sh // 2 + eyepos+2, (sw // 2) - (len(NormalOffset) // 2), eyeDraw[6], orange)  # Bottom

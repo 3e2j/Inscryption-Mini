@@ -224,7 +224,7 @@ riversnapper = [
     1,  # attack
     6,  # health
     2,
-    "riversnapper"
+    "river snapper"
 ]
 skink = [
     '┌───────────────┐',  # 0
@@ -388,7 +388,7 @@ elkcub = [
     1,  # attack
     1,  # health
     1,
-    "elkcub"
+    "elk cub"
 ]
 elk = [
     '┌───────────────┐',  # 0

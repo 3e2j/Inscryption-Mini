@@ -26,7 +26,7 @@ def StartCabin():
 
     #EngageBoard
     from game.gameboard import startBoard, StartGame
-    #startBoard()
+    startBoard()
 
     waitTimerSecs(1)
 
