@@ -115,3 +115,14 @@ def GameEvents(dmgdealt=0):
                 leshyTalk("Lets begin.")
                 StopLoopingSound("cabin_ambience")
                 PlaySound("stereo/cabin/gametable_ambience", 1, (0, 0, 0), "gametable_ambience")
+    if LastEvent == "OpponentWinCandles":
+        leshyTalk("You've lost this match...")
+        leshyTalk("Where did I put that blastered thing?")
+        leshyTalk("Here we go.", skippable=True)
+        #ActivateCandles
+        sleep(3)
+        leshyTalk("Let me explain something to you.")
+        #Put Out a Candle
+        leshyTalk("That was one of the two mistakes you can make here.")
+        leshyTalk("If you make another I must sacrifice you.")
+        leshyTalk("Now, where were we...")

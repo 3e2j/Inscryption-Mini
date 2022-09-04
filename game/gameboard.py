@@ -38,18 +38,19 @@ def startBoard(clearBoard=False):
         cardCentering = cardCentringOriginal
         soundPosition = soundPositionOriginal
         for card in range(0,4):
-            mvaddstr(sh // 2 + cardHeight, sw // 2 + cardCentering, blankCardSpace[0], white)
-            heightAddition = 1
-            for line in range(0,10):
-                mvaddstr(sh // 2 + cardHeight + heightAddition, sw // 2 + cardCentering, blankCardSpace[1], white)
-                heightAddition += 1
-            heightAddition = 0
-            mvaddstr(sh // 2 + cardHeight +11, sw // 2 + cardCentering, blankCardSpace[11], white)
+            #[mvaddstr(sh // 2 + cardHeight + x, sw // 2 + cardCentering, blankCardSpace[x], white) for x in range (0,12)]
+            if cardRow == 0:
+                [mvaddstr(sh // 2 + cardHeight + x, sw // 2 + cardCentering, blankCardSpaceArrow[x], mediocre_gray) for x in range(0, 12)]
+            elif cardRow == 1:
+                [mvaddstr(sh // 2 + cardHeight + x, sw // 2 + cardCentering, blankCardSpaceAttackDown[x], mediocre_gray) for x in range(0, 12)]
+            elif cardRow == 2:
+                [mvaddstr(sh // 2 + cardHeight + x, sw // 2 + cardCentering, blankCardSpaceAttackUp[x], mediocre_gray) for x in range(0, 12)]
             cardCentering += 20
             if not clearBoard:
                 CardPlaySound("glow",(soundPosition, 0,1))
                 soundPosition += 0.1
                 sleep(0.2)
+
         cardHeight += 12
     global BoardID
     BoardID = [
@@ -95,6 +96,7 @@ reference = { # Reference for all strings to lists
         "knife" : knife,
         "bell" : bell,
         "blankCardSpace" : blankCardSpace,
+        "blankCardSpaceArrow" : blankCardSpaceArrow,
         "squirrelback": squirrelback,
         "powerback": powerback,
         "bigblank" : bigblank,
@@ -179,6 +181,7 @@ def endRound(victory):
         else:
             LastEvent = "OpponentWin"
             GameEvents()
+            #Put out a candle
 
 def endRoundChecker():
     if scaleTip <= -5: #opponent wins
@@ -485,26 +488,18 @@ def PlaceCardOrColorChange(cardNum, row, deckCardInfo, placement = True, color =
     cardHeight = -15 + (12 * row) #Height; changes 1-3 to 0-2
 
     if deckCardInfo == "blankCardSpace" or not deckCardInfo:
-        mvaddstr(sh // 2 + cardHeight, sw // 2 + cardCentering, blankCardSpace[0], color)
-        cardHeight += 1
-        for _ in range(0,10):
-            mvaddstr(sh // 2 + cardHeight, sw // 2 + cardCentering, blankCardSpace[1], color)
-            cardHeight += 1
-        mvaddstr(sh // 2 + cardHeight, sw // 2 + cardCentering, blankCardSpace[11], color)
+        if color == white:
+            color = mediocre_gray
+        #[mvaddstr(sh // 2 + cardHeight + x, sw // 2 + cardCentering, blankCardSpace[x], color) for x in range(0, 12)]
+        if row == 0:
+            [mvaddstr(sh // 2 + x + cardHeight, sw // 2 + cardCentering, blankCardSpaceArrow[x], color) for x in range(0,12)]
+        elif row == 1:
+            [mvaddstr(sh // 2 + x + cardHeight, sw // 2 + cardCentering, blankCardSpaceAttackDown[x], color) for x in range(0, 12)]
+        elif row == 2:
+            [mvaddstr(sh // 2 + x + cardHeight, sw // 2 + cardCentering, blankCardSpaceAttackUp[x], color) for x in range(0, 12)]
     else:
         CardType = deckCardInfo[0]
-        mvaddstr(sh // 2 + cardHeight, sw // 2 + cardCentering, reference[CardType][0], color)  # Drawing out the card
-        mvaddstr(sh // 2 + cardHeight + 1, sw // 2 + cardCentering, reference[CardType][1], color)
-        mvaddstr(sh // 2 + cardHeight + 2, sw // 2 + cardCentering, reference[CardType][2], color)
-        mvaddstr(sh // 2 + cardHeight + 3, sw // 2 + cardCentering, reference[CardType][3], color)
-        mvaddstr(sh // 2 + cardHeight + 4, sw // 2 + cardCentering, reference[CardType][4], color)
-        mvaddstr(sh // 2 + cardHeight + 5, sw // 2 + cardCentering, reference[CardType][5], color)
-        mvaddstr(sh // 2 + cardHeight + 6, sw // 2 + cardCentering, reference[CardType][6], color)
-        mvaddstr(sh // 2 + cardHeight + 7, sw // 2 + cardCentering, reference[CardType][7], color)
-        mvaddstr(sh // 2 + cardHeight + 8, sw // 2 + cardCentering, reference[CardType][8], color)
-        mvaddstr(sh // 2 + cardHeight + 9, sw // 2 + cardCentering, reference[CardType][9], color)
-        mvaddstr(sh // 2 + cardHeight + 10, sw // 2 + cardCentering, reference[CardType][10], color)
-        mvaddstr(sh // 2 + cardHeight + 11, sw // 2 + cardCentering, reference[CardType][11], color)
+        [mvaddstr(sh // 2 + cardHeight + x, sw // 2 + cardCentering, reference[CardType][x], color) for x in range(0, 12)]
         mvaddstr(sh // 2 + cardHeight + 10, sw // 2 + cardCentering + 2, f"{deckCardInfo[1]}†", color)  # Attack
         mvaddstr(sh // 2 + cardHeight + 10, sw // 2 + cardCentering + 13, f"{deckCardInfo[2]}♥", color)  # Attack
         if color == white:
@@ -519,20 +514,14 @@ def PlaceCardOrColorChange(cardNum, row, deckCardInfo, placement = True, color =
 
 def printSideBig(deckCardInfo, color, blank=False, positionInDeck = "TurnedOff"): # Prints preview of deck on right-hand side of screen
     if blank == True:
-        count = 0
-        for _ in range (0,31):
-            mvaddstr(sh // 2 - 18 + count, sw // 2 + 58, bigblank[0], color)
-            count += 1
+        [mvaddstr(sh // 2 - 18 + x, sw // 2 + 58, bigblank[0], color) for x in range (0,31)]
     else:
-        count = 0
         portrait = f"big{deckCardInfo[0]}"
         if not positionInDeck == "TurnedOff": # "TurnedOff" is temporary as bool cannot be used due to '0' being a pos
             mvaddstr(sh // 2 - 19, sw // 2 + 76 - len(str(positionInDeck)), f"{positionInDeck+1}/{len(deck)}", color) # Status bar
         else:
             mvaddstr(sh // 2 - 19, sw // 2 + 76 - 3, f"               ", color) # disable status bar
-        for _ in range(0,31):
-            mvaddstr(sh // 2 -18 + count, sw // 2 + 58, reference[portrait][count], color) # Print portrait
-            count +=1
+        [mvaddstr(sh // 2 - 18 + x, sw // 2 + 58, reference[portrait][x], color) for x in range(0, 31)]
         mvaddstr(sh // 2 - 18 + 28, sw // 2 + 64, f"{deckCardInfo[1]}†", color) #Extras
         mvaddstr(sh // 2 - 18 + 28, sw // 2 + 90, f"{deckCardInfo[2]}♥", color)
         if color == white:
@@ -643,7 +632,11 @@ def positionPlacement(oldSelect=0, spectating = False): # Position on one of the
                     wU = False
                 elif placing and BoardID[2][placementCount] == "blankCardSpace" and not spectating and not deck == []: # Will not continue if sacrifice is not made
                     wU = False
-                if sacrificeRequired and not sacrificeMade and not BoardID[2][placementCount] == "blankCardSpace" and not placementCount in sacrifices and not spectating:
+                if sacrificeRequired \
+                        and not sacrificeMade \
+                        and not BoardID[2][placementCount] == "blankCardSpace" \
+                        and not BoardID[2][placementCount][0] in ["boulder","stump"] \
+                        and not placementCount in sacrifices and not spectating:
                     sacrifices.append(placementCount) #appends position of sacrifice
                     #Sacrifice knife
                     #top
@@ -966,6 +959,27 @@ def BellObject(color = gray, spawn=False, pressed = False):
             AttackPhase()
         else:
             NotPressed()
+
+def Candles(spawn=False, relight = False):
+    def candleAnimation():
+        mvaddstr(20, 0, "ϼ")
+        mvaddstr(21, 0, "≬")
+        mvaddstr(22, 0, "δ")
+
+    def candleBurnt():
+        pass
+
+    def printCandleBase(left = True):
+        if left:
+            pass
+        else:
+            pass
+    if relight:
+        pass
+    else:
+        mvaddstr(19, 0, "ϧ")
+        #@threaded
+        mvaddstr(sh // 2 + count + 8, sw // 2 - 90, bell[count], color)
 
 
 #Sounds

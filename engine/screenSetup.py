@@ -76,9 +76,9 @@ def CursesStartup(RunThroughFullGame):
                           0x16 * 1000 // 0xff)
         # White
         unicurses.init_color(7, # for some reason default_colors sets the font to '7', which means I must make white ID 7.
-                             0xff * 1000 // 0xff,
-                             0xff * 1000 // 0xff,
-                             0xff * 1000 // 0xff)
+                             0xe5 * 1000 // 0xff, # Note: Is not true white (FFFFFF) due to overpowering intense light
+                             0xe5 * 1000 // 0xff,
+                             0xe5 * 1000 // 0xff)
         #Red
         unicurses.init_color(8,
                              0xa0 * 1000 // 0xff,

@@ -2,7 +2,7 @@ from random import choice
 def grabRandomBlueprint(prerequisites=None):
     from game.gameboard import cardsDiscovered
     #Main choices
-    choices = [
+    possibleChoices = [
         Bees,
         BirdFlock,
         CoyotePack,
@@ -20,11 +20,11 @@ def grabRandomBlueprint(prerequisites=None):
     for creature in prerequisitesCheck:
         if creature in cardsDiscovered: # Creature prerequisite is met
             if creature == "ant":
-                choices.append(AntSwarm)
+                possibleChoices.append(AntSwarm)
             if creature == "pronghorn":
-                choices.append(PronghornJuggernaut)
+                possibleChoices.append(PronghornJuggernaut)
 
-    chosenBlueprint = choice(choices)
+    chosenBlueprint = choice(possibleChoices)
     allCreatureTypesPresent = []
     [allCreatureTypesPresent.append(entity) for turn in chosenBlueprint[3::] for entity in turn if entity not in allCreatureTypesPresent] # appends non-dupes to templist
     for instanceOfCreature in allCreatureTypesPresent:
@@ -96,7 +96,7 @@ ElkJuggernaut = [
     "Hooved",
     11,
     14,
-    ["raven", "skunk", "pronghorn", "alpha"], #bloodhound
+    ["skunk", "pronghorn", "alpha"], #bloodhound #raven
     ["elk"], # mole
     [],
     ["elkcub"],
@@ -133,7 +133,7 @@ WolfPack = [
     "Canine",
     1,
     4,
-    ["mole","porcupine", "alpha"], #opposum
+    ["mole", "porcupine", "alpha"], #opposum
     ["wolfcub"],
     ["alpha"],
     []
