@@ -177,11 +177,9 @@ def endRound(victory):
         if not candlesDiscovered:
             candlesDiscovered = True
             LastEvent = "OpponentWinCandles"
-            GameEvents()
         else:
             LastEvent = "OpponentWin"
-            GameEvents()
-            #Put out a candle
+        GameEvents()
 
 def endRoundChecker():
     if scaleTip <= -5: #opponent wins
@@ -391,7 +389,7 @@ def AttackPhase(): # After bell ring
         LastEvent = "ScaleTipOpponentAttack"
         GameEvents(totalDirectDmg)
 
-    endRoundChecker()
+        endRoundChecker()
 
     if not roundOver: # Round isn't over
         LastEvent = "RoundNotOverCheck"
@@ -702,9 +700,6 @@ def positionPlacement(oldSelect=0, spectating = False): # Position on one of the
 
 #First in the event of the players turn, allows a selection from their current deck.
 def SelectCardFromDeck(count=0, turnOffArrows=False):
-
-    global LastEvent
-    LastEvent = "SelectCardFromDeck"
     if not turnOffArrows and not deck == []:
 
         canGoLeft = False
@@ -753,6 +748,8 @@ def SelectCardFromDeck(count=0, turnOffArrows=False):
                     checkInput = False
                     wU = False
 
+                global LastEvent
+                LastEvent = "SelectCardFromDeck"
                 GameEvents()
 
 

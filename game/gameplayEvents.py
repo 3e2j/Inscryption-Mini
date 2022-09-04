@@ -120,7 +120,7 @@ def GameEvents(dmgdealt=0):
         leshyTalk("Where did I put that blastered thing?")
         leshyTalk("Here we go.", skippable=True)
         #ActivateCandles
-        sleep(3)
+        sleep(3.1)
         leshyTalk("Let me explain something to you.")
         #Put Out a Candle
         leshyTalk("That was one of the two mistakes you can make here.")
