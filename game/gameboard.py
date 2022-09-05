@@ -1,9 +1,9 @@
 from unicurses import mvaddstr
-from engine.screenSetup import sh,sw,white,dark_gray,mediocre_gray, gray,brightorange,red, ResetKey
+from engine.screenSetup import sh,sw,white,dark_gray,mediocre_gray, gray,brightorange,red,orange,dark_orange, yellow, ResetKey
 from game.dialouge.leshy import leshyTalk
 from time import sleep
 from __main__ import Developer_Mode
-from random import choice, uniform, shuffle, randint
+from random import choice, uniform, shuffle, randint, choices
 
 from engine.threadingEngine import threaded
 
@@ -49,7 +49,7 @@ def startBoard(clearBoard=False):
             if not clearBoard:
                 CardPlaySound("glow",(soundPosition, 0,1))
                 soundPosition += 0.1
-                sleep(0.2)
+                sleep(0.15)
 
         cardHeight += 12
     global BoardID
@@ -81,6 +81,7 @@ def StartGame(tutorial=False): # Only used once from cabin.py
     else:
         BellObject(spawn=True)
         Scales(scaleSpawn=True)
+        #Candles(spawn=True)
         #will replace with save file later
         cardsDiscovered.extend(("lobster","wolf","riversnapper","bullfrog"))
         actualDeck.append(["lobster", lobster[12], lobster[13], lobster[14]])  # type, attack, health, blood
@@ -120,7 +121,7 @@ reference = { # Reference for all strings to lists
         "cat" : cat,
         "wolfcub" : wolfcub,
         "sparrow" : sparrow,
-        "pronghorm" : pronghorn,
+        "pronghorn" : pronghorn,
         "elkcub" : elkcub,
         "elk" : elk,
         "otter" : otter,
@@ -163,6 +164,7 @@ def endRound(victory):
     global roundOver
     global LastEvent
     global candlesDiscovered
+    global candlesActive
 
     roundOver = True
     scaleTip = 0
@@ -173,12 +175,17 @@ def endRound(victory):
         global IsTutorial
         if IsTutorial:
             IsTutorial = False
+        Candles(relight=True)
     else:
         if not candlesDiscovered:
             candlesDiscovered = True
             LastEvent = "OpponentWinCandles"
         else:
-            LastEvent = "OpponentWin"
+            candlesActive -= 1
+            if candlesActive > 0:
+                LastEvent = "OpponentWin"
+            else:
+                LastEvent = "GameOver"
         GameEvents()
 
 def endRoundChecker():
@@ -215,12 +222,14 @@ from game.blueprints import grabRandomBlueprint
 def buildOpponentTurnPlan():
     global TurnPlan
     global TurnTaken
+    global cardsDiscovered
     blueprint = grabRandomBlueprint()
     TurnTaken = 0
-    MaxNumOfTurns = len(blueprint) - 4  # -4 is the variables
-    replacements = [x for x in blueprint[3] if x in cardsDiscovered]
+    MaxNumOfTurns = len(blueprint) - 5  # -4 is the variables
+    replacements = [x for x in blueprint[4] if x in cardsDiscovered]
+    [cardsDiscovered.append(x) for x in blueprint[3] if x not in cardsDiscovered] # adds to cards discovered
 
-    for _x_ in range(0,4): # Remove old data
+    for _x_ in range(0,5): # Remove old data
         blueprint.pop(0)
 
     for x in replacements: # Add replacements
@@ -232,6 +241,8 @@ def buildOpponentTurnPlan():
 
 def randomTerrainChoice():
     amountOfFoliage = randint(-2,3)
+    if amountOfFoliage == 3:
+        amountOfFoliage = choices([2,3], weights=(75,25), k=1)[0] # Low chance to select over 3
     if amountOfFoliage <= 0:
         return
     else:
@@ -928,10 +939,7 @@ def BellObject(color = gray, spawn=False, pressed = False):
         bellEnabled = True
     else:
         def NotPressed():
-            count = 0
-            for _ in range(0,12):
-                mvaddstr(sh // 2 + count + 9, sw // 2 -80, bell[count], color)
-                count +=1
+            [mvaddstr(sh // 2 + x + 9, sw // 2 -80, bell[x], color) for x in range(0,12)]
         @threaded
         def Pressed():
             count = 0
@@ -957,26 +965,53 @@ def BellObject(color = gray, spawn=False, pressed = False):
         else:
             NotPressed()
 
-def Candles(spawn=False, relight = False):
-    def candleAnimation():
-        mvaddstr(20, 0, "ϼ")
-        mvaddstr(21, 0, "≬")
-        mvaddstr(22, 0, "δ")
+candlesActive = 2
 
-    def candleBurnt():
-        pass
+def Candles(spawn=False, relight = False, snuffOut = False):
+    global candlesActive
 
-    def printCandleBase(left = True):
-        if left:
-            pass
+    @threaded
+    def candleAnimation(status):
+        if status == 'left':
+            candleHeight = 8
+            candleCentering = -88
+        elif status == 'right':
+            candleHeight = 10
+            candleCentering = -95
+        PlaySound("mono/candle/candle_gainLife",1,(-0.35,0,0.8))
+        while (status == 'left' and candlesActive == 2) or (status == 'right' and candlesActive >= 1):
+                mvaddstr(sh // 2 + candleHeight, sw // 2 + candleCentering, choice(["ϱ","ϭ","δ","∂"]), choice([brightorange, orange, dark_orange, yellow]))#│ϼ
+                sleep(round(uniform(0.2,0.5),1))
+        PlaySound("mono/candle/candle_loseLife", 1, (-0.35, 0, 0.8))
+        mvaddstr(sh // 2 + candleHeight, sw // 2 + candleCentering, choice(["ϧ","ϩ"]),gray)  # │ϼ
+
+    def printCandleBase(status='left', spawn = False, color = gray):
+        if status == 'right':
+            [mvaddstr(sh // 2 + 11 + x, sw // 2 -97, candleBaseShort[x], color) for x in range(0, 10)]
         else:
-            pass
-    if relight:
-        pass
-    else:
-        mvaddstr(19, 0, "ϧ")
-        #@threaded
-        mvaddstr(sh // 2 + count + 8, sw // 2 - 90, bell[count], color)
+            [mvaddstr(sh // 2 + 9 + x, sw // 2 -90, candleBaseLong[x], color) for x in range(0, 12)]
+    if relight: # Will try a re-light
+        if candlesActive == 1:
+            leshyTalk(choice(["Your lives are restored.","You will not perish quite yet.","Need a light?","Reignite.","Let me relight your candles."]))
+            candlesActive = 2
+            candleAnimation('left')
+            candleAnimation('right')
+    elif spawn:
+        PlaySound("mono/candle/candle_place", 0.7, (-0.35, 0, 0.8))
+        printCandleBase('right', color=dark_gray)
+        printCandleBase(color=dark_gray)
+        sleep(0.15)
+        printCandleBase('right', color=mediocre_gray)
+        printCandleBase(color=mediocre_gray)
+        sleep(0.15)
+        printCandleBase('right')
+        printCandleBase()
+        sleep(0.3)
+        candleAnimation('left')
+        sleep(0.2)
+        candleAnimation('right')
+    elif snuffOut:
+        candlesActive -= 1
 
 
 #Sounds

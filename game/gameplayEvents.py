@@ -1,5 +1,7 @@
 from game.dialouge.leshy import leshyTalk
 from engine.soundEngine import PlaySound, StopLoopingSound
+from game.gameboard import Candles
+from random import choice
 from time import sleep
 
 from game.gameboard import \
@@ -119,10 +121,12 @@ def GameEvents(dmgdealt=0):
         leshyTalk("You've lost this match...")
         leshyTalk("Where did I put that blastered thing?")
         leshyTalk("Here we go.", skippable=True)
-        #ActivateCandles
+        Candles(spawn=True)
         sleep(3.1)
         leshyTalk("Let me explain something to you.")
-        #Put Out a Candle
+        Candles(snuffOut=True)
         leshyTalk("That was one of the two mistakes you can make here.")
         leshyTalk("If you make another I must sacrifice you.")
         leshyTalk("Now, where were we...")
+    if LastEvent == "OpponentWin":
+        leshyTalk(choice["I hoped for more.","When will a worthy challenger appear?"])

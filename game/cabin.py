@@ -17,6 +17,7 @@ def StartCabin():
     #sleep(3)
     #PlaySound("stereo/misc/eyes_opening", 0.8)
     #SetEyes("Opening")
+    SetEyes("Open")
     StartEyes()
     #waitTimerSecs(13)
     

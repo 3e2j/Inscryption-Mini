@@ -24,13 +24,19 @@ def grabRandomBlueprint(prerequisites=None):
             if creature == "pronghorn":
                 possibleChoices.append(PronghornJuggernaut)
 
-    chosenBlueprint = choice(possibleChoices)
+    from copy import deepcopy # Required for nested copying
+    chosenBlueprint = deepcopy(choice(possibleChoices))
     allCreatureTypesPresent = []
-    [allCreatureTypesPresent.append(entity) for turn in chosenBlueprint[3::] for entity in turn if entity not in allCreatureTypesPresent] # appends non-dupes to templist
+    [allCreatureTypesPresent.append(entity) for turn in chosenBlueprint[5::] for entity in turn if entity not in allCreatureTypesPresent]  # appends non-dupes to allCreatureTypesPresent
+    from unicurses import mvaddstr
+    mvaddstr(57, 0, possibleChoices)
+    mvaddstr(56, 0, chosenBlueprint)
+    chosenBlueprint[3] = allCreatureTypesPresent
+    [allCreatureTypesPresent.append(entity) for entity in chosenBlueprint[4] if entity not in allCreatureTypesPresent] # adds replacements
     for instanceOfCreature in allCreatureTypesPresent:
         if instanceOfCreature not in cardsDiscovered:
             try: # If bees aren't discovered, and they aren't in replacements, they cant remove them
-                chosenBlueprint[3].remove(instanceOfCreature)
+                chosenBlueprint[4].remove(instanceOfCreature)
             except:
                 pass
 
@@ -40,6 +46,7 @@ AntSwarm = [ # Requires 'Ant'
     "Insect", # Dominent Tribe - 0
     6, #Min difficulty - 1
     10, #Max difficulty - 2
+    [], # Will have all creatures to be added to 'discoveredCards'
     ["bat", "skink", "bullfrog", "skunk", "alpha"], # random replacements - 3
     ["ant", "ringworm"], # turn 1 - 4
     ["ant", "bee"],# turn 2 - 5...
@@ -51,6 +58,7 @@ Bees = [
     "Insect",
     5,
     10,
+    [],
     ["bullfrog"],
     ["bee"], # 1
     ["bee"],
@@ -65,6 +73,7 @@ BirdFlock = [
     "Bird",
     1,
     4,
+    [],
     ["skunk", "coyote", "alpha"],
     ["sparrow", "sparrow"], # 1
     [],
@@ -74,16 +83,17 @@ CoyotePack = [
     "Canine",
     1,
     4,
+    [],
     ["otter", "wolfcub", "porcupine", "alpha"],
     ["coyote", "coyote"], # 1
     [],
     []
-
 ]
 ElkHerd = [
     "Hooved",
     11,
     14,
+    [],
     ["mole", "porcupine", "alpha"],
     ["elkcub","elkcub"],
     ["elkcub"],
@@ -96,6 +106,7 @@ ElkJuggernaut = [
     "Hooved",
     11,
     14,
+    [],
     ["skunk", "pronghorn", "alpha"], #bloodhound #raven
     ["elk"], # mole
     [],
@@ -111,6 +122,7 @@ PronghornJuggernaut = [
     "Hooved",
     1,
     4,
+    [],
     ["elkcub", "porcupine", "alpha"],
     ["pronghorn"],
     [],
@@ -120,6 +132,7 @@ Reptiles = [
     "Reptile",
     5,
     10,
+    [],
     ["coyote","alpha"],
     ["bullfrog"],
     ["adder","adder"],
@@ -133,6 +146,7 @@ WolfPack = [
     "Canine",
     1,
     4,
+    [],
     ["mole", "porcupine", "alpha"], #opposum
     ["wolfcub"],
     ["alpha"],

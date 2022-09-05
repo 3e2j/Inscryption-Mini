@@ -10,6 +10,8 @@ red = None
 orange = None
 brightorange = None
 mediocre_gray = None
+dark_orange = None
+yellow = None
 
 sh = None
 sw = None
@@ -84,7 +86,16 @@ def CursesStartup(RunThroughFullGame):
                              0xa0 * 1000 // 0xff,
                              0x00 * 1000 // 0xff,
                              0x00 * 1000 // 0xff)
-
+        #Dark Orange
+        unicurses.init_color(10,
+                             0x82 * 1000 // 0xff,
+                             0x3e * 1000 // 0xff,
+                             0x10 * 1000 // 0xff)
+        # Yellow
+        unicurses.init_color(11,
+                             0xad * 1000 // 0xff,
+                             0x9e * 1000 // 0xff,
+                             0x00 * 1000 // 0xff)
 
         unicurses.init_pair(1, unicurses.COLOR_BLACK, -1)
         unicurses.init_pair(2, 2, -1)
@@ -96,8 +107,10 @@ def CursesStartup(RunThroughFullGame):
         unicurses.init_pair(8, 5, -1)
         unicurses.init_pair(9, 6, -1)
         unicurses.init_pair(10, 9, -1)
+        unicurses.init_pair(11, 10, -1)
+        unicurses.init_pair(12, 11, -1)
 
-        global black, dark_gray, gray, light_gray, white, red, magenta, orange, brightorange, mediocre_gray
+        global black, dark_gray, gray, light_gray, white, red, magenta, orange, brightorange, mediocre_gray, dark_orange, yellow
         black = unicurses.color_pair(1)
         dark_gray = unicurses.color_pair(2)
         gray = unicurses.color_pair(3)
@@ -108,6 +121,8 @@ def CursesStartup(RunThroughFullGame):
         orange = unicurses.color_pair(8)
         brightorange = unicurses.color_pair(9)
         mediocre_gray = unicurses.color_pair(10)
+        dark_orange = unicurses.color_pair(11)
+        yellow = unicurses.color_pair(12)
 
         if Developer_Mode: #Dev subtitles
             unicurses.mvaddstr(0, 0, "Developer Stats", magenta)
