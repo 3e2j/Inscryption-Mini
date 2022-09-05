@@ -13,6 +13,10 @@ blankCardSpace = [
     '└───────────────┘'#this is obviously used
 ]
 
+blank = [
+    '                 '
+]
+
 blankCardSpaceArrow = [
 '┌───────────────┐',
 '│      ███      │',

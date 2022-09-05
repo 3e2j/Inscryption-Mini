@@ -30,29 +30,41 @@ LastEvent = "" #CardPlace{TYPE}, positionPlacement{TYPE},sacrifice,SelectCardFro
 
 squirrelCount = 9 #Starting squirrel count
 
-def startBoard(clearBoard=False):
+def startBoard(clearBoard=False, color = mediocre_gray, wipeBoard = False):
+    global BoardID
     cardCentringOriginal = -38
     soundPositionOriginal = -0.15
     cardHeight = -15
     for cardRow in range(0,3):
         cardCentering = cardCentringOriginal
         soundPosition = soundPositionOriginal
-        for card in range(0,4):
-            #[mvaddstr(sh // 2 + cardHeight + x, sw // 2 + cardCentering, blankCardSpace[x], white) for x in range (0,12)]
-            if cardRow == 0:
-                [mvaddstr(sh // 2 + cardHeight + x, sw // 2 + cardCentering, blankCardSpaceArrow[x], mediocre_gray) for x in range(0, 12)]
+        def cardPrinter():
+            if wipeBoard:
+                [mvaddstr(sh // 2 + cardHeight + x, sw // 2 + cardCentering, blank[0]) for x in range(0, 12)]
+            elif cardRow == 0:
+                [mvaddstr(sh // 2 + cardHeight + x, sw // 2 + cardCentering, blankCardSpaceArrow[x], color) for x in
+                 range(0, 12)]
             elif cardRow == 1:
-                [mvaddstr(sh // 2 + cardHeight + x, sw // 2 + cardCentering, blankCardSpaceAttackDown[x], mediocre_gray) for x in range(0, 12)]
+                [mvaddstr(sh // 2 + cardHeight + x, sw // 2 + cardCentering, blankCardSpaceAttackDown[x], color) for x
+                 in range(0, 12)]
             elif cardRow == 2:
-                [mvaddstr(sh // 2 + cardHeight + x, sw // 2 + cardCentering, blankCardSpaceAttackUp[x], mediocre_gray) for x in range(0, 12)]
+                [mvaddstr(sh // 2 + cardHeight + x, sw // 2 + cardCentering, blankCardSpaceAttackUp[x], color) for x in
+                 range(0, 12)]
+        for card in range(0,4):
+            if clearBoard:
+                if not BoardID[cardRow][card] == "blankCardSpace":
+                    cardPrinter()
+                    CardPlaySound("quick", (soundPosition, 0,1), 0.3)
+                    sleep(0.1)
+            else:
+                cardPrinter()
             cardCentering += 20
-            if not clearBoard:
+            if not clearBoard and not wipeBoard:
                 CardPlaySound("glow",(soundPosition, 0,1))
-                soundPosition += 0.1
-                sleep(0.15)
-
+                sleep(0.05)
+            soundPosition += 0.1
         cardHeight += 12
-    global BoardID
+
     BoardID = [
         ["blankCardSpace", "blankCardSpace", "blankCardSpace", "blankCardSpace"],#0
         ["blankCardSpace", "blankCardSpace", "blankCardSpace", "blankCardSpace"],#1
@@ -203,6 +215,11 @@ def mainStartingModule(): #Makes sure code doesn't stack
         if not roundOver: # SelectCardFromDeck may trigger round over therefore no new card should be drawn
             drawNewCard()  # Loop back to start
     else: #If continue rounds -
+        startBoard(clearBoard=True)
+        sleep(0.2)
+        startBoard(wipeBoard=True)
+        #Insert pickup card
+        startBoard()
         startNewRound()
 
 def startNewRound():
@@ -211,8 +228,8 @@ def startNewRound():
     startBoard(True) # Clears board
     randomTerrainChoice() # Puts new terrain
     buildOpponentTurnPlan() #creates turn plan for opponent
-    selectRandomPlayerCards() #Randomly chooses from actual deck
     Scales(scaleRefresh=True) #Refresh Scales
+    selectRandomPlayerCards()  # Randomly chooses from actual deck
     drawNewCard(True) #Refresh New card textures
     opponentAI() #Play first turn
     mainStartingModule() # Begin match
