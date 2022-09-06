@@ -8,6 +8,8 @@ if not TurnOffSoundForLinux:
 from time import sleep
 import unicurses
 
+from random import choice
+
 
 '''
 Quick note:
@@ -184,3 +186,35 @@ def leshySound(tone, volume=0.4, position=(0,0,0)):
 		soundfile.destroy()
 	except:
 		pass
+
+def CardPlaySound(tone="normal", position=(0,0,0), volume=0.7):
+    if tone == "normal":
+        normal = [
+            "card#1",
+            "card#2",
+            "card#3",
+            "card#4",
+            "card#5",
+            "card#6",
+            "card#7",
+            "card#8",
+            "card#9",
+            "card#10"
+        ]
+        PlaySound(f"mono/card/{choice(normal)}", volume, position)
+    if tone == "quick":
+        quick = [
+            "cardquick#1",
+            "cardquick#2",
+            "cardquick#3",
+            "cardquick#4"
+        ]
+        PlaySound(f"mono/card/{choice(quick)}", volume, position)
+    if tone == "glow":
+        glow = [
+            "cardslot_glow#1",
+            "cardslot_glow#2",
+            "cardslot_glow#3",
+            "cardslot_glow#4"
+        ]
+        PlaySound(f"mono/card/{choice(glow)}", volume, position)

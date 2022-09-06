@@ -10,7 +10,7 @@ from engine.threadingEngine import threaded
 
 from game.boardArt import *
 
-from engine.soundEngine import PlaySound, StopLoopingSound
+from engine.soundEngine import PlaySound, StopLoopingSound, CardPlaySound
 
 from array import *
 
@@ -163,6 +163,38 @@ reference = { # Reference for all strings to lists
         "bigporcupine" : bigporcupine,
         "bigadder" : bigadder
     }
+#Goat - "It's bleeding yeilds 3 blood... If you can ignore the bleating"
+#Grizzly - "The monsterous grizzly. Its form speaks enough of its efficacy."
+#Beehive - "The inviolatable beehive. When it's attacked, you will draw a bee."
+#Rattler - "The nefarious rattler. A brittle creature... once past its monsterous fangs'
+#Raven - "The conniving raven. A blight upon the skies"
+#Ant queen - "The regal ant queen. She births a new ant once played."
+#opposum - "The resourceful opposum. A small creature for a small price."
+listOfAvaliables = {
+        "lobster" : "The gnashing of a lobster. Best not underestimate its strength.",
+        "wolf" : "The gnashing wolf. A wise choice if any.",
+        "alpha" : "The venerable alpha. Its courage emboldens the creatures that stand beside it.",
+        "coyote": "The meager coyote. But what did you expect for only 4 bones?",
+        "skunk": "The reaking skunk. Its smell weakens any opponent.",
+        "skink": "The tenacious skink. It moves over when attacked, leaving its tail behind.",
+        "ant": "Ah, the diligent ant. Its strength is proportionate to the size of it's colony.",
+        "bee": "A singlar bee. Hm, your choice.",
+        "ringworm": "The underappreciated ringworm. Its value is not readily apparent.",
+        "bullfrog": "The watching bullfrog. It leaps in the way of attacking flyers.", #Airborn sigel
+        "riversnapper": "The stalwart snapper. A near impenetrable defence.",
+        "cat": "The undying cat. The creature does not perish upon a sacrifice.",
+        "wolfcub": "The young wolf cub. It grows into a wolf after a single turn.",
+        "sparrow": "The meek sparrow. An inexpensive, if feeble, flying creature.",
+        "pronghorn" : "The sadistic pronghorn. Woe be to those that meet the end of it's antlers.",
+        "elkcub": "The nascent fawn. It quickly grows into an elk.",
+        "elk": "The flighty elk. It moves after attacking.",
+        "otter": "Ah, the elusive otter. It submerges itself during my turn",
+        "porcupine": "The small porcupine, will damage any opponent with its spikes.",
+        "adder": "The caustic adder. One bite can cause instant death."
+}
+# "The sun rose over the sleepy firns"
+# "Birds fluttered across the paths of wolves and elk..."
+# "You were embarking upon.. The Woodlands."
 
 
 # End Game
@@ -206,7 +238,6 @@ def endRoundChecker():
     elif scaleTip >= 5: # player wins
         endRound(True)
 
-
 #Pre-game
 
 def mainStartingModule(): #Makes sure code doesn't stack
@@ -215,20 +246,20 @@ def mainStartingModule(): #Makes sure code doesn't stack
         if not roundOver: # SelectCardFromDeck may trigger round over therefore no new card should be drawn
             drawNewCard()  # Loop back to start
     else: #If continue rounds -
+        Scales(scaleRefresh=True)  # Refresh Scales
         startBoard(clearBoard=True)
         sleep(0.2)
         startBoard(wipeBoard=True)
-        #Insert pickup card
+        foundRandomCard()
         startBoard()
         startNewRound()
 
 def startNewRound():
     global roundOver
     roundOver = False
-    startBoard(True) # Clears board
+    #startBoard(True) # Clears board
     randomTerrainChoice() # Puts new terrain
     buildOpponentTurnPlan() #creates turn plan for opponent
-    Scales(scaleRefresh=True) #Refresh Scales
     selectRandomPlayerCards()  # Randomly chooses from actual deck
     drawNewCard(True) #Refresh New card textures
     opponentAI() #Play first turn
@@ -328,6 +359,87 @@ def selectRandomPlayerCards():
         remainingDeck.remove(card)
         deck.append(card)
 
+# During upkeep time
+
+def foundRandomCard():
+    global actualDeck
+    global cardsDiscovered
+    numberOfCards = randint(2,3)
+    if numberOfCards == 3:
+        cardCentering = -28
+    else: # 2
+        cardCentering = -18
+
+    cardHeight = -6
+
+    selectedCard = 0
+    cardsChosen = []
+    revealedCards = []
+
+    for _ in range (0,numberOfCards):
+        #Choose a card
+        chosenCard = choice(list(listOfAvaliables.keys()))
+        while chosenCard in cardsChosen:
+            chosenCard = choice(list(listOfAvaliables.keys()))
+        cardsChosen.append(chosenCard) # Make sure it's unused again
+
+    def cardMiddlePrinter(spawn = False, clear = False):
+        for card in range(0,numberOfCards):
+            if selectedCard == card:
+                color = brightorange
+            else:
+                color = white
+            if card in revealedCards:
+                icon = reference[cardsChosen[card]]
+            else:
+                icon = powerback
+            if clear:
+                [mvaddstr(sh // 2 + cardHeight + x, sw // 2 + (cardCentering + 20 * card), blank[0], color) for x in range(0, 12)]
+            else:
+                [mvaddstr(sh // 2 + cardHeight + x, sw // 2 + (cardCentering + 20 * card), icon[x], color) for x in range(0, 12)]
+                try: # powerback has no values
+                    mvaddstr(sh // 2 + cardHeight + 10, sw // 2 + (cardCentering + 20 * card) + 2, f"{icon[12]}†", color)  # Attack
+                    mvaddstr(sh // 2 + cardHeight + 10, sw // 2 + (cardCentering + 20 * card) + 13, f"{icon[13]}♥", color)  # Attack
+                    mvaddstr(sh // 2 + cardHeight + 10, sw // 2 + (cardCentering + 20 * card) + 9 - icon[14],"δ" * icon[14], color)  # Attack
+                except:
+                    pass
+            if spawn or clear:
+                CardPlaySound()
+                sleep(0.15)
+
+    cardMiddlePrinter(spawn = True)
+    wU = True
+    while wU:
+        ResetKey()
+        checkInput = True
+        while checkInput:
+            from engine.screenSetup import key
+            if key in ["KEY_LEFT", "a"]:
+                if not selectedCard - 1 <= -1:
+                        selectedCard -= 1
+                        checkInput = False
+            elif key in ["KEY_RIGHT", "d"]:
+                if not selectedCard + 1 == numberOfCards:
+                    selectedCard += 1
+                    checkInput = False
+            elif key in ["^J", 'z', ' ']:
+                if selectedCard in revealedCards:
+                    cardData = reference[cardsChosen[selectedCard]]
+                    actualDeck.append([cardsChosen[selectedCard],cardData[12],cardData[13],cardData[14]])
+                    wU = False
+                else:
+                    CardPlaySound()
+                    revealedCards.append(selectedCard)
+                    cardMiddlePrinter()
+                    if cardsChosen[selectedCard] not in cardsDiscovered:
+                        leshyTalk(listOfAvaliables[cardsChosen[selectedCard]])
+                        cardsDiscovered.append(chosenCard[selectedCard])
+                checkInput = False
+        cardMiddlePrinter()
+    CardPlaySound()
+    sleep(0.1)
+    cardMiddlePrinter(clear=True)
+    sleep(0.2)
 
 #During game opponent AI
 
@@ -544,7 +656,7 @@ def printSideBig(deckCardInfo, color, blank=False, positionInDeck = "TurnedOff")
     else:
         portrait = f"big{deckCardInfo[0]}"
         if not positionInDeck == "TurnedOff": # "TurnedOff" is temporary as bool cannot be used due to '0' being a pos
-            mvaddstr(sh // 2 - 19, sw // 2 + 76 - len(str(positionInDeck)), f"{positionInDeck+1}/{len(deck)}", color) # Status bar
+            mvaddstr(sh // 2 - 19, sw // 2 + 76 - len(str(positionInDeck))//2, f"{positionInDeck+1}/{len(deck)}", color) # Status bar
         else:
             mvaddstr(sh // 2 - 19, sw // 2 + 76 - 3, f"               ", color) # disable status bar
         [mvaddstr(sh // 2 - 18 + x, sw // 2 + 58, reference[portrait][x], color) for x in range(0, 31)]
@@ -552,10 +664,7 @@ def printSideBig(deckCardInfo, color, blank=False, positionInDeck = "TurnedOff")
         mvaddstr(sh // 2 - 18 + 28, sw // 2 + 90, f"{deckCardInfo[2]}♥", color)
         if color == white:
             color = red
-        if not portrait == "bigriversnapper":
-            mvaddstr(sh // 2 -16, sw // 2 + 90 - deckCardInfo[3], "δ" * deckCardInfo[3], color) # Accounting for double-line title
-        else:
-            mvaddstr(sh // 2 - 15, sw // 2 + 90 - deckCardInfo[3], "δ" * deckCardInfo[3], color)
+        mvaddstr(sh // 2 - 18 + 29, sw // 2 + 77 - deckCardInfo[3]//2, "δ" * deckCardInfo[3], color)
 
 def positionPlacement(oldSelect=0, spectating = False): # Position on one of the 4 avaliable places to put a card (Includes sacrifices)
 
@@ -1009,7 +1118,7 @@ def Candles(spawn=False, relight = False, snuffOut = False):
             [mvaddstr(sh // 2 + 9 + x, sw // 2 -90, candleBaseLong[x], color) for x in range(0, 12)]
     if relight: # Will try a re-light
         if candlesActive == 1:
-            leshyTalk(choice(["Your lives are restored.","You will not perish quite yet.","Need a light?","Reignite.","Let me relight your candles."]))
+            leshyTalk(choice(["Your lives are restored.","You will not perish quite yet.","Need a light?","Reignite.","Let me relight your candles.","Allow me to relight your candles once more. I won't be killing you quite yet."]))
             candlesActive = 2
             candleAnimation('left')
             candleAnimation('right')
@@ -1029,41 +1138,6 @@ def Candles(spawn=False, relight = False, snuffOut = False):
         candleAnimation('right')
     elif snuffOut:
         candlesActive -= 1
-
-
-#Sounds
-
-def CardPlaySound(tone="normal", position=(0,0,0), volume=0.7):
-    if tone == "normal":
-        normal = [
-            "card#1",
-            "card#2",
-            "card#3",
-            "card#4",
-            "card#5",
-            "card#6",
-            "card#7",
-            "card#8",
-            "card#9",
-            "card#10"
-        ]
-        PlaySound(f"mono/card/{choice(normal)}", volume, position)
-    if tone == "quick":
-        quick = [
-            "cardquick#1",
-            "cardquick#2",
-            "cardquick#3",
-            "cardquick#4"
-        ]
-        PlaySound(f"mono/card/{choice(quick)}", volume, position)
-    if tone == "glow":
-        glow = [
-            "cardslot_glow#1",
-            "cardslot_glow#2",
-            "cardslot_glow#3",
-            "cardslot_glow#4"
-        ]
-        PlaySound(f"mono/card/{choice(glow)}", volume, position)
 
 
 from game.gameplayEvents import GameEvents # Game Events and triggers

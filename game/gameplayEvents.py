@@ -129,4 +129,4 @@ def GameEvents(dmgdealt=0):
         leshyTalk("If you make another I must sacrifice you.")
         leshyTalk("Now, where were we...")
     if LastEvent == "OpponentWin":
-        leshyTalk(choice["I hoped for more.","When will a worthy challenger appear?"])
+        leshyTalk(choice(["I hoped for more.","When will a worthy challenger appear?"]))

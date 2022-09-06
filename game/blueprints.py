@@ -29,8 +29,8 @@ def grabRandomBlueprint(prerequisites=None):
     allCreatureTypesPresent = []
     [allCreatureTypesPresent.append(entity) for turn in chosenBlueprint[5::] for entity in turn if entity not in allCreatureTypesPresent]  # appends non-dupes to allCreatureTypesPresent
     from unicurses import mvaddstr
-    mvaddstr(57, 0, possibleChoices)
-    mvaddstr(56, 0, chosenBlueprint)
+    # mvaddstr(57, 0, possibleChoices)
+    # mvaddstr(56, 0, chosenBlueprint)
     chosenBlueprint[3] = allCreatureTypesPresent
     [allCreatureTypesPresent.append(entity) for entity in chosenBlueprint[4] if entity not in allCreatureTypesPresent] # adds replacements
     for instanceOfCreature in allCreatureTypesPresent:
