@@ -97,14 +97,21 @@ def StartGame(tutorial=False): # Only used once from cabin.py
         global candlesDiscovered
         candlesDiscovered = True
         #will replace with save file later
-        cardsDiscovered.extend(("lobster","wolf","riversnapper","bullfrog"))
-        actualDeck.append(["lobster", lobster[12], lobster[13], lobster[14]])  # type, attack, health, blood
-        actualDeck.append(["wolf", wolf[12], wolf[13], wolf[14]])  # type, attack, health, blood
-        actualDeck.append(["wolf", wolf[12], wolf[13], wolf[14]])  # type, attack, health, blood
-        actualDeck.append(["riversnapper", wolf[12], wolf[13], wolf[14]])
+        setDeckToDefault()
         StopLoopingSound("cabin_ambience")
         PlaySound("stereo/cabin/gametable_ambience", 1, (0, 0, 0), "gametable_ambience")
         startNewRound()
+
+def setDeckToDefault():
+    global actualDeck
+    global cardsDiscovered
+    actualDeck.clear()
+    cardsDiscovered.clear()
+    actualDeck.append(["lobster", lobster[12], lobster[13], lobster[14]])  # type, attack, health, blood
+    actualDeck.append(["wolf", wolf[12], wolf[13], wolf[14]])  # type, attack, health, blood
+    actualDeck.append(["wolf", wolf[12], wolf[13], wolf[14]])  # type, attack, health, blood
+    actualDeck.append(["riversnapper", wolf[12], wolf[13], wolf[14]])
+    cardsDiscovered.extend(("lobster", "wolf", "riversnapper", "bullfrog"))
 
 reference = { # Reference for all strings to lists
     #misc
@@ -244,6 +251,8 @@ def endRound(victory):
             GameEvents()
             Candles(relight=True)
             BellObject(spawn=True)
+            global actualDeck
+            setDeckToDefault()
             PlaySound("stereo/cabin/gametable_ambience", 1, (0, 0, 0), "gametable_ambience")
             StartingNewGame = True
 

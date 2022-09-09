@@ -2,7 +2,7 @@ import os
 import sys
 
 
-Developer_Mode = True #Dev stats
+Developer_Mode = False #Dev stats
 TurnOffSoundForLinux = False # Dev command (LINUX NOT SUPPORTED)
 
 import subprocess
