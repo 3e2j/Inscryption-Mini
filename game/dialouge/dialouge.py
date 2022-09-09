@@ -7,6 +7,7 @@ from __main__ import Developer_Mode
 '''
 Below is all dialouge usable functions that can be called upon to simplify
 screen updates that are called constantly
+This was mainly used for the Start Screen then abandoned.
 '''
 
 

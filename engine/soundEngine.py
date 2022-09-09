@@ -172,9 +172,9 @@ def leshySound(tone, volume=0.4, position=(0,0,0)):
 		if tone == 'calm':
 			soundfileLeshy = random.choice(choicesCalm)
 		if tone == 'curious':
-			soundfileLeshy = random.choice(curious)
+			soundfileLeshy = random.choice(choicesCurious)
 		if tone == 'frustrated':
-			soundfileLeshy = random.choice(frustrated)
+			soundfileLeshy = random.choice(choicesFrustrated)
 		Source.set_gain(soundfileLeshy, volume)
 		Source.set_pitch(soundfileLeshy, round(random.uniform(0.95,1.05),2)) # adds dynamic
 		Source.set_position(soundfileLeshy, position)

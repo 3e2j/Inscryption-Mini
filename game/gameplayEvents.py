@@ -134,3 +134,31 @@ def GameEvents(dmgdealt=0):
         leshyTalk(choice(["It is time for your end.", "The last glint of light fades...","Goodbye..."]),skippable=True)
     if LastEvent == "RestartMatch":
         leshyTalk(choice(["Ah a new challenger. Your predecesor didn't make it. Will you?", "Ah a new opponent, about time.", "Hello. Or will this become a goodbye?", "Old habits die hard.", "Up for a game?"]))
+    if LastEvent == "WonGame":
+        from game.gameboard import save_file
+        if int(save_file['timesWon']) > 1:
+            leshyTalk(choice(["Well done.", "Well played.", "Good game."]))
+            leshyTalk(choice(["It seems I cannot best your wits.", "You were too good for me unfortunately.", "At the end of all things..."]))
+            leshyTalk(choice(["Apart from some minor hickups, I thought I had you there.", "Seems another victor is to join my ranks."]))
+            leshyTalk(choice(["You have outright beaten me., Either way, I have lost.","I am defeated."]))
+            leshyTalk(choice(["Well, not the matter.", "Either way...", "Hmn."]))
+            leshyTalk(choice(["Let us play again.", "I think I will have you this time.", "How about another?"]))
+            return True # Makes the music play again
+        else:
+            leshyTalk("Congratulations.")
+            leshyTalk("It seems you have beaten me.", tone="curious")
+            leshyTalk("Well done.")
+            leshyTalk("Enjoy your reward...",skippable=True)
+            sleep(6)
+            leshyTalk("What do you mean wheres the reward?", tone="frustrated")
+            leshyTalk("The reward is that you didn't loose.", tone="frustrated")
+            sleep(4)
+            leshyTalk("What? You want something physical?")
+            leshyTalk("I don't have an adequate item to give you.", tone="frustrated")
+            leshyTalk("But I'll tell you what...")
+            leshyTalk("You've probably grown tired of that background music.")
+            leshyTalk("How about we change that?", tone = "curious")
+            from game.gameboard import changePlaySound
+            changePlaySound()
+            leshyTalk("How about we continue?")
+            Candles(relight=True)

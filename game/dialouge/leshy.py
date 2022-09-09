@@ -202,47 +202,10 @@ def leshyTalk(speech, tone="calm", skippable=False, volume=0.3, position=(0,0,0)
         SetEyes("Talking")
     #voice
     if tone == "calm":
-        calm = [
-            "voice_calm#1",
-            "voice_calm#2",
-            "voice_calm#3",
-            "voice_calm#4",
-            "voice_calm#5",
-            "voice_calm#6",
-            "voice_calm#7",
-            "voice_calm#8",
-            "voice_calm#9",
-            "voice_calm#10",
-            "voice_calm#11",
-            "voice_calm#12"
-        ]
         leshySound('calm', volume, position)
     if tone == "curious":
-        curious = [
-            "voice_curious#1",
-            "voice_curious#2",
-            "voice_curious#3",
-            "voice_curious#4",
-            "voice_curious#5",
-            "voice_curious#6",
-            "voice_curious#7",
-            "voice_curious#8",
-            "voice_curious#9",
-            "voice_curious#10",
-            "voice_curious#11"
-        ]
         leshySound('curious', volume, position)
     if tone == "frustrated":
-        frustrated = [
-            "voice_frustrated#1",
-            "voice_frustrated#2",
-            "voice_frustrated#3",
-            "voice_frustrated#4",
-            "voice_frustrated#5",
-            "voice_frustrated#6",
-            "voice_frustrated#7",
-            "voice_frustrated#8"
-        ]
         leshySound('frustrated', volume, position)
 
     if not skippable:

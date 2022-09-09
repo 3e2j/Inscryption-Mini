@@ -4,6 +4,7 @@ from game.dialouge.leshy import leshyTalk
 from time import sleep
 from __main__ import Developer_Mode
 from random import choice, uniform, shuffle, randint, choices
+from __main__ import working_directory
 
 from engine.threadingEngine import threaded
 
@@ -13,6 +14,12 @@ from game.boardArt import *
 from engine.soundEngine import PlaySound, StopLoopingSound, CardPlaySound
 
 from array import *
+
+#SaveFile
+import configparser
+config_obj = configparser.ConfigParser()
+config_obj.read(f"{working_directory}/save_file.ini")
+save_file = config_obj['save']
 
 BoardID = [
         ["blankCardSpace", "blankCardSpace", "blankCardSpace", "blankCardSpace"],#0
@@ -96,10 +103,9 @@ def StartTheGame(tutorial=False): # Only used once from cabin.py
         Candles(spawn=True)
         global candlesDiscovered
         candlesDiscovered = True
-        #will replace with save file later
         setDeckToDefault()
         StopLoopingSound("cabin_ambience")
-        PlaySound("stereo/cabin/gametable_ambience", 1, (0, 0, 0), "gametable_ambience")
+        PlaySound(save_file['playingTrack'], 1, (0, 0, 0), "gametable_ambience")
         startNewRound()
 
 def setDeckToDefault():
@@ -205,6 +211,17 @@ listOfAvaliables = {
 # "Birds fluttered across the paths of wolves and elk..."
 # "You were embarking upon.. The Woodlands."
 
+def changePlaySound():
+    if save_file['playingTrack'] == 'stereo/cabin/gametable_ambience':
+        save_file['playingTrack'] = 'stereo/cabin/gametable_ambience2'
+    else:
+        save_file['playingTrack'] = 'stereo/cabin/gametable_ambience'
+    with open(f"{working_directory}/save_file.ini", "w") as save:
+        config_obj.write(save)
+    StopLoopingSound("gametable_ambience")
+    sleep(0.5)
+    config_obj.read(f"{working_directory}/save_file.ini")
+    PlaySound(save_file['playingTrack'], 1, (0, 0, 0), "gametable_ambience")
 
 # End Game
 
@@ -212,6 +229,7 @@ bellEnabled = False
 candlesDiscovered = False
 roundOver = False
 StartingNewGame = False
+RoundsWon = 0
 
 def endRound(victory):
     global scaleTip
@@ -220,6 +238,7 @@ def endRound(victory):
     global candlesDiscovered
     global candlesActive
     global StartingNewGame
+    global RoundsWon
 
     roundOver = True
     scaleTip = 0
@@ -230,10 +249,20 @@ def endRound(victory):
         global IsTutorial
         if IsTutorial:
             IsTutorial = False
-            from __main__ import working_directory
-            with open(f"{working_directory}/save-file.txt", "a") as saveFile:
-                saveFile.write("tutorialCompleted = True")
-                saveFile.close()
+            save_file['tutorial'] = 'False'
+            with open(f"{working_directory}/save_file.ini", "w") as save:
+                config_obj.write(save)
+        else:
+            RoundsWon += 1
+            if RoundsWon == 7:
+                StopLoopingSound("gametable_ambience")
+                save_file['timesWon'] = str(int(save_file['timesWon']) + 1)
+                with open(f"{working_directory}/save_file.ini", "w") as save:
+                    config_obj.write(save)
+                LastEvent = "WonGame"
+                if GameEvents():
+                    PlaySound(save_file['playingTrack'], 1, (0, 0, 0), "gametable_ambience")
+                RoundsWon = 0
     else:
         if not candlesDiscovered:
             candlesDiscovered = True
@@ -255,9 +284,8 @@ def endRound(victory):
             GameEvents()
             Candles(relight=True)
             BellObject(spawn=True)
-            global actualDeck
             setDeckToDefault()
-            PlaySound("stereo/cabin/gametable_ambience", 1, (0, 0, 0), "gametable_ambience")
+            PlaySound(save_file['playingTrack'], 1, (0, 0, 0), "gametable_ambience")
             StartingNewGame = True
 
 def endRoundChecker():
@@ -296,17 +324,16 @@ def startNewRound():
     opponentAI() #Play first turn
     mainStartingModule() # Begin match
 
-from game.blueprints import grabRandomBlueprint
-
 def buildOpponentTurnPlan():
     global TurnPlan
     global TurnTaken
     global cardsDiscovered
+    from game.blueprints import grabRandomBlueprint
     blueprint = grabRandomBlueprint()
     TurnTaken = 0
     MaxNumOfTurns = len(blueprint) - 5  # -4 is the variables
     replacements = [x for x in blueprint[4] if x in cardsDiscovered]
-    [cardsDiscovered.append(x) for x in blueprint[3] if x not in cardsDiscovered] # adds to cards discovered
+    #[cardsDiscovered.append(x) for x in blueprint[3] if x not in cardsDiscovered] # adds to cards discovered
     minDifficulty = blueprint[1]
     maxDifficulty = blueprint[2]
 
@@ -1156,7 +1183,7 @@ def Candles(spawn=False, relight = False, snuffOut = False):
             candlesActive = 2
             candleAnimation('left')
             candleAnimation('right')
-        else:
+        elif candlesActive == 0:
             leshyTalk(choice(["It is very dark.", "This cabin has seen darker days.", "I have not seen a challenger in while.", "I'm awake."]))
             leshyTalk(choice(["Let me provide a light.","Let's begin", "Lets see how you hold up", "Let's tell your story"]))
             candlesActive = 2
@@ -1164,6 +1191,7 @@ def Candles(spawn=False, relight = False, snuffOut = False):
             printCandleBase()
             candleAnimation('left')
             candleAnimation('right')
+
     elif spawn:
         PlaySound("mono/candle/candle_place", 0.7, (-0.35, 0, 0.8))
         printCandleBase('right', color=dark_gray)

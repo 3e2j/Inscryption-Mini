@@ -39,10 +39,11 @@ def StartCabin():
     StartEyes()
     waitTimerSecs(13)
 
-    with open(f"{working_directory}/save-file.txt", "r") as saveFile:
-        lines = saveFile.readlines()
-        saveFile.close()
-    if "tutorialCompleted = True" in lines:
+    import configparser
+    config_obj = configparser.ConfigParser()
+    config_obj.read(f"{working_directory}/save_file.ini")
+    save_file = config_obj['save']
+    if config_obj['save']['tutorial'] == "False":
         from random import choice
         leshyTalk(choice(["So you have returned,", "How nice to see you once again.", "Welcome back."]))
         leshyTalk(choice(["Let us begin.", "A new match is to be set.", "I suppose that you fancy a new match?"]))

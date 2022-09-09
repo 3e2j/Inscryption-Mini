@@ -1,6 +1,7 @@
 import os
 import sys
-
+import configparser
+config = configparser.ConfigParser()
 
 Developer_Mode = False #Dev stats
 TurnOffSoundForLinux = False # Dev command (LINUX NOT SUPPORTED)
@@ -10,7 +11,12 @@ def install(package):
     subprocess.check_call([sys.executable, "-m", "pip", "install", package])
 
 try:
-    x = open("save-file.txt", "x")
+    config.add_section('save')
+    config.set('save', 'tutorial', 'True')
+    config.set('save', 'playingTrack', 'stereo/cabin/gametable_ambience')
+    config.set('save', 'timesWon', '0')
+    with open("save_file.ini", "x") as configFile:
+        config.write(configFile)
     install("uni-curses") # Main terminal
     install("pyogg") # Supports ogg format (compresses file size)
     install("pyopenal") # Used for most sounds
