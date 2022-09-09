@@ -168,7 +168,7 @@ def CursesStartup(RunThroughFullGame):
         if Developer_Mode:
             ThreadingChecker()
         if RunThroughFullGame:
-            import game.startScreen
+            import game.cabin
         else: #Dev skip
             print("Skipping to certain section")
             import game.cabin
@@ -180,7 +180,7 @@ def ResetKey():
     global key
     key = None
 
-@CursesStartup(RunThroughFullGame=False)
+@CursesStartup(RunThroughFullGame=True)
 def StartCurses():
     pass
 

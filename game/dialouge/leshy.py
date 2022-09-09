@@ -2,13 +2,13 @@ import random
 
 import unicurses
 
-from engine.screenSetup import sh, sw, white, orange, brightorange
+from engine.screenSetup import sh, sw, white, orange, brightorange, mediocre_gray, gray, dark_gray
 from time import sleep
 from engine.threadingEngine import threaded
 from unicurses import  mvaddstr, refresh, napms
 from random import randint
 from game.dialouge.waiting import waitUntil, waitTimerSecs
-from game.dialouge.dialouge import clearLine
+from game.dialouge.dialouge import clearLine, screenClear
 
 eyesStatus = [] #Open, Closed, Talking, Opening, Stop (kills eyes)
 
@@ -45,6 +45,45 @@ teethDraw = [
 "   █ █████ █████ ████ ████ ████ ████ █   "
 ]
 
+handDraw = [
+'      █      █  ', #0
+'█     ██    ██  ',
+'█     ██    █   ',
+'█     ██   ██   ',
+'██    ██   ██   ',
+' ██   ██   █    ',
+' ██   ██  ██    ',
+' ██   ██  ██    ',
+'  █   ██  ██    ',
+'  ██████████    ',
+'  ██████████   █',
+'  ██████████   █',
+'  ██████████   █',
+'   █████████  ██',
+'   ████████████ ',
+'    ██████████  ',
+'    ███████     ', #16
+]
+handDraw2 = [
+'  █      █      ', #0
+'  ██    ██     █',
+'   █    ██     █',
+'   ██   ██     █',
+'   ██   ██    ██',
+'    █   ██   ██ ',
+'    ██  ██   ██ ',
+'    ██  ██   ██ ',
+'    ██  ██   █  ',
+'    ██████████  ',
+'█   ██████████  ',
+'█   ██████████  ',
+'█   ██████████  ',
+'██  █████████   ',
+' ████████████   ',
+'  ██████████    ',
+'     ███████    ' #16
+]
+
 finLDraw = [
 
 ]
@@ -62,9 +101,7 @@ def StartEyes():
     while "Stop" not in eyesStatus:
         while "Open" in eyesStatus:
             refresh()
-            mvaddstr(sh // 2 + eyepos, (sw // 2) - (len(NormalOffset) // 2), eyeDraw[0],white) #Top
-            mvaddstr(sh // 2 + eyepos+1, (sw // 2) - (len(NormalOffset) // 2), eyeDraw[1],white) # Mid
-            mvaddstr(sh // 2 + eyepos+2, (sw // 2) - (len(NormalOffset) // 2), eyeDraw[2], white) # Bottom
+            [mvaddstr(sh // 2 + eyepos + x, (sw // 2) - (len(NormalOffset) // 2), eyeDraw[x],white) for x in range (0,3)] #Eyes
             randomTime = randint(8,10)
             counter = 0
             while "Open" in eyesStatus and not counter//4 >= randomTime:
@@ -92,14 +129,6 @@ def StartEyes():
             mvaddstr(sh // 2 + eyepos+2, (sw // 2) - (len(NormalOffset) // 2), eyeDraw[2], white)  # Bottom
             mvaddstr(sh // 2 + eyepos+1, (sw // 2) - (len(NormalOffset) // 2), eyeDraw[1], white)  # Mid
             napms(2400) and refresh()
-            # mvaddstr(sh // 2 + eyepos + 6, (sw // 2) - (len(TeethOffset) // 2), teethDraw[3], white) # Teeth
-            # napms(170) and refresh()
-            # mvaddstr(sh // 2 + eyepos + 5, (sw // 2) - (len(TeethOffset) // 2), teethDraw[2], white)
-            # napms(170) and refresh()
-            # mvaddstr(sh // 2 + eyepos + 4, (sw // 2) - (len(TeethOffset) // 2), teethDraw[1], white)
-            # napms(170) and refresh()
-            # mvaddstr(sh // 2 + eyepos + 3, (sw // 2) - (len(TeethOffset) // 2), teethDraw[0], white)
-            # napms(170) and refresh()
             SetEyes("Open")
         while "Talking" in eyesStatus:
             mvaddstr(sh // 2 + eyepos+2, (sw // 2) - (len(NormalOffset) // 2), eyeDraw[6], orange)  # Bottom
@@ -118,6 +147,33 @@ def StartEyes():
             mvaddstr(sh // 2 + eyepos+1, (sw // 2) - (len(NormalOffset) // 2), eyeDraw[16], orange)  # Mid
             mvaddstr(sh // 2 + eyepos, (sw // 2) - (len(NormalOffset) // 2), eyeDraw[17], orange)  # Top
             napms(220) and refresh()
+        while "End" in eyesStatus:
+            from engine.soundEngine import PlaySound
+            PlaySound("stereo/leshy/giant_arm_descending", 0.7)
+            [mvaddstr(sh // 2 + eyepos + x, (sw // 2) - (len(NormalOffset) // 2), eyeDraw[x], white) for x in range(0, 3)]
+            mvaddstr(sh // 2 + eyepos + 6, (sw // 2) - (len(TeethOffset) // 2), teethDraw[3], white) # Teeth
+            napms(170) and refresh()
+            mvaddstr(sh // 2 + eyepos + 5, (sw // 2) - (len(TeethOffset) // 2), teethDraw[2], white)
+            napms(170) and refresh()
+            mvaddstr(sh // 2 + eyepos + 4, (sw // 2) - (len(TeethOffset) // 2), teethDraw[1], white)
+            napms(170) and refresh()
+            mvaddstr(sh // 2 + eyepos + 3, (sw // 2) - (len(TeethOffset) // 2), teethDraw[0], white)
+            napms(170) and refresh()
+            [mvaddstr(sh // 2 + eyepos -2 + x, (sw // 2) - 30 - len(handDraw[0]), handDraw[x], dark_gray) for x in range(0, 17)]
+            [mvaddstr(sh // 2 + eyepos - 2 + x, (sw // 2) + 30, handDraw2[x], dark_gray) for x in range(0, 17)]
+            sleep(0.8)
+            [mvaddstr(sh // 2 + eyepos - 2 + x, (sw // 2) - 30 - len(handDraw[0]), handDraw[x], mediocre_gray) for x in range(0, 17)]
+            [mvaddstr(sh // 2 + eyepos - 2 + x, (sw // 2) + 30, handDraw2[x], mediocre_gray) for x in range(0, 17)]
+            sleep(0.8)
+            [mvaddstr(sh // 2 + eyepos - 2 + x, (sw // 2) - 30 - len(handDraw[0]), handDraw[x], gray) for x in range(0, 17)]
+            [mvaddstr(sh // 2 + eyepos - 2 + x, (sw // 2) + 30, handDraw2[x], gray) for x in range(0, 17)]
+            sleep(0.8)
+            [mvaddstr(sh // 2 + eyepos - 2 + x, (sw // 2) - 30 - len(handDraw[0]), handDraw[x], white) for x in range(0, 17)]
+            [mvaddstr(sh // 2 + eyepos - 2 + x, (sw // 2) + 30, handDraw2[x], white) for x in range(0, 17)]
+            sleep(0.8)
+            screenClear()
+            SetEyes("None")
+            PlaySound("mono/candle/candle_loseLife")
         unicurses.refresh()
 
 
@@ -134,13 +190,16 @@ def SetEyes(eyeMode):
         pass
 
 # Tone can be either -  calm, curious, or frustrated
-def leshyTalk(speech, tone="calm", skippable=False, volume=0.3, position=(0,0,0)):
+def leshyTalk(speech, tone="calm", skippable=False, volume=0.3, position=(0,0,0), overrideSetEyes = False):
     from engine.soundEngine import leshySound
-    from engine.screenSetup import StandardScreen
     clearLine(-27)
     #talk
+
     mvaddstr(sh // 2 + eyepos -2, sw // 2 - len(speech) // 2, speech.upper(), brightorange)
-    SetEyes("Talking")
+    if overrideSetEyes:
+        SetEyes(overrideSetEyes)
+    else:
+        SetEyes("Talking")
     #voice
     if tone == "calm":
         calm = [

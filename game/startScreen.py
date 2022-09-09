@@ -1,5 +1,6 @@
 from engine.threadingEngine import threaded
 from game.dialouge.dialouge import *
+from game.dialouge.waiting import *
 import time
 from time import sleep
 
@@ -44,15 +45,19 @@ def dancingMan(heightChange, widthChange, TotalTime):
         sleep(TotalTime / 2)
     deleteKey("DialougeSendIn")
 
-dialouge("init")
-dialouge2("init")
-dialouge3("init")
-dialouge4("init")
-from engine.soundEngine import PlaySound,StopLoopingSound, StopSoundList
-PlaySound("mono/scale/scale_tick", 0.5, (-0.1,0,0.5))
-waitUntil("DialougeSendIn", "^J") #^J represents enter (for some reason)
-dialouge("out")
-dialouge2("out")
-dialouge3("out")  # Assumes last thread therefore will have wait toggle (note: changes for time periods given)
-dialouge4("out")
-waitUntil("DialougeSendOut", False)
+def StartGame():
+    dialouge("init")
+    dialouge2("init")
+    dialouge3("init")
+    dialouge4("init")
+    from engine.soundEngine import PlaySound,StopLoopingSound, StopSoundList
+    waitUntil("DialougeSendIn", ["^J"]) #^J represents enter (for some reason)
+    dialouge("out")
+    dialouge2("out")
+    dialouge3("out")  # Assumes last thread therefore will have wait toggle (note: changes for time periods given)
+    dialouge4("out")
+    waitUntil("DialougeSendOut", False)
+    clearLine(-2)
+    clearLine(-1)
+    clearLine(0)
+    clearLine(1)

@@ -21,7 +21,8 @@ def deleteResidueKeys(WaitIdOrKey):
         waitUntilKiller.remove(WaitIdOrKey)
     except:
         pass
-    unicurses.mvaddstr(4, 0, f"Removed {WaitIdOrKey} from waitUntilKiller")
+    if Developer_Mode:
+        unicurses.mvaddstr(4, 0, f"Removed {WaitIdOrKey} from waitUntilKiller")
 
 def sendWaitIdOrKey(WaitIdOrKey):
     waitUntilKiller.append(WaitIdOrKey)

@@ -2,7 +2,7 @@ import os
 import sys
 
 
-Developer_Mode = False #Dev stats
+Developer_Mode = True #Dev stats
 TurnOffSoundForLinux = False # Dev command (LINUX NOT SUPPORTED)
 
 import subprocess
@@ -14,7 +14,6 @@ try:
     install("uni-curses") # Main terminal
     install("pyogg") # Supports ogg format (compresses file size)
     install("pyopenal") # Used for most sounds
-    install("playsound") # Used for leshy's voice
     install("pynput") # Keyboard send functions
     install("pathlib") # Grab working directory
 

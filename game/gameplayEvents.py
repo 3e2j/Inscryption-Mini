@@ -130,3 +130,7 @@ def GameEvents(dmgdealt=0):
         leshyTalk("Now, where were we...")
     if LastEvent == "OpponentWin":
         leshyTalk(choice(["I hoped for more.","When will a worthy challenger appear?"]))
+    if LastEvent == "GameOver":
+        leshyTalk(choice(["It is time for your end.", "The last glint of light fades...","Goodbye..."]),skippable=True)
+    if LastEvent == "RestartMatch":
+        leshyTalk(choice(["Ah a new challenger. Your predecesor didn't make it. Will you?", "Ah a new opponent, about time.", "Hello. Or will this become a goodbye?", "Old habits die hard.", "Up for a game?"]))

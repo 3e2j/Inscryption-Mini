@@ -61,7 +61,7 @@ def startBoard(clearBoard=False, color = mediocre_gray, wipeBoard = False):
             cardCentering += 20
             if not clearBoard and not wipeBoard:
                 CardPlaySound("glow",(soundPosition, 0,1))
-                sleep(0.05)
+                sleep(0.08)
             soundPosition += 0.1
         cardHeight += 12
 
@@ -89,11 +89,13 @@ def StartGame(tutorial=False): # Only used once from cabin.py
         deck.append(["lobster", lobster[12], lobster[13], lobster[14]])  # type, attack, health, blood
         deck.append(["wolf", wolf[12], wolf[13], wolf[14]])  # type, attack, health, blood
         deck.append(["wolf", wolf[12], wolf[13], wolf[14]])  # type, attack, health, blood
-        SelectCardFromDeck()
+        mainStartingModule()
     else:
         BellObject(spawn=True)
         Scales(scaleSpawn=True)
-        #Candles(spawn=True)
+        Candles(spawn=True)
+        global candlesDiscovered
+        candlesDiscovered = True
         #will replace with save file later
         cardsDiscovered.extend(("lobster","wolf","riversnapper","bullfrog"))
         actualDeck.append(["lobster", lobster[12], lobster[13], lobster[14]])  # type, attack, health, blood
@@ -202,6 +204,7 @@ listOfAvaliables = {
 bellEnabled = False
 candlesDiscovered = False
 roundOver = False
+StartingNewGame = False
 
 def endRound(victory):
     global scaleTip
@@ -209,6 +212,7 @@ def endRound(victory):
     global LastEvent
     global candlesDiscovered
     global candlesActive
+    global StartingNewGame
 
     roundOver = True
     scaleTip = 0
@@ -219,7 +223,6 @@ def endRound(victory):
         global IsTutorial
         if IsTutorial:
             IsTutorial = False
-        Candles(relight=True)
     else:
         if not candlesDiscovered:
             candlesDiscovered = True
@@ -230,7 +233,19 @@ def endRound(victory):
                 LastEvent = "OpponentWin"
             else:
                 LastEvent = "GameOver"
+                StopLoopingSound("gametable_ambience")
         GameEvents()
+        if LastEvent == "GameOver":
+            sleep(3.1)
+            from game.dialouge.leshy import SetEyes
+            SetEyes("End")
+            sleep(10)
+            LastEvent = "RestartMatch"
+            GameEvents()
+            Candles(relight=True)
+            BellObject(spawn=True)
+            PlaySound("stereo/cabin/gametable_ambience", 1, (0, 0, 0), "gametable_ambience")
+            StartingNewGame = True
 
 def endRoundChecker():
     if scaleTip <= -5: #opponent wins
@@ -241,16 +256,19 @@ def endRoundChecker():
 #Pre-game
 
 def mainStartingModule(): #Makes sure code doesn't stack
+    global StartingNewGame
     while not roundOver:
         SelectCardFromDeck()
         if not roundOver: # SelectCardFromDeck may trigger round over therefore no new card should be drawn
             drawNewCard()  # Loop back to start
     else: #If continue rounds -
         Scales(scaleRefresh=True)  # Refresh Scales
-        startBoard(clearBoard=True)
-        sleep(0.2)
-        startBoard(wipeBoard=True)
-        foundRandomCard()
+        if not StartingNewGame:
+            startBoard(clearBoard=True)
+            sleep(0.2)
+            startBoard(wipeBoard=True)
+            foundRandomCard()
+        StartingNewGame = False
         startBoard()
         startNewRound()
 
@@ -275,7 +293,7 @@ def buildOpponentTurnPlan():
     TurnTaken = 0
     MaxNumOfTurns = len(blueprint) - 5  # -4 is the variables
     replacements = [x for x in blueprint[4] if x in cardsDiscovered]
-    # [cardsDiscovered.append(x) for x in blueprint[3] if x not in cardsDiscovered] # adds to cards discovered
+    [cardsDiscovered.append(x) for x in blueprint[3] if x not in cardsDiscovered] # adds to cards discovered
     minDifficulty = blueprint[1]
     maxDifficulty = blueprint[2]
 
@@ -436,7 +454,7 @@ def foundRandomCard():
                     cardMiddlePrinter()
                     if cardsChosen[selectedCard] not in cardsDiscovered:
                         leshyTalk(listOfAvaliables[cardsChosen[selectedCard]])
-                        cardsDiscovered.append(chosenCard[selectedCard])
+                        cardsDiscovered.append(cardsChosen[selectedCard])
                 checkInput = False
         cardMiddlePrinter()
     CardPlaySound()
@@ -1123,6 +1141,14 @@ def Candles(spawn=False, relight = False, snuffOut = False):
         if candlesActive == 1:
             leshyTalk(choice(["Your lives are restored.","You will not perish quite yet.","Need a light?","Reignite.","Let me relight your candles.","Allow me to relight your candles once more. I won't be killing you quite yet."]))
             candlesActive = 2
+            candleAnimation('left')
+            candleAnimation('right')
+        else:
+            leshyTalk(choice(["It is very dark.", "This cabin has seen darker days.", "I have not seen a challenger in while.", "I'm awake."]))
+            leshyTalk(choice(["Let me provide a light.","Let's begin", "Lets see how you hold up", "Let's tell your story"]))
+            candlesActive = 2
+            printCandleBase('right')
+            printCandleBase()
             candleAnimation('left')
             candleAnimation('right')
     elif spawn:

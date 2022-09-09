@@ -38,23 +38,15 @@ def StopLoopingSound(LoopValue): #Store value in StopSoundList
 from __main__ import Developer_Mode, working_directory
 from unicurses import mvaddstr
 
-#Long Sounds
-cabin_ambience = oalOpen(f'{working_directory}/sounds/stereo/cabin/cabin_ambience.ogg')
-gametable_ambience = oalOpen(f'{working_directory}/sounds/stereo/cabin/gametable_ambience.ogg')
-
-preInitLongSounds = { #Any Sounds with Looping
-	"stereo/cabin/cabin_ambience":cabin_ambience,
-	"stereo/cabin/gametable_ambience":gametable_ambience,
-}
-
 
 @threaded
 def PlaySound(sound_path, volume=1, position=(0,0,0), LoopValue=False, pitch = 1): #*args
+	global StopSoundList
 	try:
 		if not TurnOffSoundForLinux:
 			if LoopValue:
-				pyoggSetStreamBufferSize(4096 * 4)
-				oalSetStreamBufferCount(12)
+				# pyoggSetStreamBufferSize(4096 * 4)
+				# oalSetStreamBufferCount(12)
 				soundfile = preInitLongSounds[sound_path]  # Path grab
 			else:
 				soundfile = oalOpen(f'{working_directory}/sounds/{sound_path}.ogg')  # Path grab
@@ -73,19 +65,32 @@ def PlaySound(sound_path, volume=1, position=(0,0,0), LoopValue=False, pitch = 1
 						sleep(1)
 					soundfile.play()
 					# release resources
+				soundfile.stop()
 				StopSoundList.remove(LoopValue) #
 			else: #Same as loop code but without LoopSound check
 				while soundfile.get_state() == AL_PLAYING:
 					sleep(1)
 			# for x in args:
 			# 	x
-			soundfile.destroy()
+			if not LoopValue:
+				soundfile.destroy()
 
 			if Developer_Mode:
 				unicurses.mvaddstr(10, 0, f'Sound Ended: {sound_path}.ogg		') # {working_directory}/sounds/stereo/leshy/
 	except:
 		pass
-from playsound import playsound
+
+#Long Sounds
+
+cabin_ambience = oalOpen(f'{working_directory}/sounds/stereo/cabin/cabin_ambience.ogg')
+gametable_ambience = oalOpen(f'{working_directory}/sounds/stereo/cabin/gametable_ambience.ogg')
+gametable_ambience2 = oalOpen(f'{working_directory}/sounds/stereo/cabin/gametable_ambience2.ogg')
+
+preInitLongSounds = { #Any Sounds with Looping
+	"stereo/cabin/cabin_ambience":cabin_ambience,
+	"stereo/cabin/gametable_ambience":gametable_ambience,
+	"stereo/cabin/gametable_ambience2":gametable_ambience2
+}
 
 #Preloads all of leshy's sounds to stop buffer issues
 voice_calm1 = oalOpen(f'{working_directory}/sounds/stereo/leshy/voice_calm#1.ogg')
@@ -182,10 +187,6 @@ def leshySound(tone, volume=0.4, position=(0,0,0)):
 			unicurses.mvaddstr(10, 0, f'Sound Ended: leshy {tone}		')
 	except Exception:
 		print(Exception)
-	try:
-		soundfile.destroy()
-	except:
-		pass
 
 def CardPlaySound(tone="normal", position=(0,0,0), volume=0.7):
     if tone == "normal":

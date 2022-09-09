@@ -13,17 +13,19 @@ clearLine(0)
 
 # This is the main cabin that will be used for the remainer of rounds
 def StartCabin():
-    PlaySound("stereo/cabin/cabin_ambience", 1, (0,0,0), "cabin_ambience")
-    #sleep(3)
-    #PlaySound("stereo/misc/eyes_opening", 0.8)
-    #SetEyes("Opening")
-    SetEyes("Open")
+    from game.startScreen import StartGame
+    StartGame()
+    PlaySound(0, 1, (0,0,0), "cabin_ambience")
+    sleep(3)
+    PlaySound("stereo/misc/eyes_opening", 0.8)
+    #SetEyes("End")
+    SetEyes("Opening")
     StartEyes()
-    #waitTimerSecs(13)
+    waitTimerSecs(13)
     
-    #leshyTalk("Another challenger... it has been ages.")
-    #leshyTalk("Perhaps you have forgotton how this game is played.")
-    #leshyTalk("Allow me to remind you.")
+    leshyTalk("Another challenger... it has been ages.")
+    leshyTalk("Perhaps you have forgotton how this game is played.")
+    leshyTalk("Allow me to remind you.")
 
     #EngageBoard
     from game.gameboard import startBoard, StartGame
