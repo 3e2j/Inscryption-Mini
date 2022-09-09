@@ -147,7 +147,7 @@ WolfPack = [
     1,
     4,
     [],
-    ["mole", "porcupine", "alpha"], #opposum
+    ["porcupine", "alpha"], #opposum "mole",
     ["wolfcub"],
     ["alpha"],
     []

@@ -275,16 +275,19 @@ def buildOpponentTurnPlan():
     TurnTaken = 0
     MaxNumOfTurns = len(blueprint) - 5  # -4 is the variables
     replacements = [x for x in blueprint[4] if x in cardsDiscovered]
-    [cardsDiscovered.append(x) for x in blueprint[3] if x not in cardsDiscovered] # adds to cards discovered
+    # [cardsDiscovered.append(x) for x in blueprint[3] if x not in cardsDiscovered] # adds to cards discovered
+    minDifficulty = blueprint[1]
+    maxDifficulty = blueprint[2]
 
     for _x_ in range(0,5): # Remove old data
         blueprint.pop(0)
 
     for x in replacements: # Add replacements
         selectedSlot = randint(0, len(blueprint)-1)
-        blueprint[selectedSlot].append(x)
-    # difficulty -> replacement count
-    # -> add replacements
+        chanceToBeIncluded = randint(minDifficulty, maxDifficulty) * 3  # chance for extra card to be included
+        willBeIncluded = choices([True, False], weights=(chanceToBeIncluded, 100 - chanceToBeIncluded),k=1)  # determiner
+        if willBeIncluded:
+            blueprint[selectedSlot].append(x)
     TurnPlan = blueprint
 
 def randomTerrainChoice():
