@@ -17,7 +17,6 @@ try:
     install("pynput") # Keyboard send functions
     install("pathlib") # Grab working directory
 
-    x.write("ImportProcess = True")
 except:
     pass
 

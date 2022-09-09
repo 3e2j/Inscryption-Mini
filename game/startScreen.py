@@ -45,7 +45,7 @@ def dancingMan(heightChange, widthChange, TotalTime):
         sleep(TotalTime / 2)
     deleteKey("DialougeSendIn")
 
-def StartGame():
+def engageStartScreen():
     dialouge("init")
     dialouge2("init")
     dialouge3("init")

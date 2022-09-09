@@ -75,7 +75,7 @@ def startBoard(clearBoard=False, color = mediocre_gray, wipeBoard = False):
         #mvaddstr(22, 0, BoardID)
         mvaddstr(59,0,deck)
 
-def StartGame(tutorial=False): # Only used once from cabin.py
+def StartTheGame(tutorial=False): # Only used once from cabin.py
     if tutorial:
         global IsTutorial
         IsTutorial = True
@@ -230,6 +230,10 @@ def endRound(victory):
         global IsTutorial
         if IsTutorial:
             IsTutorial = False
+            from __main__ import working_directory
+            with open(f"{working_directory}/save-file.txt", "a") as saveFile:
+                saveFile.write("tutorialCompleted = True")
+                saveFile.close()
     else:
         if not candlesDiscovered:
             candlesDiscovered = True
