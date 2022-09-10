@@ -1,0 +1,1 @@
+py %cd%\__main__.py
