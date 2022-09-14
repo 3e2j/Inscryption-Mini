@@ -152,6 +152,14 @@ WolfPack = [
     ["alpha"],
     []
 ]
+DeveloperTester = [
+    "Canine",
+    1,
+    4,
+    [],
+    [],
+    ["porcupine"]
+]
 # ~~~~~~~~~~~
 # Name [Skinks]
 # Dominant Tribes [Reptile]

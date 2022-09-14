@@ -15,6 +15,10 @@ clearLine(0)
 
 # This is the main cabin that will be used for the remainer of rounds
 def StartCabin():
+    import configparser
+    config_obj = configparser.ConfigParser()
+    config_obj.read(f"{working_directory}/save_file.ini")
+    save_file = config_obj['save']
 
     def engageTutorial():
         leshyTalk("Another challenger... it has been ages.")
@@ -33,16 +37,17 @@ def StartCabin():
     engageStartScreen()
     PlaySound("stereo/cabin/cabin_ambience", 1, (0,0,0), "cabin_ambience")
     sleep(3)
-    PlaySound("stereo/misc/eyes_opening", 0.8)
-    #SetEyes("End")
-    SetEyes("Opening")
-    StartEyes()
-    waitTimerSecs(13)
+    if save_file['tutorial'] == "True":
+        PlaySound("stereo/misc/eyes_opening", 0.8)
+        SetEyes("Opening")
+        StartEyes()
+        waitTimerSecs(13)
+    else:
+        SetEyes("Open")
+        StartEyes()
+        sleep(1)
 
-    import configparser
-    config_obj = configparser.ConfigParser()
-    config_obj.read(f"{working_directory}/save_file.ini")
-    save_file = config_obj['save']
+
     if config_obj['save']['tutorial'] == "False":
         from random import choice
         leshyTalk(choice(["So you have returned.", "How nice to see you once again.", "Welcome back."]))

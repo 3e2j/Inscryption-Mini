@@ -1,5 +1,5 @@
 from unicurses import mvaddstr
-from engine.screenSetup import sh,sw,white,dark_gray,mediocre_gray, gray,brightorange,red,orange,dark_orange, yellow, ResetKey
+from engine.screenSetup import sh,sw,white,dark_gray,mediocre_gray, gray,brightorange,red,orange,dark_orange, yellow, purple, ResetKey
 from game.dialouge.leshy import leshyTalk
 from time import sleep
 from __main__ import Developer_Mode
@@ -194,6 +194,18 @@ stinkyCreatures = [
     "skunk"
 ]
 
+poisonCreatures = [
+    "adder"
+]
+
+undyingCreatures = [
+    "cat"
+]
+
+spikyCreatures = [
+    "porcupine"
+]
+
 #Goat - "It's bleeding yeilds 3 blood... If you can ignore the bleating"
 #Grizzly - "The monsterous grizzly. Its form speaks enough of its efficacy."
 #Beehive - "The inviolatable beehive. When it's attacked, you will draw a bee."
@@ -219,7 +231,7 @@ listOfAvaliables = {
         "pronghorn" : "The sadistic pronghorn. Woe be to those that meet the end of it's antlers.",
         "elkcub": "The nascent fawn. It quickly grows into an elk.",
         "elk": "The flighty elk. It moves after attacking.",
-        "otter": "Ah, the elusive otter. It submerges itself during my turn",
+        "otter": "Ah, the elusive otter.", #  It submerges itself during my turn
         "porcupine": "The small porcupine, will damage any opponent with its spikes.",
         "adder": "The caustic adder. One bite can cause instant death."
 }
@@ -482,6 +494,8 @@ def foundRandomCard():
                 try: # powerback has no values
                     mvaddstr(sh // 2 + cardHeight + 10, sw // 2 + (cardCentering + 20 * card) + 2, f"{icon[12]}†", color)  # Attack
                     mvaddstr(sh // 2 + cardHeight + 10, sw // 2 + (cardCentering + 20 * card) + 13, f"{icon[13]}♥", color)  # Attack
+                    if color == white:
+                        color = red
                     mvaddstr(sh // 2 + cardHeight + 10, sw // 2 + (cardCentering + 20 * card) + 9 - icon[14],"δ" * icon[14], color)  # Attack
                 except:
                     pass
@@ -599,11 +613,11 @@ def AttackPhase(): # After bell ring
     Scales(scaleWeight=totalDirectDmg)
     LastEvent = "ScaleTipPlayerAttack"
     GameEvents(totalDirectDmg)
-
     endRoundChecker()
 
     if not roundOver:
         #Opponent moves forward and places cards
+        sleep(0.2)
         if not IsTutorial:
             opponentAI() # Moves cards forward and plays queue
 
@@ -688,12 +702,23 @@ def AttackCard(opponent=False):
                 totalDirectDmg += BoardID[2][card][1] # total damage positive (player attacking)
             else: #blockedAttack
                 PlaySound("mono/card/card_attack_creature", round(uniform(0.5, 0.6), 2),(-0.15 + (0.1 * card), 0, 1))
-                if not BoardID[1][card][0] in stinkyCreatures:
+                if not BoardID[1][card][0] in stinkyCreatures \
+                        and not BoardID[2][card][0] in poisonCreatures:
                     BoardID[1][card][2] -= BoardID[2][card][1] #Opponents card's health - Players dmg
+                elif BoardID[2][card][0] in poisonCreatures:
+                    BoardID[1][card][2] = 0
                 else:
                     BoardID[1][card][2] -= BoardID[2][card][1] - 1  # Opponents card's health - Players dmg
+
             animationAttack(card)
             sleep(0.3)
+            if BoardID[1][card][0] in spikyCreatures:
+                PlaySound("mono/card/card_attack_creature", round(uniform(0.5, 0.6), 2), (-0.15 + (0.1 * card), 0, 1))
+                BoardID[2][card][2] -= 1
+                opponent = True
+                animationAttack(card)
+                sleep(0.3)
+                opponent = False
 
     else: # Opponent Attack
         #Detection
@@ -715,12 +740,24 @@ def AttackCard(opponent=False):
                 totalDirectDmg -= BoardID[1][card][1] # totalDmg negative (opponent attacking)
             else:  # blockedAttack
                 PlaySound("mono/card/card_attack_damage", round(uniform(0.5, 0.6), 2), (-0.15 + (0.1 * card), 0, 1))
-                if not BoardID[2][card][0] in stinkyCreatures:
+                if not BoardID[2][card][0] in stinkyCreatures \
+                        and not BoardID[1][card][0] in poisonCreatures:
                     BoardID[2][card][2] -= BoardID[1][card][1]  # Players card's health - Opponent dmg
+                elif BoardID[1][card][0] in poisonCreatures:
+                    BoardID[2][card][2] = 0
                 else:
                     BoardID[2][card][2] -= BoardID[1][card][1] -1
+
             animationAttack(card)
             sleep(0.3)
+            if BoardID[2][card][0] in spikyCreatures:
+                PlaySound("mono/card/card_attack_creature", round(uniform(0.5, 0.6), 2), (-0.15 + (0.1 * card), 0, 1))
+                BoardID[1][card][2] -= 1
+                opponent = False
+                animationAttack(card)
+                sleep(0.3)
+                opponent = True
+
     return totalDirectDmg
 
 def UpgradeBabyCards():
@@ -768,11 +805,26 @@ def PlaceCardOrColorChange(cardNum, row, deckCardInfo, placement = True, color =
         CardType = deckCardInfo[0]
         [mvaddstr(sh // 2 + cardHeight + x, sw // 2 + cardCentering, reference[CardType][x], color) for x in range(0, 12)]
         mvaddstr(sh // 2 + cardHeight + 10, sw // 2 + cardCentering + 2, f"{deckCardInfo[1]}†", color)  # Attack
-        mvaddstr(sh // 2 + cardHeight + 10, sw // 2 + cardCentering + 13, f"{deckCardInfo[2]}♥", color)  # Attack
+        health = deckCardInfo[2]
+        if health < 0:
+            health = 0
+        mvaddstr(sh // 2 + cardHeight + 10, sw // 2 + cardCentering + 13, f"{health}♥", color)  # Attack
+        sigil = " "
         if color == white:
             color = red
-        if row == 2:
-            mvaddstr(sh // 2 + cardHeight + 10, sw // 2 + cardCentering + 9 - deckCardInfo[3], "δ" * deckCardInfo[3],color)  # Attack
+            if CardType in poisonCreatures:
+                sigil = "δ"
+                color = purple
+            if CardType in undyingCreatures:
+                sigil = "δ"
+                color = brightorange
+            if CardType in flyingCreatures:
+                sigil = "₼"
+            if CardType in stinkyCreatures:
+                sigil = "₪"
+            if CardType in spikyCreatures:
+                sigil = "Ж"
+        mvaddstr(sh // 2 + cardHeight + 10, sw // 2 + cardCentering + 8, sigil ,color)  # Attack
     if placingABlankCard:
         BoardID[row][cardNum] = "blankCardSpace"
     elif placement:
