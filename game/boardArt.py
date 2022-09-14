@@ -342,8 +342,8 @@ boulder = [
     '│  ██ █████████ │',
     '│               │',
     '└───────────────┘', # 11
-    0,  # Health
-    5,  # attack
+    0,  # attack
+    5,  # health
     0, #cannot obtain
     "boulder"
 ]
@@ -360,8 +360,8 @@ cat = [
     '│ █  █ █  █     │',
     '│               │',
     '└───────────────┘',  # 11
-    1,  # Health
     0,  # attack
+    1,  # health
     1,
     "cat"
 ]

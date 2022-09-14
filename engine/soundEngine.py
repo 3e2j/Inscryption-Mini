@@ -70,9 +70,6 @@ def PlaySound(sound_path, volume=1, position=(0,0,0), LoopValue=False, pitch = 1
 			else: #Same as loop code but without LoopSound check
 				while soundfile.get_state() == AL_PLAYING:
 					sleep(1)
-			# for x in args:
-			# 	x
-			if not LoopValue:
 				soundfile.destroy()
 
 			if Developer_Mode:

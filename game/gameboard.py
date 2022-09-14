@@ -80,7 +80,8 @@ def startBoard(clearBoard=False, color = mediocre_gray, wipeBoard = False):
 
     if Developer_Mode:
         #mvaddstr(22, 0, BoardID)
-        mvaddstr(59,0,deck)
+        #mvaddstr(59,0,deck)
+        pass
 
 def StartTheGame(tutorial=False): # Only used once from cabin.py
     if tutorial:
@@ -117,7 +118,7 @@ def setDeckToDefault():
     actualDeck.append(["wolf", wolf[12], wolf[13], wolf[14]])  # type, attack, health, blood
     actualDeck.append(["wolf", wolf[12], wolf[13], wolf[14]])  # type, attack, health, blood
     actualDeck.append(["riversnapper", wolf[12], wolf[13], wolf[14]])
-    cardsDiscovered.extend(("lobster", "wolf", "riversnapper", "bullfrog"))
+    #cardsDiscovered.extend(("lobster", "wolf", "riversnapper", "bullfrog"))
 
 reference = { # Reference for all strings to lists
     #misc
@@ -178,6 +179,21 @@ reference = { # Reference for all strings to lists
         "bigporcupine" : bigporcupine,
         "bigadder" : bigadder
     }
+
+babyCards = {
+    "elkcub" : "elk",
+    "wolfcub" : "wolf"
+}
+
+flyingCreatures = [
+    "sparrow",
+    "bee"
+]
+
+stinkyCreatures = [
+    "skunk"
+]
+
 #Goat - "It's bleeding yeilds 3 blood... If you can ignore the bleating"
 #Grizzly - "The monsterous grizzly. Its form speaks enough of its efficacy."
 #Beehive - "The inviolatable beehive. When it's attacked, you will draw a bee."
@@ -186,10 +202,10 @@ reference = { # Reference for all strings to lists
 #Ant queen - "The regal ant queen. She births a new ant once played."
 #opposum - "The resourceful opposum. A small creature for a small price."
 listOfAvaliables = {
-        "lobster" : "The gnashing of a lobster. Best not underestimate its strength.",
+        "lobster" : "The gnashing claws of a lobster. Best not underestimate its strength.",
         "wolf" : "The gnashing wolf. A wise choice if any.",
         "alpha" : "The venerable alpha. Its courage emboldens the creatures that stand beside it.",
-        "coyote": "The meager coyote. But what did you expect for only 4 bones?",
+        "coyote": "The meager coyote. A strong yet fragile creature.",
         "skunk": "The reaking skunk. Its smell weakens any opponent.",
         "skink": "The tenacious skink. It moves over when attacked, leaving its tail behind.",
         "ant": "Ah, the diligent ant. Its strength is proportionate to the size of it's colony.",
@@ -221,7 +237,7 @@ def changePlaySound():
     StopLoopingSound("gametable_ambience")
     sleep(0.5)
     config_obj.read(f"{working_directory}/save_file.ini")
-    PlaySound(save_file['playingTrack'], 1, (0, 0, 0), "gametable_ambience")
+    #PlaySound(save_file['playingTrack'], 1, (0, 0, 0), "gametable_ambience")
 
 # End Game
 
@@ -317,6 +333,11 @@ def startNewRound():
     global roundOver
     roundOver = False
     #startBoard(True) # Clears board
+    global GrowUpCardCheck
+    GrowUpCardCheck = [
+        [0, 0, 0, 0],  # Opponents Row
+        [0, 0, 0, 0]  # Players Row
+    ]
     randomTerrainChoice() # Puts new terrain
     buildOpponentTurnPlan() #creates turn plan for opponent
     selectRandomPlayerCards()  # Randomly chooses from actual deck
@@ -563,6 +584,11 @@ def opponentAI():
     if TurnTaken <= len(TurnPlan)-1:
         playQueuedCards()
 
+GrowUpCardCheck = [
+    [0,0,0,0], # Opponents Row
+    [0,0,0,0] # Players Row
+]
+
 def AttackPhase(): # After bell ring
     global LastEvent
     #Starts by attacking from the players perspective
@@ -595,6 +621,7 @@ def AttackPhase(): # After bell ring
     if not roundOver: # Round isn't over
         LastEvent = "RoundNotOverCheck"
         GameEvents()
+        UpgradeBabyCards()
         #Goes back to mainStartingModule
 
 def AttackCard(opponent=False):
@@ -605,6 +632,7 @@ def AttackCard(opponent=False):
 
     def animationAttack(card): #Animation for attacking
         global BoardID
+        global GrowUpCardCheck
         if not opponent: #Player
             PlaceCardOrColorChange(card, 2, BoardID[2][card],False,brightorange) #changes players card to orange
             PlaceCardOrColorChange(card, 1, BoardID[1][card], False, red) #changes opponents card to red
@@ -615,6 +643,7 @@ def AttackCard(opponent=False):
                     sleep(0.1)
                     PlaySound("mono/card/card_death", round(uniform(0.5, 0.6), 2), (-0.15 + (0.1 * card), 0, 1))
                     BoardID[1][card] = "blankCardSpace"
+                    GrowUpCardCheck[0][card] = 0
                     PlaceCardOrColorChange(card, 1, BoardID[1][card], False, red)  # updates blank space with red
                     sleep(0.2)
             except:
@@ -630,21 +659,28 @@ def AttackCard(opponent=False):
                     sleep(0.1)
                     PlaySound("mono/card/card_death", round(uniform(0.5, 0.6), 2), (-0.15 + (0.1 * card), 0, 1))
                     BoardID[2][card] = "blankCardSpace"
+                    GrowUpCardCheck[1][card] = 0
                     PlaceCardOrColorChange(card, 2, BoardID[2][card], False, red)  # updates blank space with red
                     sleep(0.2)
             except:
                 pass
             PlaceCardOrColorChange(card, 2, BoardID[2][card], False, white)  # changes players card to white
     #Not animation
+    global GrowUpCardCheck
     if not opponent: #Player Attack
         #Detect spaces
         for card in range(0, 4):
             if not BoardID[2][card] == "blankCardSpace" and not BoardID[2][card][1] == 0: # Detect players row
                 order.append(card)
+                if BoardID[2][card][0] in babyCards:
+                    GrowUpCardCheck[1][card] += 1
                 if BoardID[1][card] == "blankCardSpace": #Detect if blocked space (opponents card); Will beable to still attack stumps and boulders
                     directAttack.append(card)
                 else: #Not blocked
-                    blockedAttack.append(card)
+                    if not BoardID[2][card][0] in flyingCreatures:
+                        blockedAttack.append(card)
+                    else:
+                        directAttack.append(card)
         #Attacking
         for card in order:
             if card in directAttack:
@@ -652,7 +688,10 @@ def AttackCard(opponent=False):
                 totalDirectDmg += BoardID[2][card][1] # total damage positive (player attacking)
             else: #blockedAttack
                 PlaySound("mono/card/card_attack_creature", round(uniform(0.5, 0.6), 2),(-0.15 + (0.1 * card), 0, 1))
-                BoardID[1][card][2] -= BoardID[2][card][1] #Opponents card's health - Players dmg
+                if not BoardID[1][card][0] in stinkyCreatures:
+                    BoardID[1][card][2] -= BoardID[2][card][1] #Opponents card's health - Players dmg
+                else:
+                    BoardID[1][card][2] -= BoardID[2][card][1] - 1  # Opponents card's health - Players dmg
             animationAttack(card)
             sleep(0.3)
 
@@ -661,10 +700,14 @@ def AttackCard(opponent=False):
         for card in range(0, 4):
             if not BoardID[1][card] == "blankCardSpace" and not BoardID[1][card][1] == 0: # Detects Opponents row
                 order.append(card)
+                if BoardID[1][card][0] in babyCards:
+                    GrowUpCardCheck[0][card] += 1
                 if BoardID[2][card] == "blankCardSpace": # Detect if blocked space (players card)
                     directAttack.append(card)
-                else:
+                if not BoardID[1][card][0] in flyingCreatures:
                     blockedAttack.append(card)
+                else:
+                    directAttack.append(card)
         # Attacking
         for card in order:
             if card in directAttack:
@@ -672,10 +715,35 @@ def AttackCard(opponent=False):
                 totalDirectDmg -= BoardID[1][card][1] # totalDmg negative (opponent attacking)
             else:  # blockedAttack
                 PlaySound("mono/card/card_attack_damage", round(uniform(0.5, 0.6), 2), (-0.15 + (0.1 * card), 0, 1))
-                BoardID[2][card][2] -= BoardID[1][card][1]  # Players card's health - Opponent dmg
+                if not BoardID[2][card][0] in stinkyCreatures:
+                    BoardID[2][card][2] -= BoardID[1][card][1]  # Players card's health - Opponent dmg
+                else:
+                    BoardID[2][card][2] -= BoardID[1][card][1] -1
             animationAttack(card)
             sleep(0.3)
     return totalDirectDmg
+
+def UpgradeBabyCards():
+    #Uses AttackCard to keep track of GrowUpCardCheck
+    global GrowUpCardCheck
+
+    def replaceAnimation(row, cardNum):
+        cardData = reference[babyCards[BoardID[row][cardNum][0]]]
+        PlaceCardOrColorChange(cardNum, row, [cardData[15], cardData[12], cardData[13], cardData[14]])
+        sleep(0.2)
+
+    count = 0
+    for cardAge in GrowUpCardCheck[0]: # Opponent
+        if cardAge == 2:
+            replaceAnimation(1, count)
+            GrowUpCardCheck[0][count] = 0
+        count += 1
+    count = 0
+    for cardAge in GrowUpCardCheck[1]: # Player
+        if cardAge == 2:
+            replaceAnimation(2, count)
+            GrowUpCardCheck[1][count] = 0
+        count += 1
 
 
 #During 'quiet' time
@@ -856,7 +924,8 @@ def positionPlacement(oldSelect=0, spectating = False): # Position on one of the
                         sleep(0.3)
                         for position in sacrifices:
                             PlaySound("mono/card/sacrifice_default", 0.7, (-0.15 + (0.1 * position), 0, 1))
-                            BoardID[2][position] = "blankCardSpace"
+                            if not BoardID[2][position][0] == "cat":
+                                BoardID[2][position] = "blankCardSpace"
                             changeOldCardToWhite(BoardID[2][position], position)
                             sleep(0.2)
 

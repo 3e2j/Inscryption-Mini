@@ -45,7 +45,7 @@ def StartCabin():
     save_file = config_obj['save']
     if config_obj['save']['tutorial'] == "False":
         from random import choice
-        leshyTalk(choice(["So you have returned,", "How nice to see you once again.", "Welcome back."]))
+        leshyTalk(choice(["So you have returned.", "How nice to see you once again.", "Welcome back."]))
         leshyTalk(choice(["Let us begin.", "A new match is to be set.", "I suppose that you fancy a new match?"]))
         startBoard()
         StartTheGame()

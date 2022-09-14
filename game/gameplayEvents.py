@@ -114,6 +114,7 @@ def GameEvents(dmgdealt=0):
             if LastEvent == 'PlayerWin':
                 leshyTalk("You've won this match.")
                 leshyTalk("They won't all be so easy.")
+                leshyTalk("Try to beat me seven times.")
                 leshyTalk("Lets begin.")
                 StopLoopingSound("cabin_ambience")
                 PlaySound("stereo/cabin/gametable_ambience", 1, (0, 0, 0), "gametable_ambience")
@@ -160,5 +161,5 @@ def GameEvents(dmgdealt=0):
             leshyTalk("How about we change that?", tone = "curious")
             from game.gameboard import changePlaySound
             changePlaySound()
-            leshyTalk("How about we continue?")
+            leshyTalk("Lets begin again.")
             Candles(relight=True)
