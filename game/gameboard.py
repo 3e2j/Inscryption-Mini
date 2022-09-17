@@ -206,6 +206,12 @@ spikyCreatures = [
     "porcupine"
 ]
 
+flyBlockerCreatures = [
+    "bullfrog",
+    "boulder",
+    "stump"
+]
+
 #Goat - "It's bleeding yeilds 3 blood... If you can ignore the bleating"
 #Grizzly - "The monsterous grizzly. Its form speaks enough of its efficacy."
 #Beehive - "The inviolatable beehive. When it's attacked, you will draw a bee."
@@ -216,21 +222,21 @@ spikyCreatures = [
 listOfAvaliables = {
         "lobster" : "The gnashing claws of a lobster. Best not underestimate its strength.",
         "wolf" : "The gnashing wolf. A wise choice if any.",
-        "alpha" : "The venerable alpha. Its courage emboldens the creatures that stand beside it.",
+        "alpha" : "The venerable alpha.", #Its courage emboldens the creatures that stand beside it.",
         "coyote": "The meager coyote. A strong yet fragile creature.",
         "skunk": "The reaking skunk. Its smell weakens any opponent.",
-        "skink": "The tenacious skink. It moves over when attacked, leaving its tail behind.",
-        "ant": "Ah, the diligent ant. Its strength is proportionate to the size of it's colony.",
+        "skink": "The tenacious skink.", #It moves over when attacked, leaving its tail behind.",
+        "ant": "Ah, the diligent ant.", #Its strength is proportionate to the size of it's colony.",
         "bee": "A singlar bee. Hm, your choice.",
         "ringworm": "The underappreciated ringworm. Its value is not readily apparent.",
-        "bullfrog": "The watching bullfrog. It leaps in the way of attacking flyers.", #Airborn sigel
+        "bullfrog": "The watching bullfrog. It leaps in the way of attacking flyers.",
         "riversnapper": "The stalwart snapper. A near impenetrable defence.",
         "cat": "The undying cat. The creature does not perish upon a sacrifice.",
         "wolfcub": "The young wolf cub. It grows into a wolf after a single turn.",
         "sparrow": "The meek sparrow. An inexpensive, if feeble, flying creature.",
         "pronghorn" : "The sadistic pronghorn. Woe be to those that meet the end of it's antlers.",
         "elkcub": "The nascent fawn. It quickly grows into an elk.",
-        "elk": "The flighty elk. It moves after attacking.",
+        "elk": "The flighty elk.", #It moves after attacking.",
         "otter": "Ah, the elusive otter.", #  It submerges itself during my turn
         "porcupine": "The small porcupine, will damage any opponent with its spikes.",
         "adder": "The caustic adder. One bite can cause instant death."
@@ -513,6 +519,8 @@ def foundRandomCard():
                         sigil = "₪"
                     elif CardType in spikyCreatures:
                         sigil = "Ж"
+                    elif CardType in flyBlockerCreatures: # Stops foliage from showing power
+                        sigil = "₾"
                     elif color == white:
                         color = red
                     mvaddstr(sh // 2 + cardHeight + 10, sw // 2 + (cardCentering + 20 * card) + 8, sigil, color)  # Attack
@@ -713,6 +721,8 @@ def AttackCard(opponent=False):
                 else: #Not blocked
                     if not BoardID[2][card][0] in flyingCreatures:
                         blockedAttack.append(card)
+                    elif BoardID[1][card][0] in flyBlockerCreatures:
+                        blockedAttack.append(card)
                     else:
                         directAttack.append(card)
         #Attacking
@@ -756,6 +766,8 @@ def AttackCard(opponent=False):
                 if BoardID[2][card] == "blankCardSpace": # Detect if blocked space (players card)
                     directAttack.append(card)
                 if not BoardID[1][card][0] in flyingCreatures:
+                    blockedAttack.append(card)
+                elif BoardID[2][card][0] in flyBlockerCreatures:
                     blockedAttack.append(card)
                 else:
                     directAttack.append(card)
@@ -857,6 +869,8 @@ def PlaceCardOrColorChange(cardNum, row, deckCardInfo, placement = True, color =
             sigil = "₪"
         elif CardType in spikyCreatures:
             sigil = "Ж"
+        elif CardType in flyBlockerCreatures and not CardType in ["stump","boulder"]:
+            sigil = "₾"
         elif color == white:
             color = red
         mvaddstr(sh // 2 + cardHeight + 10, sw // 2 + cardCentering + 8, sigil ,color)  # Attack
