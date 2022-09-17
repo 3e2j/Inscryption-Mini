@@ -16,6 +16,16 @@ Game Events and triggers for doing certain actions. Contained in own Script to k
 Will trigger certain events upon certain inputs. Mainly used for the tutorial section of the game.
 '''
 
+from unicurses import mvaddstr
+from engine.screenSetup import sh, sw
+from engine.screenSetup import dark_gray
+def engageHint(hint, remove = False, heightAddition = 0):
+    if not remove:
+        mvaddstr(sh // 2 + 23 + heightAddition, sw // 2 - len(hint) // 2, hint, dark_gray)
+    else:
+        mvaddstr(sh // 2 + 23 + heightAddition, sw // 2 - len(hint) // 2, " " * len(hint), dark_gray)
+
+
 def GameEvents(dmgdealt=0):
     from game.gameboard import LastEvent, BoardID, IsTutorial # Reloads Last Event
 
@@ -37,10 +47,14 @@ def GameEvents(dmgdealt=0):
                 leshyTalk("Wolves require two sacrifices. You do not have enough.")
                 BellObject(spawn=True)
                 leshyTalk("Ring the bell to end your turn... and commence combat.")
+                engageHint("Press W / Up to exit card selection. Maneuver the cursor to the Bell and press Enter / Space / Z")
+                engageHint("You can always press S / Down / Esc / X to return", heightAddition=1)
                 tutorialPhase += 1
 
         if tutorialPhase == 2:
             if LastEvent == 'BellPressed':
+                engageHint("Press W / Up to exit card selection. Maneuver the cursor to the Bell and press Enter / Space / Z", remove=True)
+                engageHint("You can always press S / Down / Esc / X to return", remove=True, heightAddition=1)
                 leshyTalk("Your lobster stands unopposed.")
                 leshyTalk("The number on the bottom left is the attack power: 1.")
                 Scales(scaleSpawn=True)
