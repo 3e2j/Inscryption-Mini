@@ -734,10 +734,10 @@ def AttackCard(opponent=False):
             if BoardID[1][card][0] in stinkyCreatures:
                 stink = 1
             if card in directAttack:
-                PlaySound("mono/card/card_attack_directly",round(uniform(0.5,0.6),2),(-0.15+(0.1*card),0,1))
                 if BoardID[2][card][1] - stink == 0:
                     StopAnimation = True
                 else:
+                    PlaySound("mono/card/card_attack_directly", round(uniform(0.5, 0.6), 2),(-0.15 + (0.1 * card), 0, 1))
                     totalDirectDmg += BoardID[2][card][1] # total damage positive (player attacking)
             else: #blockedAttack
                 if not BoardID[2][card][1] - stink == 0:
@@ -781,8 +781,8 @@ def AttackCard(opponent=False):
             if BoardID[2][card][0] in stinkyCreatures:
                 stink = 1
             if card in directAttack:
-                PlaySound("mono/card/card_attack_directly", round(uniform(0.5, 0.6), 2),(-0.15 + (0.1 * card), 0, 1))
                 if BoardID[1][card][1] - stink == 0:
+                    PlaySound("mono/card/card_attack_directly", round(uniform(0.5, 0.6), 2),(-0.15 + (0.1 * card), 0, 1))
                     StopAnimation = True
                 else:
                     totalDirectDmg -= BoardID[1][card][1] # totalDmg negative (opponent attacking)
