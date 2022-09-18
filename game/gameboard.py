@@ -33,7 +33,7 @@ actualDeck = [] # Users current GAME deck of cards
 remainingDeck = [] # Users current GAME deck of cards
 deck = [] # Users current GAME deck of cards
 cardsDiscovered = []
-LastEvent = "" #CardPlace{TYPE}, positionPlacement{TYPE},sacrifice,SelectCardFromDeck,BellPressed, BellSpawn
+LastEvent = "" #CardPlaceTYPE, positionPlacementTYPE,sacrifice,SelectCardFromDeck,BellPressed, BellSpawn, etc...
 
 squirrelCount = 9 #Starting squirrel count
 
@@ -118,6 +118,7 @@ def setDeckToDefault():
     actualDeck.append(["wolf", wolf[12], wolf[13], wolf[14]])  # type, attack, health, blood
     actualDeck.append(["wolf", wolf[12], wolf[13], wolf[14]])  # type, attack, health, blood
     actualDeck.append(["riversnapper", riversnapper[12], riversnapper[13], riversnapper[14]])
+    actualDeck.append(["skunk", skunk[12], skunk[13], skunk[14]])
     #cardsDiscovered.extend(("lobster", "wolf", "riversnapper", "bullfrog"))
 
 reference = { # Reference for all strings to lists
@@ -211,7 +212,7 @@ flyBlockerCreatures = [
     "boulder",
     "stump"
 ]
-
+# Extras:
 #Goat - "It's bleeding yeilds 3 blood... If you can ignore the bleating"
 #Grizzly - "The monsterous grizzly. Its form speaks enough of its efficacy."
 #Beehive - "The inviolatable beehive. When it's attacked, you will draw a bee."
@@ -241,21 +242,23 @@ listOfAvaliables = {
         "porcupine": "The small porcupine, will damage any opponent with its spikes.",
         "adder": "The caustic adder. One bite can cause instant death."
 }
+# Different Areas dialouge. Unused currently.
 # "The sun rose over the sleepy firns"
 # "Birds fluttered across the paths of wolves and elk..."
 # "You were embarking upon.. The Woodlands."
 
-def changePlaySound():
+def changePlaySound(replaySound=False):
     if save_file['playingTrack'] == 'stereo/cabin/gametable_ambience':
         save_file['playingTrack'] = 'stereo/cabin/gametable_ambience2'
     else:
         save_file['playingTrack'] = 'stereo/cabin/gametable_ambience'
     with open(f"{working_directory}/save_file.ini", "w") as save:
         config_obj.write(save)
-    StopLoopingSound("gametable_ambience")
-    sleep(0.5)
     config_obj.read(f"{working_directory}/save_file.ini")
-    #PlaySound(save_file['playingTrack'], 1, (0, 0, 0), "gametable_ambience")
+    if replaySound:
+        StopLoopingSound("gametable_ambience")
+        sleep(1.5)
+        PlaySound(save_file['playingTrack'], 1, (0, 0, 0), "gametable_ambience")
 
 # End Game
 
@@ -294,8 +297,8 @@ def endRound(victory):
                 with open(f"{working_directory}/save_file.ini", "w") as save:
                     config_obj.write(save)
                 LastEvent = "WonGame"
-                if GameEvents():
-                    PlaySound(save_file['playingTrack'], 1, (0, 0, 0), "gametable_ambience")
+                GameEvents()
+                PlaySound(save_file['playingTrack'], 1, (0, 0, 0), "gametable_ambience")
                 RoundsWon = 0
     else:
         if not candlesDiscovered:
@@ -507,11 +510,11 @@ def foundRandomCard():
                     sigil = " "
                     if CardType in poisonCreatures:
                         sigil = "δ"
-                        if color == white:
+                        if color == red:
                             color = purple
                     elif CardType in undyingCreatures:
                         sigil = "δ"
-                        if color == white:
+                        if color == red:
                             color = brightorange
                     elif CardType in flyingCreatures:
                         sigil = "₼"
@@ -521,8 +524,6 @@ def foundRandomCard():
                         sigil = "Ж"
                     elif CardType in flyBlockerCreatures: # Stops foliage from showing power
                         sigil = "₾"
-                    elif color == white:
-                        color = red
                     mvaddstr(sh // 2 + cardHeight + 10, sw // 2 + (cardCentering + 20 * card) + 8, sigil, color)  # Attack
 
                 except:
@@ -626,7 +627,7 @@ def opponentAI():
     if TurnTaken <= len(TurnPlan)-1:
         playQueuedCards()
 
-GrowUpCardCheck = [
+GrowUpCardCheck = [ # Keeps data for Age values on the board. Transforms baby card if 2+
     [0,0,0,0], # Opponents Row
     [0,0,0,0] # Players Row
 ]
@@ -738,13 +739,14 @@ def AttackCard(opponent=False):
                 else:
                     totalDirectDmg += BoardID[2][card][1] # total damage positive (player attacking)
             else: #blockedAttack
-                PlaySound("mono/card/card_attack_creature", round(uniform(0.5, 0.6), 2),(-0.15 + (0.1 * card), 0, 1))
-                if not BoardID[2][card][0] in poisonCreatures:
-                    if BoardID[2][card][1] - stink == 0:
-                        StopAnimation = True
-                    BoardID[1][card][2] -= (BoardID[2][card][1] - stink) #Opponents card's health - Players dmg
+                if not BoardID[2][card][1] - stink == 0:
+                    PlaySound("mono/card/card_attack_creature", round(uniform(0.5, 0.6), 2),(-0.15 + (0.1 * card), 0, 1))
+                    if not BoardID[2][card][0] in poisonCreatures:
+                        BoardID[1][card][2] -= (BoardID[2][card][1] - stink) #Opponents card's health - Players dmg
+                    else:
+                        BoardID[1][card][2] = 0
                 else:
-                    BoardID[1][card][2] = 0
+                    StopAnimation = True
             if not StopAnimation:
                 animationAttack(card)
                 sleep(0.3)
@@ -784,13 +786,14 @@ def AttackCard(opponent=False):
                 else:
                     totalDirectDmg -= BoardID[1][card][1] # totalDmg negative (opponent attacking)
             else:  # blockedAttack
-                PlaySound("mono/card/card_attack_damage", round(uniform(0.5, 0.6), 2), (-0.15 + (0.1 * card), 0, 1))
-                if not BoardID[1][card][0] in poisonCreatures:
-                    if BoardID[1][card][1] - stink == 0:
-                        StopAnimation = True
-                    BoardID[2][card][2] -= (BoardID[1][card][1] - stink)  # Players card's health - Opponent dmg
+                if not BoardID[1][card][1] - stink == 0:
+                    PlaySound("mono/card/card_attack_damage", round(uniform(0.5, 0.6), 2), (-0.15 + (0.1 * card), 0, 1))
+                    if not BoardID[1][card][0] in poisonCreatures:
+                        BoardID[2][card][2] -= (BoardID[1][card][1] - stink)  # Players card's health - Opponent dmg
+                    else:
+                        BoardID[2][card][2] = 0
                 else:
-                    BoardID[2][card][2] = 0
+                    StopAnimation = True
 
             if not StopAnimation:
                 animationAttack(card)
@@ -815,13 +818,13 @@ def UpgradeBabyCards():
         sleep(0.2)
 
     count = 0
-    for cardAge in GrowUpCardCheck[0]: # Opponent
+    for cardAge in GrowUpCardCheck[0]: # Opponents cards first
         if cardAge == 2:
             replaceAnimation(1, count)
             GrowUpCardCheck[0][count] = 0
         count += 1
     count = 0
-    for cardAge in GrowUpCardCheck[1]: # Player
+    for cardAge in GrowUpCardCheck[1]: # Players cards second
         if cardAge == 2:
             replaceAnimation(2, count)
             GrowUpCardCheck[1][count] = 0
@@ -839,6 +842,7 @@ def PlaceCardOrColorChange(cardNum, row, deckCardInfo, placement = True, color =
     if deckCardInfo == "blankCardSpace" or not deckCardInfo:
         if color == white:
             color = mediocre_gray
+        #OLD blank card. Before 'overlays'
         #[mvaddstr(sh // 2 + cardHeight + x, sw // 2 + cardCentering, blankCardSpace[x], color) for x in range(0, 12)]
         if row == 0:
             [mvaddstr(sh // 2 + x + cardHeight, sw // 2 + cardCentering, blankCardSpaceArrow[x], color) for x in range(0,12)]
@@ -886,9 +890,10 @@ def printSideBig(deckCardInfo, color, blank=False, positionInDeck = "TurnedOff")
     else:
         portrait = f"big{deckCardInfo[0]}"
         if not positionInDeck == "TurnedOff": # "TurnedOff" is temporary as bool cannot be used due to '0' being a pos
+            mvaddstr(sh // 2 - 19, sw // 2 + 76 - 4, f"                ", color) # Briefly clear status bar
             mvaddstr(sh // 2 - 19, sw // 2 + 76 - len(str(positionInDeck))//2, f"{positionInDeck+1}/{len(deck)}", color) # Status bar
         else:
-            mvaddstr(sh // 2 - 19, sw // 2 + 76 - 3, f"               ", color) # disable status bar
+            mvaddstr(sh // 2 - 19, sw // 2 + 76 - 4, f"                ", color) # disable status bar
         [mvaddstr(sh // 2 - 18 + x, sw // 2 + 58, reference[portrait][x], color) for x in range(0, 31)]
         mvaddstr(sh // 2 - 18 + 28, sw // 2 + 64, f"{deckCardInfo[1]}†", color) #Extras
         mvaddstr(sh // 2 - 18 + 28, sw // 2 + 90, f"{deckCardInfo[2]}♥", color)
@@ -1022,13 +1027,13 @@ def positionPlacement(oldSelect=0, spectating = False): # Position on one of the
 
                     PlaySound("mono/card/sacrifice_mark",0.7,(-0.15+(0.1*placementCount),0,1))
                     if len(sacrifices) == deck[oldSelect][3]:
-                        sleep(0.3)
+                        sleep(0.2)
                         for position in sacrifices:
                             PlaySound("mono/card/sacrifice_default", 0.7, (-0.15 + (0.1 * position), 0, 1))
                             if not BoardID[2][position][0] == "cat":
                                 BoardID[2][position] = "blankCardSpace"
                             changeOldCardToWhite(BoardID[2][position], position)
-                            sleep(0.2)
+                            sleep(0.15)
 
                         LastEvent = "sacrifice"
                         GameEvents()
@@ -1063,7 +1068,6 @@ def positionPlacement(oldSelect=0, spectating = False): # Position on one of the
 
             LastEvent = f"CardPlace{tempStoreOldTitle}"
             GameEvents()
-            sleep(0.4)
             SelectCardFromDeck()
 
 #First in the event of the players turn, allows a selection from their current deck.

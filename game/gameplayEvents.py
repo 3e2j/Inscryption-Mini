@@ -158,7 +158,6 @@ def GameEvents(dmgdealt=0):
             leshyTalk(choice(["You have outright beaten me., Either way, I have lost.","I am defeated."]))
             leshyTalk(choice(["Well, not the matter.", "Either way...", "Hmn."]))
             leshyTalk(choice(["Let us play again.", "I think I will have you this time.", "How about another?"]))
-            return True # Makes the music play again
         else:
             leshyTalk("Congratulations.")
             leshyTalk("It seems you have beaten me.", tone="curious")
@@ -166,7 +165,7 @@ def GameEvents(dmgdealt=0):
             leshyTalk("Enjoy your reward...",skippable=True)
             sleep(6)
             leshyTalk("What do you mean wheres the reward?", tone="frustrated")
-            leshyTalk("The reward is that you didn't loose.", tone="frustrated")
+            leshyTalk("The reward is that you didn't lose.", tone="frustrated")
             sleep(4)
             leshyTalk("What? You want something physical?")
             leshyTalk("I don't have an adequate item to give you.", tone="frustrated")

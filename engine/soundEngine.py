@@ -63,7 +63,8 @@ def PlaySound(sound_path, volume=1, position=(0,0,0), LoopValue=False, pitch = 1
 					while soundfile.get_state() == AL_PLAYING and LoopValue not in StopSoundList: # check if the file is still playing
 						# wait until the file is done playing
 						sleep(1)
-					soundfile.play()
+					if LoopValue not in StopSoundList:
+						soundfile.play()
 					# release resources
 				soundfile.stop()
 				StopSoundList.remove(LoopValue) #
