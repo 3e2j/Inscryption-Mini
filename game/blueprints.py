@@ -47,7 +47,7 @@ AntSwarm = [ # Requires 'Ant'
     6, #Min difficulty - 1
     10, #Max difficulty - 2
     [], # Will have all creatures to be added to 'discoveredCards'
-    ["bat", "skink", "bullfrog", "skunk", "alpha"], # random replacements - 3
+    ["skink", "bullfrog", "skunk", "alpha"], # random replacements - 3 # "bat"
     ["ant", "ringworm"], # turn 1 - 4
     ["ant", "bee"],# turn 2 - 5...
     ["ant"],

@@ -158,6 +158,7 @@ def GameEvents(dmgdealt=0):
             leshyTalk(choice(["You have outright beaten me., Either way, I have lost.","I am defeated."]))
             leshyTalk(choice(["Well, not the matter.", "Either way...", "Hmn."]))
             leshyTalk(choice(["Let us play again.", "I think I will have you this time.", "How about another?"]))
+            Candles(relight=True)
         else:
             leshyTalk("Congratulations.")
             leshyTalk("It seems you have beaten me.", tone="curious")
