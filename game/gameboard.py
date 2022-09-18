@@ -418,6 +418,7 @@ def randomTerrainChoice():
                 inPlayersPosition = True
             #Execute
             counter = 0
+            sleep(0.05)
             while not counter == 4:
                 if inPlayersPosition:
                     if slots[1][counter] in slots[0]:
@@ -557,7 +558,7 @@ def foundRandomCard():
                     revealedCards.append(selectedCard)
                     cardMiddlePrinter()
                     if cardsChosen[selectedCard] not in cardsDiscovered:
-                        leshyTalk(listOfAvaliables[cardsChosen[selectedCard]])
+                        leshyTalk(listOfAvaliables[cardsChosen[selectedCard]], immediateReturn=True)
                         cardsDiscovered.append(cardsChosen[selectedCard])
                 checkInput = False
         cardMiddlePrinter()
@@ -1028,12 +1029,17 @@ def positionPlacement(oldSelect=0, spectating = False): # Position on one of the
                     PlaySound("mono/card/sacrifice_mark",0.7,(-0.15+(0.1*placementCount),0,1))
                     if len(sacrifices) == deck[oldSelect][3]:
                         sleep(0.2)
+                        sacrificeCounter = 0 #Keeps track to stop sleeping
                         for position in sacrifices:
-                            PlaySound("mono/card/sacrifice_default", 0.7, (-0.15 + (0.1 * position), 0, 1))
+                            sacrificeCounter += 1
                             if not BoardID[2][position][0] == "cat":
                                 BoardID[2][position] = "blankCardSpace"
                             changeOldCardToWhite(BoardID[2][position], position)
-                            sleep(0.15)
+                            if not sacrificeCounter == len(sacrifices):
+                                PlaySound("mono/card/sacrifice_default", 0.7, (-0.15 + (0.1 * position), 0, 1))
+                                sleep(0.15)
+                            else:
+                                PlaySound("mono/card/sacrifice_defaultPRELOADED", 0.7, (-0.15 + (0.1 * position), 0, 1)) #Stops overlapping by playing only 1 sound last.
 
                         LastEvent = "sacrifice"
                         GameEvents()

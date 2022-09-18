@@ -162,18 +162,18 @@ def CursesStartup(RunThroughFullGame):
 
         GetCurrentKeyPress()
 
-        from threading import activeCount
-        @threaded
-        def ThreadingChecker(): #Checks active amount of threads
-            from time import sleep
-            while True:
-                try:
-                    unicurses.mvaddstr(2, 0, f"Number of running threads: {activeCount()}       ")
-                except:
-                    pass
-                sleep(2)
-            return ThreadingChecker
         if Developer_Mode:
+            from threading import activeCount
+            @threaded
+            def ThreadingChecker():  # Checks active amount of threads
+                from time import sleep
+                while True:
+                    try:
+                        unicurses.mvaddstr(2, 0, f"Number of running threads: {activeCount()}       ")
+                    except:
+                        pass
+                    sleep(2)
+                return ThreadingChecker
             ThreadingChecker()
         if RunThroughFullGame:
             import game.cabin

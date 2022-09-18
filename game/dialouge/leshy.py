@@ -189,8 +189,12 @@ def SetEyes(eyeMode):
     except:
         pass
 
+UUIDcurrentTalking = "" # Keeps track of the current talking.
+from uuid import uuid4
 # Tone can be either -  calm, curious, or frustrated
-def leshyTalk(speech, tone="calm", skippable=False, volume=0.3, position=(0,0,0), overrideSetEyes = False):
+def leshyTalk(speech, tone="calm", skippable=False, volume=0.3, position=(0,0,0), overrideSetEyes = False, immediateReturn = False):
+    global UUIDcurrentTalking
+    UUIDcurrentTalking = uuid4().hex
     from engine.soundEngine import leshySound
     clearLine(-27)
     #talk
@@ -212,12 +216,13 @@ def leshyTalk(speech, tone="calm", skippable=False, volume=0.3, position=(0,0,0)
         waitUntil("leshyTalking",["^J","z"," "], triangle=True)
         SetEyes("Open")
         clearLine(-27)
-        sleep(0.5)
+        if not immediateReturn:
+            sleep(0.5)
     else:
         @threaded
-        def endingEyesNonSkip(OldSpeech):
+        def endingEyesNonSkipClear(OldSpeech, uuid):
             waitTimerSecs(3)
-            if speech == OldSpeech:
+            if uuid == UUIDcurrentTalking:
                 clearLine(-27)
                 SetEyes("Open")
-        endingEyesNonSkip(speech)
+        endingEyesNonSkipClear(speech, UUIDcurrentTalking)

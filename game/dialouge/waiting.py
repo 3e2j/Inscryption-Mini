@@ -35,20 +35,19 @@ def waitUntil(WaitIdOrKey, isKeyboardInput, *arguments, triangle=False):
     wU = True
     if Developer_Mode:
         unicurses.mvaddstr(3, 0, f"Listening for {WaitIdOrKey}, Keyboard: '{isKeyboardInput}'    ")
-    import uuid
-    UUID = uuid.uuid4().hex
-    while wU == True:
+    from uuid import uuid4
+    UUID = uuid4().hex
+    while wU:
         if isKeyboardInput is not False:
             from engine.screenSetup import key
             if key in isKeyboardInput:
                 wU = False
+                UUID = False # Stops UUID of triangle
                 if Developer_Mode:
                     unicurses.mvaddstr(3, 0, f"Completed Wait Key Loop for {WaitIdOrKey}    ")
-                waitUntilKiller.append(WaitIdOrKey)
-                UUID = False
-                if WaitIdOrKey == "leshyTalking":
-                    deleteKey("leshyTalking")
-                else:
+                if not WaitIdOrKey == "leshyTalking":
+                    waitUntilKiller.append(WaitIdOrKey)
+                if not WaitIdOrKey == "leshyTalking":
                     deleteResidueKeys(WaitIdOrKey)
             else:
                 if triangle:
@@ -62,16 +61,12 @@ def waitUntil(WaitIdOrKey, isKeyboardInput, *arguments, triangle=False):
                                 break
                             unicurses.mvaddstr(sh // 2 -28, sw // 2, "▲", brightorange | unicurses.A_BOLD)
                             sleep(0.5)
-                        from game.dialouge.dialouge import clearLine
-                        clearLine(-28)
+                        unicurses.mvaddstr(sh // 2 -28, sw // 2, " ")
                     DisplayTriangle()
                     triangle = False
 
         else:
             if WaitIdOrKey in waitUntilKiller:  # Checks if waitID has been added to waitUntilKiller
-
-                # for x in arguments:  # Arguments
-                #     x
                 wU = False
                 waitUntilKiller.remove(WaitIdOrKey)  # Removes key
 
