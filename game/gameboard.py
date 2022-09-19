@@ -83,7 +83,7 @@ def startBoard(clearBoard=False, color = mediocre_gray, wipeBoard = False):
         #mvaddstr(59,0,deck)
         pass
 
-def StartTheGame(tutorial=False): # Only used once from cabin.py
+def StartTheGame(tutorial=False): # Only used once from cabinStart.py
     if tutorial:
         global IsTutorial
         IsTutorial = True

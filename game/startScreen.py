@@ -46,6 +46,15 @@ def dancingMan(heightChange, widthChange, TotalTime):
     deleteKey("DialougeSendIn")
 
 def engageStartScreen():
+    # from game.cabinArt import doorEntryTest, doorEntryTest2, framingBox
+    # for idx, item in enumerate(framingBox.split("\n")):
+    #     unicurses.mvaddstr(sh//2 - 21 + (idx+1),sw//2 - 81, item)
+    # for idx, item in enumerate(doorEntryTest.split("\n")):
+    #     unicurses.mvaddstr(sh//2 - 20 + (idx+1),sw//2 - 80, item)
+    # sleep(2)
+    # for idx, item in enumerate(doorEntryTest2.split("\n")):
+    #     unicurses.mvaddstr(sh//2 - 20 + (idx+1),sw//2 - 80, item)
+    # sleep(0.2)
     dialouge("init")
     dialouge2("init")
     dialouge3("init")

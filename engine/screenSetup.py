@@ -176,10 +176,10 @@ def CursesStartup(RunThroughFullGame):
                 return ThreadingChecker
             ThreadingChecker()
         if RunThroughFullGame:
-            import game.cabin
+            import game.cabinStart
         else: #Dev skip
             print("Skipping to certain section")
-            import game.cabin
+            import game.cabinStart
             #Add in whatever section here, IE: startScreen(), mainMenu(), etc...
         unicurses.endwin()
     return main
