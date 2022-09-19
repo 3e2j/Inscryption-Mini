@@ -181,6 +181,11 @@ reference = { # Reference for all strings to lists
         "bigadder" : bigadder
     }
 
+terrainCards = [
+    "stump",
+    "boulder"
+]
+
 babyCards = {
     "elkcub" : "elk",
     "wolfcub" : "wolf"
@@ -782,9 +787,9 @@ def AttackCard(opponent=False):
                 stink = 1
             if card in directAttack:
                 if BoardID[1][card][1] - stink == 0:
-                    PlaySound("mono/card/card_attack_directly", round(uniform(0.5, 0.6), 2),(-0.15 + (0.1 * card), 0, 1))
                     StopAnimation = True
                 else:
+                    PlaySound("mono/card/card_attack_directly", round(uniform(0.5, 0.6), 2),(-0.15 + (0.1 * card), 0, 1))
                     totalDirectDmg -= BoardID[1][card][1] # totalDmg negative (opponent attacking)
             else:  # blockedAttack
                 if not BoardID[1][card][1] - stink == 0:
@@ -854,7 +859,8 @@ def PlaceCardOrColorChange(cardNum, row, deckCardInfo, placement = True, color =
     else:
         CardType = deckCardInfo[0]
         [mvaddstr(sh // 2 + cardHeight + x, sw // 2 + cardCentering, reference[CardType][x], color) for x in range(0, 12)]
-        mvaddstr(sh // 2 + cardHeight + 10, sw // 2 + cardCentering + 2, f"{deckCardInfo[1]}†", color)  # Attack
+        if not CardType in terrainCards:
+            mvaddstr(sh // 2 + cardHeight + 10, sw // 2 + cardCentering + 2, f"{deckCardInfo[1]}†", color)  # Attack
         health = deckCardInfo[2]
         if health < 0:
             health = 0
